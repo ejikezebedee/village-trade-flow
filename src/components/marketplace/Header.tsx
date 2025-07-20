@@ -1,84 +1,95 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { QrCode, Menu } from "lucide-react";
+import { QrCode, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-20">
+          {/* Logo - Larger for easier recognition */}
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-primary p-2 rounded-lg">
-              <QrCode className="h-6 w-6 text-primary-foreground" />
+            <div className="bg-gradient-primary p-3 rounded-xl">
+              <QrCode className="h-7 w-7 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">VillageMarket</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-foreground">VillageMarket</h1>
               <Badge variant="secondary" className="text-xs">
-                Secure Trading Platform
+                Simple & Safe Trading
               </Badge>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-foreground hover:text-primary transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="text-foreground hover:text-primary transition-colors">
+          {/* Desktop Navigation - Simplified */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            <a href="#how-it-works" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
               How It Works
             </a>
-            <a href="#pricing" className="text-foreground hover:text-primary transition-colors">
-              Pricing
+            <a href="#features" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
+              Why Choose Us
             </a>
-            <a href="#contact" className="text-foreground hover:text-primary transition-colors">
-              Contact
+            <a href="#contact" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
+              Get Help
             </a>
           </nav>
 
-          {/* Action Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost">
-              Login
+          {/* Action Buttons - Larger and clearer */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <Button variant="ghost" size="lg" className="text-base">
+              Sign In
             </Button>
-            <Button variant="premium">
-              Join Platform
+            <Button variant="premium" size="lg" className="text-base px-6">
+              Get Started
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Larger touch target */}
           <Button 
             variant="ghost" 
-            size="icon" 
-            className="md:hidden"
+            size="lg"
+            className="lg:hidden p-3"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
-            <Menu className="h-5 w-5" />
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Simplified and touch-friendly */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
-            <nav className="py-4 space-y-4">
-              <a href="#features" className="block px-4 py-2 text-foreground hover:text-primary">
-                Features
+          <div className="lg:hidden border-t border-border bg-background/98 backdrop-blur-md">
+            <nav className="py-6 space-y-1">
+              <a 
+                href="#how-it-works" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                📖 How It Works
               </a>
-              <a href="#how-it-works" className="block px-4 py-2 text-foreground hover:text-primary">
-                How It Works
+              <a 
+                href="#features" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                ⭐ Why Choose Us
               </a>
-              <a href="#pricing" className="block px-4 py-2 text-foreground hover:text-primary">
-                Pricing
+              <a 
+                href="#contact" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                🆘 Get Help
               </a>
-              <a href="#contact" className="block px-4 py-2 text-foreground hover:text-primary">
-                Contact
-              </a>
-              <div className="flex flex-col space-y-2 px-4 pt-4 border-t border-border">
-                <Button variant="ghost">Login</Button>
-                <Button variant="premium">Join Platform</Button>
+              <div className="flex flex-col space-y-3 px-4 pt-6 border-t border-border">
+                <Button variant="ghost" size="lg" className="text-base justify-start">
+                  Sign In
+                </Button>
+                <Button variant="premium" size="lg" className="text-base">
+                  Get Started Now
+                </Button>
               </div>
             </nav>
           </div>
