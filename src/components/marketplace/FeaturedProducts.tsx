@@ -108,8 +108,8 @@ export function FeaturedProducts() {
         </div>
         
         <div className="text-center mt-8">
-          <Button variant="outline" size="lg">
-            View All Products
+          <Button variant="outline" size="lg" asChild>
+            <a href="/products">View All Products</a>
           </Button>
         </div>
       </div>
