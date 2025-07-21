@@ -79,7 +79,7 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ product, quantity, o
         return;
       }
 
-      // Create order in database
+      // Create order in database with notifications
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -91,7 +91,8 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ product, quantity, o
           total_amount: finalTotal,
           shipping_address: shippingDetails as any,
           order_status: 'pending',
-          payment_status: 'pending'
+          payment_status: 'pending',
+          current_stage: 'seller_preparing'
         })
         .select()
         .single();

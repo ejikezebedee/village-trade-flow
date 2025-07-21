@@ -8,6 +8,7 @@ import { StockAlerts } from "@/components/marketplace/StockAlerts";
 import { EnhancedAddProduct } from "@/components/marketplace/EnhancedAddProduct";
 import { RealTimeProductDisplay } from "@/components/marketplace/RealTimeProductDisplay";
 import { SalesAnalytics } from "@/components/seller/SalesAnalytics";
+import { OrderActions } from "@/components/orders/OrderActions";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -89,23 +90,60 @@ const recentSales = [
 ];
 
 export default function SellerDashboard() {
+  const [user, setUser] = useState(null);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [products, setProducts] = useState(currentProducts);
   const [stockAlertCount, setStockAlertCount] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [orders, setOrders] = useState([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchStockAlertCount();
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchStockAlertCount();
+      fetchOrders();
+    }
+  }, [user]);
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoadingOrders(true);
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('seller_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load orders. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingOrders(false);
+    }
+  };
 
   const fetchStockAlertCount = async () => {
     try {
       const { data: profile } = await supabase
         .from('profiles')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user?.id)
         .single();
 
       if (!profile) return;
@@ -305,33 +343,40 @@ export default function SellerDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Recent Sales */}
+              {/* Recent Orders */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-green-500" />
-                    Recent Sales
+                    <Package className="h-5 w-5 text-blue-500" />
+                    Orders to Fulfill
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {recentSales.map((sale) => (
-                    <div key={sale.id} className="p-3 bg-muted/30 rounded-lg">
-                      <div className="flex justify-between items-start mb-1">
-                        <h5 className="font-medium text-sm text-foreground truncate">{sale.product}</h5>
-                        <span className="font-semibold text-primary text-sm">{sale.amount}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">Buyer: {sale.buyer}</p>
-                      <div className="flex justify-between items-center mt-2">
-                        <span className="text-xs text-muted-foreground">{sale.date}</span>
-                        <Badge variant="secondary" className="text-xs">
-                          {sale.status}
-                        </Badge>
-                      </div>
+                  {isLoadingOrders ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
+                      <p className="text-sm text-muted-foreground">Loading orders...</p>
                     </div>
-                  ))}
-                  <Button variant="outline" className="w-full">
-                    View All Sales
-                  </Button>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-4">
+                      <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">No orders yet</p>
+                    </div>
+                  ) : (
+                    orders.slice(0, 3).map((order) => (
+                      <OrderActions 
+                        key={order.id}
+                        order={order} 
+                        userRole="seller" 
+                        onOrderUpdate={fetchOrders} 
+                      />
+                    ))
+                  )}
+                  {orders.length > 3 && (
+                    <Button variant="outline" className="w-full">
+                      View All Orders ({orders.length})
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>
