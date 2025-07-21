@@ -17,7 +17,7 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo - Larger for easier recognition */}
-          <div className="flex items-center space-x-3">
+          <a href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer">
             <div className="bg-gradient-primary p-3 rounded-xl">
               <QrCode className="h-7 w-7 text-primary-foreground" />
             </div>
@@ -27,7 +27,7 @@ export function Header() {
                 Simple & Safe Trading
               </Badge>
             </div>
-          </div>
+          </a>
 
           {/* Desktop Navigation - Simplified */}
           <nav className="hidden lg:flex items-center space-x-8">
