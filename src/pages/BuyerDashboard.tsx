@@ -119,7 +119,7 @@ export default function BuyerDashboard() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="pt-20">
+      <main className="pt-24">
         <div className="container mx-auto px-4 py-6">
           {/* Welcome Section */}
           <div className="mb-8">
@@ -136,9 +136,11 @@ export default function BuyerDashboard() {
                   <p className="text-muted-foreground">Ready to discover new products today?</p>
                 </div>
               </div>
-              <Button className="h-12 px-6">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
+              <Button className="h-12 px-6" asChild>
+                <a href="/notifications">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notifications
+                </a>
               </Button>
             </div>
           </div>

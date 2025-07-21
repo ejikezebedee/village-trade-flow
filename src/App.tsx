@@ -24,6 +24,9 @@ import DisputePage from "./pages/DisputePage";
 import QRTrackingPage from "./pages/QRTrackingPage";
 import { PaymentSuccess } from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import HowItWorksPage from "./pages/HowItWorksPage";
+import WhyChooseUsPage from "./pages/WhyChooseUsPage";
+import GetHelpPage from "./pages/GetHelpPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -45,6 +48,9 @@ const App = () => (
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/language-settings" element={<LanguageSettingsPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/why-choose-us" element={<WhyChooseUsPage />} />
+        <Route path="/get-help" element={<GetHelpPage />} />
         <Route path="/qr-tracking" element={
           <ProtectedRoute>
             <QRTrackingPage />

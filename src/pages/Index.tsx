@@ -4,6 +4,7 @@ import { SearchSection } from "@/components/marketplace/SearchSection";
 import { FeaturedProducts } from "@/components/marketplace/FeaturedProducts";
 import { DashboardNavigation } from "@/components/marketplace/DashboardNavigation";
 import { RoleBasedDashboard } from "@/components/auth/RoleBasedDashboard";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
@@ -37,6 +38,7 @@ const Index = () => {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 };

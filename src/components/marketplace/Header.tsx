@@ -31,13 +31,13 @@ export function Header() {
 
           {/* Desktop Navigation - Simplified */}
           <nav className="hidden lg:flex items-center space-x-8">
-            <a href="#how-it-works" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
+            <a href="/how-it-works" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
               How It Works
             </a>
-            <a href="#features" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
+            <a href="/why-choose-us" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
               Why Choose Us
             </a>
-            <a href="#contact" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
+            <a href="/get-help" className="text-lg text-foreground hover:text-primary transition-colors font-medium">
               Get Help
             </a>
           </nav>
@@ -78,21 +78,21 @@ export function Header() {
           <div className="lg:hidden border-t border-border bg-background/98 backdrop-blur-md">
             <nav className="py-6 space-y-1">
               <a 
-                href="#how-it-works" 
+                href="/how-it-works" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 📖 How It Works
               </a>
               <a 
-                href="#features" 
+                href="/why-choose-us" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 ⭐ Why Choose Us
               </a>
               <a 
-                href="#contact" 
+                href="/get-help" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
