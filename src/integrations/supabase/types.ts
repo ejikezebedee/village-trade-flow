@@ -2602,6 +2602,42 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_fees: {
+        Row: {
+          created_at: string
+          fee_type: string
+          fee_value: number
+          id: string
+          is_active: boolean
+          maximum_fee: number | null
+          minimum_fee: number
+          transaction_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fee_type?: string
+          fee_value: number
+          id?: string
+          is_active?: boolean
+          maximum_fee?: number | null
+          minimum_fee?: number
+          transaction_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fee_type?: string
+          fee_value?: number
+          id?: string
+          is_active?: boolean
+          maximum_fee?: number | null
+          minimum_fee?: number
+          transaction_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       transaction_qr_codes: {
         Row: {
           created_at: string
@@ -2764,6 +2800,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      transfer_limits: {
+        Row: {
+          created_at: string
+          daily_limit: number
+          daily_spent: number
+          id: string
+          last_reset_date: string
+          monthly_limit: number
+          monthly_spent: number
+          single_transaction_limit: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_limit?: number
+          daily_spent?: number
+          id?: string
+          last_reset_date?: string
+          monthly_limit?: number
+          monthly_spent?: number
+          single_transaction_limit?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_limit?: number
+          daily_spent?: number
+          id?: string
+          last_reset_date?: string
+          monthly_limit?: number
+          monthly_spent?: number
+          single_transaction_limit?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       translation_usage_logs: {
         Row: {
@@ -3154,6 +3229,108 @@ export type Database = {
         }
         Relationships: []
       }
+      user_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          escrow_balance: number
+          id: string
+          is_active: boolean
+          total_received: number
+          total_sent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          escrow_balance?: number
+          id?: string
+          is_active?: boolean
+          total_received?: number
+          total_sent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          escrow_balance?: number
+          id?: string
+          is_active?: boolean
+          total_received?: number
+          total_sent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallet_transfers: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          currency: string
+          failed_at: string | null
+          failure_reason: string | null
+          id: string
+          message: string | null
+          net_amount: number
+          recipient_id: string
+          reference_number: string
+          requires_2fa: boolean
+          sender_id: string
+          status: string
+          transaction_fee: number
+          transfer_type: string
+          updated_at: string
+          verified_at: string | null
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          failed_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          message?: string | null
+          net_amount: number
+          recipient_id: string
+          reference_number: string
+          requires_2fa?: boolean
+          sender_id: string
+          status?: string
+          transaction_fee?: number
+          transfer_type?: string
+          updated_at?: string
+          verified_at?: string | null
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          failed_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          message?: string | null
+          net_amount?: number
+          recipient_id?: string
+          reference_number?: string
+          requires_2fa?: boolean
+          sender_id?: string
+          status?: string
+          transaction_fee?: number
+          transfer_type?: string
+          updated_at?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       optimized_product_listings: {
@@ -3189,8 +3366,16 @@ export type Database = {
         Args: { dispute_uuid: string }
         Returns: string
       }
+      calculate_transaction_fee: {
+        Args: { p_amount: number; p_transaction_type: string }
+        Returns: number
+      }
       can_user_transact: {
         Args: { p_user_id: string; p_transaction_amount?: number }
+        Returns: boolean
+      }
+      can_user_transfer: {
+        Args: { p_user_id: string; p_amount: number }
         Returns: boolean
       }
       check_encryption_compliance: {
@@ -3293,6 +3478,10 @@ export type Database = {
         }
         Returns: string
       }
+      generate_transfer_reference: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       generate_verification_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -3315,6 +3504,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      initialize_user_wallet: {
+        Args: { p_user_id: string }
+        Returns: string
       }
       is_admin: {
         Args: { user_uuid?: string }

@@ -35,6 +35,9 @@ import TotalOrdersPage from "./pages/TotalOrdersPage";
 import PendingOrdersPage from "./pages/PendingOrdersPage";
 import CompletedOrdersPage from "./pages/CompletedOrdersPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import WalletPage from "./pages/WalletPage";
+import WalletTransferPage from "./pages/WalletTransferPage";
+import WalletHistoryPage from "./pages/WalletHistoryPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -109,6 +112,21 @@ const App = () => (
         <Route path="/favorites" element={
           <ProtectedRoute>
             <FavoritesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/wallet" element={
+          <ProtectedRoute>
+            <WalletPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/wallet/transfer" element={
+          <ProtectedRoute>
+            <WalletTransferPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/wallet/history" element={
+          <ProtectedRoute>
+            <WalletHistoryPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
