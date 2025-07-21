@@ -41,11 +41,17 @@ export function HeroSection() {
                 { icon: Users, title: "👥 For Everyone", desc: "Buyers, sellers, drivers welcome", emoji: "🤝" },
                 { icon: Truck, title: "🚚 Fast Delivery", desc: "Local drivers bring goods to you", emoji: "⚡" }
               ].map((feature, index) => (
-                <Card key={feature.title} className="p-4 md:p-6 bg-card/20 backdrop-blur-sm border-primary-foreground/20 text-center hover:bg-card/30 transition-all duration-300" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="text-2xl mb-2">{feature.emoji}</div>
-                  <h3 className="font-semibold text-sm md:text-base text-primary-foreground mb-1">{feature.title}</h3>
-                  <p className="text-xs md:text-sm text-primary-foreground/70">{feature.desc}</p>
-                </Card>
+                <a 
+                  key={feature.title} 
+                  href="/features"
+                  className="block hover:scale-105 transition-transform duration-300"
+                >
+                  <Card className="p-4 md:p-6 bg-card/20 backdrop-blur-sm border-primary-foreground/20 text-center hover:bg-card/30 transition-all duration-300 cursor-pointer" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div className="text-2xl mb-2">{feature.emoji}</div>
+                    <h3 className="font-semibold text-sm md:text-base text-primary-foreground mb-1">{feature.title}</h3>
+                    <p className="text-xs md:text-sm text-primary-foreground/70">{feature.desc}</p>
+                  </Card>
+                </a>
               ))}
             </div>
           </div>

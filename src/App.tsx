@@ -24,6 +24,7 @@ import DisputePage from "./pages/DisputePage";
 import QRTrackingPage from "./pages/QRTrackingPage";
 import { PaymentSuccess } from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import { FeaturesPage } from "./pages/FeaturesPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import WhyChooseUsPage from "./pages/WhyChooseUsPage";
 import GetHelpPage from "./pages/GetHelpPage";
@@ -45,6 +46,7 @@ const App = () => (
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/verify-email" element={<EmailVerificationHandler />} />
         <Route path="/products" element={<ProductListing />} />
+        <Route path="/features" element={<FeaturesPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/language-settings" element={<LanguageSettingsPage />} />
