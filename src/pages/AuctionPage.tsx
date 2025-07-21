@@ -80,10 +80,7 @@ export default function AuctionPage() {
       
       let query = supabase
         .from('auctions')
-        .select(`
-          *,
-          profiles!auctions_seller_id_fkey(first_name, last_name)
-        `);
+        .select('*');
 
       // Filter by tab
       if (activeTab === "active") {
@@ -149,7 +146,19 @@ export default function AuctionPage() {
         );
       }
 
-      setAuctions(filteredData);
+      // Fetch profiles for all sellers
+      const sellerIds = filteredData.map(auction => auction.seller_id);
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', sellerIds);
+
+      const auctionsWithProfiles = filteredData.map(auction => ({
+        ...auction,
+        profiles: profilesData?.find(profile => profile.user_id === auction.seller_id) || null
+      }));
+
+      setAuctions(auctionsWithProfiles);
     } catch (error) {
       console.error('Error fetching auctions:', error);
       toast({

@@ -130,15 +130,23 @@ export function AuctionDetailsDialog({ auctionId, open, onOpenChange }: AuctionD
     try {
       const { data, error } = await supabase
         .from('auctions')
-        .select(`
-          *,
-          profiles!auctions_seller_id_fkey(first_name, last_name, rating, total_ratings)
-        `)
+        .select('*')
         .eq('id', auctionId)
         .single();
 
       if (error) throw error;
-      setAuction(data);
+      
+      // Fetch seller profile separately
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, rating, total_ratings')
+        .eq('user_id', data.seller_id)
+        .single();
+
+      setAuction({
+        ...data,
+        profiles: profileData
+      });
     } catch (error: any) {
       console.error('Error fetching auction details:', error);
       toast({
@@ -155,17 +163,27 @@ export function AuctionDetailsDialog({ auctionId, open, onOpenChange }: AuctionD
     try {
       const { data, error } = await supabase
         .from('auction_bids')
-        .select(`
-          *,
-          profiles!auction_bids_bidder_id_fkey(first_name, last_name)
-        `)
+        .select('*')
         .eq('auction_id', auctionId)
         .eq('is_valid', true)
         .order('bid_time', { ascending: false })
         .limit(20);
 
       if (error) throw error;
-      setBids(data || []);
+      
+      // Fetch profiles for all bidders
+      const bidderIds = data?.map(bid => bid.bidder_id) || [];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', bidderIds);
+
+      const bidsWithProfiles = data?.map(bid => ({
+        ...bid,
+        profiles: profilesData?.find(profile => profile.user_id === bid.bidder_id) || null
+      })) || [];
+
+      setBids(bidsWithProfiles);
     } catch (error: any) {
       console.error('Error fetching auction bids:', error);
     }
