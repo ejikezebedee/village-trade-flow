@@ -98,28 +98,30 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ product, quantity, o
 
       if (orderError) throw orderError;
 
-      // Create payment record
-      const { error: paymentError } = await supabase
-        .from('payments')
-        .insert({
-          order_id: order.id,
-          amount: finalTotal,
-          payment_method: 'escrow',
-          escrow_status: 'held'
+      // Create payment session with Stripe
+      const { data: paymentData, error: paymentError } = await supabase.functions
+        .invoke("create-payment", {
+          body: { orderId: order.id }
         });
 
       if (paymentError) throw paymentError;
 
-      setCurrentStep(4);
-      toast({
-        title: "Payment Processed",
-        description: "Your funds are securely held in escrow until delivery confirmation.",
-      });
+      // Redirect to Stripe Checkout in new tab
+      if (paymentData.url) {
+        window.open(paymentData.url, '_blank');
+        onClose();
+        toast({
+          title: "Redirecting to payment",
+          description: "Complete your secure payment with escrow protection in the new tab.",
+        });
+      } else {
+        throw new Error("Payment URL not received");
+      }
     } catch (error) {
       console.error('Payment error:', error);
       toast({
         title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        description: error.message || "There was an error processing your payment. Please try again.",
         variant: "destructive"
       });
     } finally {
