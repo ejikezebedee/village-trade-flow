@@ -21,6 +21,7 @@ import { AdminSecurityPanel } from '@/components/admin/AdminSecurityPanel';
 import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
+import { ComprehensivePlatformDashboard } from '@/components/admin/ComprehensivePlatformDashboard';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -173,8 +174,11 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Monitor orders, payments, and platform activity</p>
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+            <Shield className="h-8 w-8 text-primary" />
+            Admin Dashboard
+          </h1>
+          <p className="text-muted-foreground">Comprehensive platform management and monitoring</p>
         </div>
 
         {/* Stats Cards */}
@@ -228,15 +232,20 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid grid-cols-7 w-full">
+            <TabsTrigger value="dashboard">Platform Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard" className="space-y-6">
+            <ComprehensivePlatformDashboard />
+          </TabsContent>
 
           <TabsContent value="analytics">
             <AnalyticsDashboard />
