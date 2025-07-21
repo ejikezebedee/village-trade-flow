@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Heart, ShoppingCart, MapPin, Verified } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface ProductCardProps {
   product: {
@@ -31,9 +32,69 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onBuyNow }: ProductCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
+  const { trackProductEvent, trackEvent } = useAnalytics();
+
+  const handleProductView = () => {
+    trackProductEvent(product.id.toString(), 'view', {
+      name: product.name,
+      category: product.category,
+      price: parseFloat(product.price.replace('$', '')),
+      seller: product.seller.name
+    });
+  };
+
+  const handleProductClick = () => {
+    trackProductEvent(product.id.toString(), 'click', {
+      name: product.name,
+      category: product.category,
+      price: parseFloat(product.price.replace('$', '')),
+      seller: product.seller.name
+    });
+  };
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFavorited(!isFavorited);
+    trackProductEvent(product.id.toString(), 'favorite', {
+      name: product.name,
+      category: product.category,
+      favorited: !isFavorited
+    });
+    trackEvent('engagement', 'product_favorited', {
+      product_id: product.id,
+      product_name: product.name,
+      action: !isFavorited ? 'add' : 'remove'
+    });
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    trackProductEvent(product.id.toString(), 'add_to_cart', {
+      name: product.name,
+      category: product.category,
+      price: parseFloat(product.price.replace('$', '')),
+      seller: product.seller.name
+    });
+    trackEvent('ecommerce', 'add_to_cart', {
+      product_id: product.id,
+      product_name: product.name,
+      value: parseFloat(product.price.replace('$', ''))
+    });
+    if (onBuyNow) {
+      onBuyNow(product, 1);
+    }
+  };
+
+  // Track product view when component mounts
+  useEffect(() => {
+    handleProductView();
+  }, []);
 
   return (
-    <Card className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+    <Card 
+      className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer"
+      onClick={handleProductClick}
+    >
       <div className="relative">
         <img 
           src={product.image}
@@ -65,7 +126,7 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
           className={`absolute top-3 right-3 h-8 w-8 p-0 bg-background/80 hover:bg-background ${
             isFavorited ? "text-red-500" : "text-muted-foreground"
           }`}
-          onClick={() => setIsFavorited(!isFavorited)}
+          onClick={handleFavorite}
           aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
         >
           <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
@@ -145,7 +206,7 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
           <Button 
             className="flex-1 h-11 font-semibold"
             disabled={!product.inStock}
-            onClick={() => onBuyNow?.(product, 1)}
+            onClick={handleBuyNow}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             {product.inStock ? "🛒 Buy Now" : "❌ Out of Stock"}

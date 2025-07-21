@@ -130,6 +130,94 @@ export type Database = {
           },
         ]
       }
+      conversion_events: {
+        Row: {
+          created_at: string
+          event_properties: Json | null
+          event_type: string
+          funnel_stage: string
+          id: string
+          order_id: string | null
+          product_id: string | null
+          session_id: string
+          user_id: string | null
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          event_properties?: Json | null
+          event_type: string
+          funnel_stage: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          session_id: string
+          user_id?: string | null
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          event_properties?: Json | null
+          event_type?: string
+          funnel_stage?: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          session_id?: string
+          user_id?: string | null
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversion_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversion_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversion_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_analytics: {
+        Row: {
+          created_at: string
+          date: string
+          dimensions: Json | null
+          id: string
+          metric_type: string
+          metric_value: number
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          dimensions?: Json | null
+          id?: string
+          metric_type: string
+          metric_value?: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          dimensions?: Json | null
+          id?: string
+          metric_type?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
       delivery_logs: {
         Row: {
           driver_id: string | null
@@ -1255,6 +1343,48 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          page_title: string | null
+          page_url: string
+          referrer: string | null
+          scroll_depth: number | null
+          session_id: string
+          time_on_page: number | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          page_title?: string | null
+          page_url: string
+          referrer?: string | null
+          scroll_depth?: number | null
+          session_id: string
+          time_on_page?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          page_title?: string | null
+          page_url?: string
+          referrer?: string | null
+          scroll_depth?: number | null
+          session_id?: string
+          time_on_page?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payment_notifications: {
         Row: {
           created_at: string
@@ -1358,6 +1488,63 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_analytics: {
+        Row: {
+          category: string | null
+          created_at: string
+          event_properties: Json | null
+          event_type: string
+          id: string
+          price: number | null
+          product_id: string | null
+          referrer: string | null
+          search_query: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          event_properties?: Json | null
+          event_type: string
+          id?: string
+          price?: number | null
+          product_id?: string | null
+          referrer?: string | null
+          search_query?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          event_properties?: Json | null
+          event_type?: string
+          id?: string
+          price?: number | null
+          product_id?: string | null
+          referrer?: string | null
+          search_query?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_analytics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_analytics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -2047,6 +2234,72 @@ export type Database = {
         }
         Relationships: []
       }
+      user_analytics: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          event_name: string
+          event_properties: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          os: string | null
+          page_url: string | null
+          referrer: string | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_name: string
+          event_properties?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          os?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_name?: string
+          event_properties?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          os?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       user_restrictions: {
         Row: {
           created_at: string | null
@@ -2080,6 +2333,87 @@ export type Database = {
           restriction_type?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          browser: string | null
+          city: string | null
+          conversion_value: number | null
+          converted: boolean | null
+          country: string | null
+          device_type: string | null
+          duration: number | null
+          ended_at: string | null
+          entry_page: string | null
+          events_count: number | null
+          exit_page: string | null
+          id: string
+          ip_address: unknown | null
+          is_bounce: boolean | null
+          os: string | null
+          page_views_count: number | null
+          referrer: string | null
+          session_id: string
+          started_at: string
+          user_agent: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          conversion_value?: number | null
+          converted?: boolean | null
+          country?: string | null
+          device_type?: string | null
+          duration?: number | null
+          ended_at?: string | null
+          entry_page?: string | null
+          events_count?: number | null
+          exit_page?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_bounce?: boolean | null
+          os?: string | null
+          page_views_count?: number | null
+          referrer?: string | null
+          session_id: string
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          conversion_value?: number | null
+          converted?: boolean | null
+          country?: string | null
+          device_type?: string | null
+          duration?: number | null
+          ended_at?: string | null
+          entry_page?: string | null
+          events_count?: number | null
+          exit_page?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_bounce?: boolean | null
+          os?: string | null
+          page_views_count?: number | null
+          referrer?: string | null
+          session_id?: string
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }
@@ -2172,6 +2506,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      generate_daily_analytics: {
+        Args: { target_date?: string }
+        Returns: undefined
+      }
       generate_qr_identifier: {
         Args: { order_uuid: string; stage: string }
         Returns: string
@@ -2226,6 +2564,44 @@ export type Database = {
       }
       resolve_dispute_by_votes: {
         Args: { dispute_uuid: string }
+        Returns: string
+      }
+      track_page_view: {
+        Args: {
+          p_user_id?: string
+          p_session_id?: string
+          p_page_url?: string
+          p_page_title?: string
+          p_referrer?: string
+          p_user_agent?: string
+          p_ip_address?: unknown
+        }
+        Returns: string
+      }
+      track_product_event: {
+        Args: {
+          p_product_id?: string
+          p_user_id?: string
+          p_session_id?: string
+          p_event_type?: string
+          p_search_query?: string
+          p_category?: string
+          p_price?: number
+          p_event_properties?: Json
+        }
+        Returns: string
+      }
+      track_user_event: {
+        Args: {
+          p_user_id?: string
+          p_session_id?: string
+          p_event_type?: string
+          p_event_name?: string
+          p_page_url?: string
+          p_event_properties?: Json
+          p_user_agent?: string
+          p_ip_address?: unknown
+        }
         Returns: string
       }
       verify_qr_scan: {

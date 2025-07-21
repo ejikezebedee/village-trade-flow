@@ -20,6 +20,7 @@ import {
 import { AdminSecurityPanel } from '@/components/admin/AdminSecurityPanel';
 import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -227,14 +228,19 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <Tabs defaultValue="orders" className="space-y-6">
+        <Tabs defaultValue="analytics" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
 
           <TabsContent value="orders">
             <Card>

@@ -4,12 +4,15 @@ import App from "./App.tsx";
 import "./index.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { AnalyticsProvider } from "./components/AnalyticsProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       <LanguageProvider>
-        <App />
+        <AnalyticsProvider>
+          <App />
+        </AnalyticsProvider>
       </LanguageProvider>
     </AuthProvider>
   </StrictMode>
