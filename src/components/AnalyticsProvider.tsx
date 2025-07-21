@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { usePageTracking, setupAnalytics } from '@/hooks/useAnalytics';
 
-// Optional Google Analytics tracking ID - replace with your actual ID
-const GA_TRACKING_ID = process.env.VITE_GA_TRACKING_ID || '';
+// Optional Google Analytics tracking ID - replace with your actual ID if needed
+const GA_TRACKING_ID = '';
 
 interface AnalyticsContextType {
   // Add any analytics context methods here if needed
