@@ -23,6 +23,8 @@ import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { ComprehensivePlatformDashboard } from '@/components/admin/ComprehensivePlatformDashboard';
+import { ProductManagement } from '@/components/admin/ProductManagement';
+import { PaymentManagement } from '@/components/admin/PaymentManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -234,11 +236,12 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-8 w-full">
+          <TabsList className="grid grid-cols-9 w-full">
             <TabsTrigger value="dashboard">Platform Overview</TabsTrigger>
             <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
+            <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="automated">Automated</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
@@ -337,58 +340,11 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="payments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Escrow Payment Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {payments.map((payment) => (
-                    <div key={payment.id} className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold">Payment #{payment.id.slice(0, 8)}...</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Order: {payment.order_id.slice(0, 8)}...
-                          </p>
-                        </div>
-                        <Badge className={getPaymentStatusColor(payment.escrow_status)}>
-                          {payment.escrow_status}
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-                        <div>
-                          <span className="font-medium">Amount:</span> ${payment.amount.toFixed(2)}
-                        </div>
-                        <div>
-                          <span className="font-medium">Method:</span> {payment.payment_method}
-                        </div>
-                        <div>
-                          <span className="font-medium">Held Since:</span> {new Date(payment.held_at).toLocaleDateString()}
-                        </div>
-                        <div>
-                          <span className="font-medium">Released:</span> {payment.released_at ? new Date(payment.released_at).toLocaleDateString() : 'Not yet'}
-                        </div>
-                      </div>
+            <PaymentManagement />
+          </TabsContent>
 
-                      {payment.escrow_status === 'held' && (
-                        <div className="flex justify-end">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleReleaseEscrow(payment.id)}
-                          >
-                            <Shield className="w-4 h-4 mr-2" />
-                            Release Escrow
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="products">
+            <ProductManagement />
           </TabsContent>
 
           <TabsContent value="messages">
