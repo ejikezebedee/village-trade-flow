@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          created_at: string
+          faq_id: string | null
+          id: string
+          is_automated: boolean | null
+          message_text: string
+          message_type: string | null
+          sender_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          faq_id?: string | null
+          id?: string
+          is_automated?: boolean | null
+          message_text: string
+          message_type?: string | null
+          sender_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          faq_id?: string | null
+          id?: string
+          is_automated?: boolean | null
+          message_text?: string
+          message_type?: string | null
+          sender_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_faq_id_fkey"
+            columns: ["faq_id"]
+            isOneToOne: false
+            referencedRelation: "faqs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_sessions: {
+        Row: {
+          agent_id: string | null
+          ended_at: string | null
+          id: string
+          session_metadata: Json | null
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          ended_at?: string | null
+          id?: string
+          session_metadata?: Json | null
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          ended_at?: string | null
+          id?: string
+          session_metadata?: Json | null
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -371,6 +449,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      faqs: {
+        Row: {
+          answer: string
+          category: string
+          created_at: string
+          helpful_count: number | null
+          id: string
+          is_active: boolean | null
+          keywords: string[] | null
+          question: string
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          answer: string
+          category: string
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          question: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          answer?: string
+          category?: string
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          question?: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: []
       }
       feedback: {
         Row: {
@@ -1643,6 +1760,95 @@ export type Database = {
           },
         ]
       }
+      support_ticket_responses: {
+        Row: {
+          attachments: Json | null
+          created_at: string
+          id: string
+          is_internal_note: boolean | null
+          responder_id: string
+          response_text: string
+          ticket_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string
+          id?: string
+          is_internal_note?: boolean | null
+          responder_id: string
+          response_text: string
+          ticket_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string
+          id?: string
+          is_internal_note?: boolean | null
+          responder_id?: string
+          response_text?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_responses_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          created_at: string
+          description: string
+          first_response_at: string | null
+          id: string
+          metadata: Json | null
+          priority: string
+          resolved_at: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          description: string
+          first_response_at?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          first_response_at?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
@@ -1968,6 +2174,10 @@ export type Database = {
           p_action_performed?: string
           p_metadata?: Json
         }
+        Returns: string
+      }
+      match_faq_response: {
+        Args: { p_message_text: string }
         Returns: string
       }
       resolve_dispute_by_votes: {

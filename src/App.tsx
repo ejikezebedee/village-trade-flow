@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { LiveChatWidget } from "@/components/support/LiveChatWidget";
 import Index from "./pages/Index";
 import ProductListing from "./pages/ProductListing";
 import AuthPage from "./pages/AuthPage";
@@ -74,6 +75,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <LiveChatWidget />
     </BrowserRouter>
   </TooltipProvider>
 </QueryClientProvider>
