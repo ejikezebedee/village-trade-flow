@@ -238,6 +238,53 @@ export type Database = {
           },
         ]
       }
+      order_status_history: {
+        Row: {
+          change_reason: string | null
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          location_data: Json | null
+          new_stage: string | null
+          new_status: string | null
+          order_id: string | null
+          previous_stage: string | null
+          previous_status: string | null
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          location_data?: Json | null
+          new_stage?: string | null
+          new_status?: string | null
+          order_id?: string | null
+          previous_stage?: string | null
+          previous_status?: string | null
+        }
+        Update: {
+          change_reason?: string | null
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          location_data?: Json | null
+          new_stage?: string | null
+          new_status?: string | null
+          order_id?: string | null
+          previous_stage?: string | null
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           buyer_id: string | null

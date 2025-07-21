@@ -152,17 +152,26 @@ serve(async (req) => {
       throw new Error('Failed to update order status');
     }
 
-    // If this is the final scan (buyer pickup), mark as completed
+    // Enhanced automatic status progression based on scan stage
+    let finalStatus = nextStage;
+    let paymentReleased = false;
+    
     if (nextStage === 'buyer_pickup') {
-      setTimeout(async () => {
-        await supabaseClient
-          .from('orders')
-          .update({ 
-            current_stage: 'completed',
-            order_status: 'delivered'
-          })
-          .eq('id', orderId);
-      }, 1000);
+      // When buyer scans for pickup, automatically complete the order
+      finalStatus = 'completed';
+      paymentReleased = true;
+      
+      // Update order to completed and trigger escrow release
+      await supabaseClient
+        .from('orders')
+        .update({ 
+          current_stage: 'completed',
+          order_status: 'delivered',
+          escrow_release_date: new Date().toISOString()
+        })
+        .eq('id', orderId);
+        
+      console.log(`Order ${orderId} automatically completed and payment released`);
     }
 
     console.log(`QR scan successful for order ${orderId}, moved to stage: ${nextStage}`);
@@ -173,8 +182,10 @@ serve(async (req) => {
         message: 'QR code scanned successfully',
         order_id: orderId,
         previous_stage: order.current_stage,
-        new_stage: nextStage,
-        scan_stage: scanStage
+        new_stage: finalStatus,
+        scan_stage: scanStage,
+        payment_released: paymentReleased,
+        message: paymentReleased ? 'Order completed and payment released from escrow' : 'Order status updated successfully'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

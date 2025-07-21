@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { QRCodeDisplay } from '@/components/qr/QRCodeDisplay';
 import { QRCodeScanner } from '@/components/qr/QRCodeScanner';
+import { AutomatedOrderTracking } from '@/components/orders/AutomatedOrderTracking';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -42,7 +43,7 @@ interface OrderTrackingProps {
 export const OrderTracking: React.FC<OrderTrackingProps> = ({ orderId, userRole = 'buyer' }) => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('timeline');
+  const [activeTab, setActiveTab] = useState('automated'); // Default to automated flow
   const { toast } = useToast();
 
   const stages = [
@@ -169,11 +170,16 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({ orderId, userRole 
 
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="automated">Automated Flow</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="qr-codes">QR Codes</TabsTrigger>
             <TabsTrigger value="scanner">Scanner</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="automated" className="space-y-6">
+            <AutomatedOrderTracking orderId={orderId} />
+          </TabsContent>
 
           <TabsContent value="timeline" className="space-y-6">
             <div className="space-y-4">
