@@ -1,10 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { QrCode, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -38,12 +43,18 @@ export function Header() {
 
           {/* Action Buttons - Larger and clearer */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button variant="ghost" size="lg" className="text-base">
-              Sign In
-            </Button>
-            <Button variant="premium" size="lg" className="text-base px-6">
-              Get Started
-            </Button>
+            {user ? (
+              <UserMenu />
+            ) : (
+              <>
+                <Button variant="ghost" size="lg" className="text-base" onClick={() => navigate('/auth')}>
+                  Sign In
+                </Button>
+                <Button variant="premium" size="lg" className="text-base px-6" onClick={() => navigate('/auth')}>
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button - Larger touch target */}
@@ -84,12 +95,20 @@ export function Header() {
                 🆘 Get Help
               </a>
               <div className="flex flex-col space-y-3 px-4 pt-6 border-t border-border">
-                <Button variant="ghost" size="lg" className="text-base justify-start">
-                  Sign In
-                </Button>
-                <Button variant="premium" size="lg" className="text-base">
-                  Get Started Now
-                </Button>
+                {user ? (
+                  <div className="text-center">
+                    <UserMenu />
+                  </div>
+                ) : (
+                  <>
+                    <Button variant="ghost" size="lg" className="text-base justify-start" onClick={() => navigate('/auth')}>
+                      Sign In
+                    </Button>
+                    <Button variant="premium" size="lg" className="text-base" onClick={() => navigate('/auth')}>
+                      Get Started Now
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           </div>
