@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UserMenu } from "@/components/auth/UserMenu";
@@ -17,7 +18,7 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo - Larger for easier recognition */}
-          <a href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer">
+          <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer">
             <div className="bg-gradient-primary p-3 rounded-xl">
               <QrCode className="h-7 w-7 text-primary-foreground" />
             </div>
@@ -27,7 +28,7 @@ export function Header() {
                 Simple & Safe Trading
               </Badge>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Navigation - Simplified */}
           <nav className="hidden lg:flex items-center space-x-8">
