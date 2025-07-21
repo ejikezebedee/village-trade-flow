@@ -1284,6 +1284,10 @@ export type Database = {
           preferred_language: string | null
           rating: number | null
           total_ratings: number | null
+          two_factor_backup_codes: string[] | null
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
+          two_factor_verified_at: string | null
           updated_at: string
           user_id: string
           user_role: Database["public"]["Enums"]["user_role"] | null
@@ -1310,6 +1314,10 @@ export type Database = {
           preferred_language?: string | null
           rating?: number | null
           total_ratings?: number | null
+          two_factor_backup_codes?: string[] | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
+          two_factor_verified_at?: string | null
           updated_at?: string
           user_id: string
           user_role?: Database["public"]["Enums"]["user_role"] | null
@@ -1336,6 +1344,10 @@ export type Database = {
           preferred_language?: string | null
           rating?: number | null
           total_ratings?: number | null
+          two_factor_backup_codes?: string[] | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
+          two_factor_verified_at?: string | null
           updated_at?: string
           user_id?: string
           user_role?: Database["public"]["Enums"]["user_role"] | null
@@ -1651,6 +1663,39 @@ export type Database = {
           },
         ]
       }
+      two_factor_logs: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          is_used: boolean | null
+          used_at: string | null
+          user_id: string
+          verification_code: string | null
+          verification_method: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_used?: boolean | null
+          used_at?: string | null
+          user_id: string
+          verification_code?: string | null
+          verification_method: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean | null
+          used_at?: string | null
+          user_id?: string
+          verification_code?: string | null
+          verification_method?: string
+        }
+        Relationships: []
+      }
       user_restrictions: {
         Row: {
           created_at: string | null
@@ -1722,6 +1767,14 @@ export type Database = {
         }
         Returns: string
       }
+      create_two_factor_code: {
+        Args: {
+          p_user_id: string
+          p_method?: string
+          p_expires_minutes?: number
+        }
+        Returns: string
+      }
       detect_browser_language: {
         Args: { accept_language: string }
         Returns: string
@@ -1736,6 +1789,10 @@ export type Database = {
       }
       generate_secure_qr: {
         Args: { p_order_id: string; p_stage: string; p_expires_hours?: number }
+        Returns: string
+      }
+      generate_verification_code: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       get_user_language: {
@@ -1765,6 +1822,10 @@ export type Database = {
       }
       verify_qr_scan: {
         Args: { p_qr_code: string; p_scanner_id: string; p_location?: Json }
+        Returns: boolean
+      }
+      verify_two_factor_code: {
+        Args: { p_user_id: string; p_code: string; p_method?: string }
         Returns: boolean
       }
     }

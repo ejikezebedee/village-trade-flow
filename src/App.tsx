@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotificationsPage from "./pages/NotificationsPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import LanguageSettingsPage from "./pages/LanguageSettingsPage";
+import TwoFactorSettings from "./pages/TwoFactorSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,11 @@ const App = () => (
       <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="/feedback" element={<FeedbackPage />} />
       <Route path="/language-settings" element={<LanguageSettingsPage />} />
+      <Route path="/2fa-settings" element={
+        <ProtectedRoute>
+          <TwoFactorSettings />
+        </ProtectedRoute>
+      } />
       <Route path="/dashboard/buyer" element={
               <ProtectedRoute requiredRole="buyer">
                 <BuyerDashboard />

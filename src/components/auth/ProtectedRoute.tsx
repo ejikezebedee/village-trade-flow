@@ -1,19 +1,22 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: string;
   requireVerification?: boolean;
+  require2FA?: boolean;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   requiredRole,
-  requireVerification = false 
+  requireVerification = false,
+  require2FA = false
 }) => {
-  const { user, profile, loading, hasRole, isVerified } = useAuth();
+  const { user, profile, loading, hasRole, isVerified, is2FAEnabled, canPerformTransactions, twoFactorRequired } = useAuth();
 
   if (loading) {
     return (
@@ -68,6 +71,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           <p className="text-sm text-muted-foreground">
             Current status: {profile.verification_status}
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (require2FA && !canPerformTransactions()) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <h2 className="text-xl font-semibold mb-2">Security Verification Required</h2>
+          <p className="text-muted-foreground mb-4">
+            {is2FAEnabled() 
+              ? "Please complete two-factor authentication to proceed with transactions."
+              : "Two-factor authentication is required for this action. Please enable 2FA in your security settings."
+            }
+          </p>
+          <Button onClick={() => window.location.href = '/2fa-settings'}>
+            {is2FAEnabled() ? "Complete 2FA" : "Enable 2FA"}
+          </Button>
         </div>
       </div>
     );

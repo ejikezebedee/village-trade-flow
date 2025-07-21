@@ -9,12 +9,15 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import TwoFactorVerification from '@/components/auth/TwoFactorVerification';
 
 export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('signin');
-  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const [show2FA, setShow2FA] = useState(false);
+  const [pendingUser, setPendingUser] = useState<{ id: string; email: string } | null>(null);
+  const { signIn, signUp, signInWithGoogle, resetPassword, verifyTwoFactor } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -42,13 +45,21 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
-      const { error } = await signIn(signInData.email, signInData.password);
+      const { error, twoFactorRequired } = await signIn(signInData.email, signInData.password);
 
       if (error) {
         toast({
           title: "Sign In Failed",
           description: error.message,
           variant: "destructive"
+        });
+      } else if (twoFactorRequired) {
+        // Show 2FA verification
+        setPendingUser({ id: '', email: signInData.email }); // We'll need to store the user ID properly
+        setShow2FA(true);
+        toast({
+          title: "2FA Required",
+          description: "Please complete two-factor authentication to continue.",
         });
       } else {
         toast({
@@ -176,6 +187,33 @@ export default function AuthPage() {
       setLoading(false);
     }
   };
+
+  const handle2FAVerificationComplete = () => {
+    verifyTwoFactor();
+    setShow2FA(false);
+    setPendingUser(null);
+    toast({
+      title: "Welcome back!",
+      description: "You have successfully signed in.",
+    });
+    navigate('/');
+  };
+
+  const handle2FACancel = () => {
+    setShow2FA(false);
+    setPendingUser(null);
+  };
+
+  if (show2FA && pendingUser) {
+    return (
+      <TwoFactorVerification
+        userId={pendingUser.id}
+        userEmail={pendingUser.email}
+        onVerificationComplete={handle2FAVerificationComplete}
+        onCancel={handle2FACancel}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex items-center justify-center p-4">

@@ -21,6 +21,10 @@ interface Profile {
   preferred_language?: string;
   auto_translate_messages?: boolean;
   detect_language_automatically?: boolean;
+  two_factor_enabled?: boolean;
+  two_factor_secret?: string;
+  two_factor_backup_codes?: string[];
+  two_factor_verified_at?: string;
   created_at: string;
   updated_at: string;
 }
@@ -30,14 +34,19 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  twoFactorRequired: boolean;
+  twoFactorVerified: boolean;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any; twoFactorRequired?: boolean }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
+  verifyTwoFactor: () => void;
   hasRole: (role: string) => boolean;
   isVerified: () => boolean;
+  is2FAEnabled: () => boolean;
+  canPerformTransactions: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -45,14 +54,19 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   profile: null,
   loading: true,
+  twoFactorRequired: false,
+  twoFactorVerified: false,
   signUp: async () => ({ error: null }),
   signIn: async () => ({ error: null }),
   signInWithGoogle: async () => ({ error: null }),
   signOut: async () => ({ error: null }),
   resetPassword: async () => ({ error: null }),
   updateProfile: async () => ({ error: null }),
+  verifyTwoFactor: () => {},
   hasRole: () => false,
   isVerified: () => false,
+  is2FAEnabled: () => false,
+  canPerformTransactions: () => false,
 });
 
 export const useAuth = () => {
@@ -68,6 +82,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+  const [twoFactorVerified, setTwoFactorVerified] = useState(false);
 
   const sendWelcomeEmail = async (emailType: string) => {
     if (!user || !profile) return;
@@ -168,10 +184,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
+
+      if (error) {
+        return { error };
+      }
+
+      // Check if user has 2FA enabled
+      if (data.user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('two_factor_enabled')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (!profileError && profile?.two_factor_enabled) {
+          setTwoFactorRequired(true);
+          setTwoFactorVerified(false);
+          return { error: null, twoFactorRequired: true };
+        }
+      }
 
       return { error };
     } catch (error) {
@@ -251,19 +286,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return profile?.verification_status === 'verified';
   };
 
+  const is2FAEnabled = (): boolean => {
+    return profile?.two_factor_enabled || false;
+  };
+
+  const verifyTwoFactor = () => {
+    setTwoFactorRequired(false);
+    setTwoFactorVerified(true);
+  };
+
+  const canPerformTransactions = (): boolean => {
+    if (!user || !profile) return false;
+    
+    // User must be verified
+    if (!isVerified()) return false;
+    
+    // If 2FA is enabled, it must be verified in this session
+    if (is2FAEnabled() && !twoFactorVerified) return false;
+    
+    return true;
+  };
+
   const value = {
     user,
     session,
     profile,
     loading,
+    twoFactorRequired,
+    twoFactorVerified,
     signUp,
     signIn,
     signInWithGoogle,
     signOut,
     resetPassword,
     updateProfile,
+    verifyTwoFactor,
     hasRole,
-    isVerified
+    isVerified,
+    is2FAEnabled,
+    canPerformTransactions
   };
 
   return (
