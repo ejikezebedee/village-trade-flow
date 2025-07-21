@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Header } from "@/components/marketplace/Header";
 import { StockAlerts } from "@/components/marketplace/StockAlerts";
 import { EnhancedAddProduct } from "@/components/marketplace/EnhancedAddProduct";
+import { RealTimeProductDisplay } from "@/components/marketplace/RealTimeProductDisplay";
 import { SalesAnalytics } from "@/components/seller/SalesAnalytics";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -92,6 +93,7 @@ export default function SellerDashboard() {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [products, setProducts] = useState(currentProducts);
   const [stockAlertCount, setStockAlertCount] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -123,10 +125,11 @@ export default function SellerDashboard() {
 
   const handleProductAdded = () => {
     toast({
-      title: "Product Added Successfully!",
-      description: "Your product has been automatically categorized and is now live.",
+      title: "🎉 Product Added Successfully!",
+      description: "Your product is now live and visible to buyers with smart categorization and auto-tags.",
     });
-    fetchStockAlertCount();
+    setRefreshTrigger(prev => prev + 1);
+    setShowAddProduct(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -178,7 +181,7 @@ export default function SellerDashboard() {
                   Add Product
                   <Badge variant="secondary" className="ml-2">
                     <Sparkles className="h-3 w-3 mr-1" />
-                    Auto-categorization
+                    🤖 AI Auto-categorization
                   </Badge>
                 </Button>
                 {stockAlertCount > 0 && (
@@ -244,52 +247,18 @@ export default function SellerDashboard() {
               {/* Stock Alerts */}
               <StockAlerts />
               
-              {/* Products List */}
+              {/* Real-Time Product Display */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5" />
-                    My Products
+                    📦 My Products
+                    <Badge variant="secondary">Real-time Updates</Badge>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {currentProducts.map((product) => (
-                    <div key={product.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-16 h-16 rounded-lg object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-foreground truncate">{product.name}</h4>
-                        <p className="text-sm text-muted-foreground">Stock: {product.stock} | Sold: {product.sold}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="secondary" className="text-xs">
-                            {getStatusText(product.status)}
-                          </Badge>
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs">{product.rating}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-foreground">{product.price}</p>
-                        <p className="text-xs text-muted-foreground">{product.views} views</p>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" className="w-full">
-                    View All Products
-                  </Button>
+                <CardContent>
+                  <RealTimeProductDisplay 
+                    refreshTrigger={refreshTrigger}
+                  />
                 </CardContent>
               </Card>
             </div>

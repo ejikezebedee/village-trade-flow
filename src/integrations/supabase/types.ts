@@ -1700,6 +1700,42 @@ export type Database = {
           },
         ]
       }
+      product_tags: {
+        Row: {
+          category: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_system_tag: boolean | null
+          name: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system_tag?: boolean | null
+          name: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system_tag?: boolean | null
+          name?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       product_translations: {
         Row: {
           created_at: string | null
@@ -1757,7 +1793,9 @@ export type Database = {
       }
       products: {
         Row: {
+          auto_tags_generated: boolean | null
           category: string
+          category_confidence: number | null
           created_at: string
           currency: string | null
           description: string | null
@@ -1765,6 +1803,7 @@ export type Database = {
           id: string
           images: Json | null
           is_active: boolean | null
+          last_categorized_at: string | null
           listing_created_at: string | null
           listing_qr_code: string | null
           location: Json | null
@@ -1777,7 +1816,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_tags_generated?: boolean | null
           category: string
+          category_confidence?: number | null
           created_at?: string
           currency?: string | null
           description?: string | null
@@ -1785,6 +1826,7 @@ export type Database = {
           id?: string
           images?: Json | null
           is_active?: boolean | null
+          last_categorized_at?: string | null
           listing_created_at?: string | null
           listing_qr_code?: string | null
           location?: Json | null
@@ -1797,7 +1839,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_tags_generated?: boolean | null
           category?: string
+          category_confidence?: number | null
           created_at?: string
           currency?: string | null
           description?: string | null
@@ -1805,6 +1849,7 @@ export type Database = {
           id?: string
           images?: Json | null
           is_active?: boolean | null
+          last_categorized_at?: string | null
           listing_created_at?: string | null
           listing_qr_code?: string | null
           location?: Json | null
@@ -2693,6 +2738,10 @@ export type Database = {
         Args: { p_user_id: string; p_transaction_amount?: number }
         Returns: boolean
       }
+      cleanup_new_arrival_tags: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_notification: {
         Args: {
           p_user_id: string
@@ -2871,6 +2920,10 @@ export type Database = {
         }
         Returns: Json
       }
+      update_product_performance_tags: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       verify_email_and_complete_registration: {
         Args: { p_token: string }
         Returns: Json
@@ -2885,6 +2938,27 @@ export type Database = {
       }
     }
     Enums: {
+      product_category_enhanced:
+        | "fruits"
+        | "vegetables"
+        | "grains"
+        | "dairy"
+        | "meat"
+        | "seafood"
+        | "spices"
+        | "beverages"
+        | "electronics"
+        | "clothing"
+        | "accessories"
+        | "home_garden"
+        | "books_media"
+        | "sports_fitness"
+        | "beauty_health"
+        | "toys_games"
+        | "crafts"
+        | "tools"
+        | "automotive"
+        | "other"
       user_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
@@ -3013,6 +3087,28 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      product_category_enhanced: [
+        "fruits",
+        "vegetables",
+        "grains",
+        "dairy",
+        "meat",
+        "seafood",
+        "spices",
+        "beverages",
+        "electronics",
+        "clothing",
+        "accessories",
+        "home_garden",
+        "books_media",
+        "sports_fitness",
+        "beauty_health",
+        "toys_games",
+        "crafts",
+        "tools",
+        "automotive",
+        "other",
+      ],
       user_role: ["admin", "moderator", "user"],
     },
   },
