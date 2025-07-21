@@ -29,11 +29,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnalyticsProvider>
-            <Routes>
+      <AuthProvider>
+        <LanguageProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AnalyticsProvider>
+              <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/verify-email" element={<EmailVerificationHandler />} />
@@ -77,13 +79,15 @@ const App = () => (
                 </ProtectedRoute>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <LiveChatWidget />
-          </AnalyticsProvider>
-        </BrowserRouter>
-  </TooltipProvider>
-</QueryClientProvider>
+              <Route path="*" element={<NotFound />} />
+              </Routes>
+              <LiveChatWidget />
+            </AnalyticsProvider>
+          </BrowserRouter>
+        </LanguageProvider>
+      </AuthProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
