@@ -97,9 +97,11 @@ export function DashboardNavigation() {
                   ))}
                 </div>
                 
-                <Button className="w-full h-12 text-base font-semibold group-hover:gap-3 transition-all duration-300">
-                  Start as {dashboard.role}
-                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <Button className="w-full h-12 text-base font-semibold group-hover:gap-3 transition-all duration-300" asChild>
+                  <a href={`/dashboard/${dashboard.role.toLowerCase()}`}>
+                    Start as {dashboard.role}
+                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </a>
                 </Button>
               </CardContent>
             </Card>
