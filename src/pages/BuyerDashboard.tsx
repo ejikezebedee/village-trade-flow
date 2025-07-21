@@ -147,34 +147,42 @@ export default function BuyerDashboard() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <ShoppingCart className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-2xl font-bold text-foreground">{stats.total}</div>
-                <p className="text-sm text-muted-foreground">Total Orders</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-                <div className="text-2xl font-bold text-foreground">{stats.pending}</div>
-                <p className="text-sm text-muted-foreground">Pending Orders</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                <div className="text-2xl font-bold text-foreground">{stats.completed}</div>
-                <p className="text-sm text-muted-foreground">Completed</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <Heart className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                <div className="text-2xl font-bold text-foreground">-</div>
-                <p className="text-sm text-muted-foreground">Favorites</p>
-              </CardContent>
-            </Card>
+            <a href="/orders/all" className="block">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <ShoppingCart className="h-8 w-8 mx-auto mb-2 text-primary" />
+                  <div className="text-2xl font-bold text-foreground">{stats.total}</div>
+                  <p className="text-sm text-muted-foreground">Total Orders</p>
+                </CardContent>
+              </Card>
+            </a>
+            <a href="/orders/pending" className="block">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                  <div className="text-2xl font-bold text-foreground">{stats.pending}</div>
+                  <p className="text-sm text-muted-foreground">Pending Orders</p>
+                </CardContent>
+              </Card>
+            </a>
+            <a href="/orders/completed" className="block">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                  <div className="text-2xl font-bold text-foreground">{stats.completed}</div>
+                  <p className="text-sm text-muted-foreground">Completed</p>
+                </CardContent>
+              </Card>
+            </a>
+            <a href="/favorites" className="block">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <Heart className="h-8 w-8 mx-auto mb-2 text-red-500" />
+                  <div className="text-2xl font-bold text-foreground">-</div>
+                  <p className="text-sm text-muted-foreground">Favorites</p>
+                </CardContent>
+              </Card>
+            </a>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">

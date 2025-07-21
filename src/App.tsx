@@ -31,6 +31,10 @@ import GetHelpPage from "./pages/GetHelpPage";
 import MessagesPage from "./pages/MessagesPage";
 import PaymentMethodsPage from "./pages/PaymentMethodsPage";
 import DeliveryAddressesPage from "./pages/DeliveryAddressesPage";
+import TotalOrdersPage from "./pages/TotalOrdersPage";
+import PendingOrdersPage from "./pages/PendingOrdersPage";
+import CompletedOrdersPage from "./pages/CompletedOrdersPage";
+import FavoritesPage from "./pages/FavoritesPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -85,6 +89,26 @@ const App = () => (
         <Route path="/delivery-addresses" element={
           <ProtectedRoute>
             <DeliveryAddressesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/orders/all" element={
+          <ProtectedRoute>
+            <TotalOrdersPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/orders/pending" element={
+          <ProtectedRoute>
+            <PendingOrdersPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/orders/completed" element={
+          <ProtectedRoute>
+            <CompletedOrdersPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/favorites" element={
+          <ProtectedRoute>
+            <FavoritesPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
