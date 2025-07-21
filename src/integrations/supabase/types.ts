@@ -1468,6 +1468,123 @@ export type Database = {
           },
         ]
       }
+      flash_sale_purchases: {
+        Row: {
+          created_at: string | null
+          flash_sale_id: string
+          id: string
+          order_id: string | null
+          purchase_price: number
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          flash_sale_id: string
+          id?: string
+          order_id?: string | null
+          purchase_price: number
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          flash_sale_id?: string
+          id?: string
+          order_id?: string | null
+          purchase_price?: number
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sale_purchases_flash_sale_id_fkey"
+            columns: ["flash_sale_id"]
+            isOneToOne: false
+            referencedRelation: "flash_sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flash_sale_purchases_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_sales: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          discount_percentage: number | null
+          end_time: string
+          featured: boolean | null
+          id: string
+          is_active: boolean | null
+          original_price: number
+          product_id: string | null
+          quantity_available: number | null
+          quantity_sold: number | null
+          sale_price: number
+          start_time: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          discount_percentage?: number | null
+          end_time: string
+          featured?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          original_price: number
+          product_id?: string | null
+          quantity_available?: number | null
+          quantity_sold?: number | null
+          sale_price: number
+          start_time: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          discount_percentage?: number | null
+          end_time?: string
+          featured?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          original_price?: number
+          product_id?: string | null
+          quantity_available?: number | null
+          quantity_sold?: number | null
+          sale_price?: number
+          start_time?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flash_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fraud_alerts: {
         Row: {
           alert_type: string
@@ -4086,6 +4203,26 @@ export type Database = {
       generate_verification_token: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_active_flash_sales: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          title: string
+          description: string
+          product_id: string
+          product_name: string
+          product_image: string
+          original_price: number
+          sale_price: number
+          discount_percentage: number
+          start_time: string
+          end_time: string
+          quantity_available: number
+          quantity_sold: number
+          featured: boolean
+          time_remaining: unknown
+        }[]
       }
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }

@@ -27,6 +27,9 @@ export function Header() {
 
           {/* Desktop Navigation - Apple-style clean */}
           <nav className="hidden lg:flex items-center space-x-1">
+            <a href="/flash-sales" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              Flash Sales
+            </a>
             <a href="/brands" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
               Top Brands
             </a>
@@ -79,6 +82,13 @@ export function Header() {
         {isMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/98 backdrop-blur-md">
             <nav className="py-6 space-y-1">
+              <a 
+                href="/flash-sales" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                ⚡ Flash Sales
+              </a>
               <a 
                 href="/brands" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
