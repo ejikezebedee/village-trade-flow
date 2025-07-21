@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Header } from "@/components/marketplace/Header";
+import { OrderTracking } from "@/components/orders/OrderTracking";
 import { 
   ShoppingCart, 
   Clock, 
@@ -251,6 +252,27 @@ export default function BuyerDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </div>
+
+          {/* Order Tracking Demo */}
+          <div className="mt-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="w-5 h-5" />
+                  Track Your Order with QR Codes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">
+                  Demo: Track an order with QR code handoffs at each delivery stage
+                </p>
+                <OrderTracking 
+                  orderId="12345678-1234-1234-1234-123456789012" 
+                  userRole="buyer"
+                />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

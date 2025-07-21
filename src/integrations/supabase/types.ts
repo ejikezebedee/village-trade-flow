@@ -18,6 +18,9 @@ export type Database = {
         Row: {
           buyer_id: string | null
           created_at: string
+          current_stage: string | null
+          driver_id: string | null
+          driver_to_shop_qr: string | null
           escrow_release_date: string | null
           id: string
           order_status: string
@@ -26,13 +29,19 @@ export type Database = {
           product_price: number
           quantity: number
           seller_id: string | null
+          seller_to_driver_qr: string | null
           shipping_address: Json
+          shop_id: string | null
+          shop_to_buyer_qr: string | null
           total_amount: number
           updated_at: string
         }
         Insert: {
           buyer_id?: string | null
           created_at?: string
+          current_stage?: string | null
+          driver_id?: string | null
+          driver_to_shop_qr?: string | null
           escrow_release_date?: string | null
           id?: string
           order_status?: string
@@ -41,13 +50,19 @@ export type Database = {
           product_price: number
           quantity?: number
           seller_id?: string | null
+          seller_to_driver_qr?: string | null
           shipping_address: Json
+          shop_id?: string | null
+          shop_to_buyer_qr?: string | null
           total_amount: number
           updated_at?: string
         }
         Update: {
           buyer_id?: string | null
           created_at?: string
+          current_stage?: string | null
+          driver_id?: string | null
+          driver_to_shop_qr?: string | null
           escrow_release_date?: string | null
           id?: string
           order_status?: string
@@ -56,7 +71,10 @@ export type Database = {
           product_price?: number
           quantity?: number
           seller_id?: string | null
+          seller_to_driver_qr?: string | null
           shipping_address?: Json
+          shop_id?: string | null
+          shop_to_buyer_qr?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -112,12 +130,56 @@ export type Database = {
           },
         ]
       }
+      qr_scans: {
+        Row: {
+          id: string
+          location_data: Json | null
+          notes: string | null
+          order_id: string | null
+          qr_code: string
+          scan_stage: string
+          scanned_at: string
+          scanned_by: string | null
+        }
+        Insert: {
+          id?: string
+          location_data?: Json | null
+          notes?: string | null
+          order_id?: string | null
+          qr_code: string
+          scan_stage: string
+          scanned_at?: string
+          scanned_by?: string | null
+        }
+        Update: {
+          id?: string
+          location_data?: Json | null
+          notes?: string | null
+          order_id?: string | null
+          qr_code?: string
+          scan_stage?: string
+          scanned_at?: string
+          scanned_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_scans_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_qr_identifier: {
+        Args: { order_uuid: string; stage: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
