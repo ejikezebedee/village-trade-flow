@@ -21,6 +21,8 @@ import FeedbackPage from "./pages/FeedbackPage";
 import LanguageSettingsPage from "./pages/LanguageSettingsPage";
 import TwoFactorSettings from "./pages/TwoFactorSettings";
 import DisputePage from "./pages/DisputePage";
+import QRTrackingPage from "./pages/QRTrackingPage";
+import { PaymentSuccess } from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
@@ -43,6 +45,12 @@ const App = () => (
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/language-settings" element={<LanguageSettingsPage />} />
+        <Route path="/qr-tracking" element={
+          <ProtectedRoute>
+            <QRTrackingPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/disputes" element={
           <ProtectedRoute>
             <DisputePage />

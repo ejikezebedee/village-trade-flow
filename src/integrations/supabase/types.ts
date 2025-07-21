@@ -3365,41 +3365,70 @@ export type Database = {
         Returns: undefined
       }
       track_page_view: {
-        Args: {
-          p_user_id?: string
-          p_session_id?: string
-          p_page_url?: string
-          p_page_title?: string
-          p_referrer?: string
-          p_user_agent?: string
-          p_ip_address?: unknown
-        }
+        Args:
+          | {
+              p_user_id?: string
+              p_session_id?: string
+              p_page_url?: string
+              p_page_title?: string
+              p_referrer?: string
+              p_user_agent?: string
+            }
+          | {
+              p_user_id?: string
+              p_session_id?: string
+              p_page_url?: string
+              p_page_title?: string
+              p_referrer?: string
+              p_user_agent?: string
+              p_ip_address?: unknown
+            }
         Returns: string
       }
       track_product_event: {
-        Args: {
-          p_product_id?: string
-          p_user_id?: string
-          p_session_id?: string
-          p_event_type?: string
-          p_search_query?: string
-          p_category?: string
-          p_price?: number
-          p_event_properties?: Json
-        }
+        Args:
+          | {
+              p_product_id?: string
+              p_user_id?: string
+              p_session_id?: string
+              p_event_type?: string
+              p_category?: string
+              p_price?: number
+              p_event_properties?: Json
+            }
+          | {
+              p_product_id?: string
+              p_user_id?: string
+              p_session_id?: string
+              p_event_type?: string
+              p_search_query?: string
+              p_category?: string
+              p_price?: number
+              p_event_properties?: Json
+            }
         Returns: string
       }
       track_user_event: {
-        Args: {
-          p_user_id?: string
-          p_session_id?: string
-          p_event_type?: string
-          p_event_name?: string
-          p_page_url?: string
-          p_event_properties?: Json
-          p_user_agent?: string
-          p_ip_address?: unknown
-        }
+        Args:
+          | {
+              p_user_id?: string
+              p_session_id?: string
+              p_event_type?: string
+              p_event_name?: string
+              p_page_url?: string
+              p_event_properties?: Json
+              p_user_agent?: string
+            }
+          | {
+              p_user_id?: string
+              p_session_id?: string
+              p_event_type?: string
+              p_event_name?: string
+              p_page_url?: string
+              p_event_properties?: Json
+              p_user_agent?: string
+              p_ip_address?: unknown
+            }
         Returns: string
       }
       update_delivery_status: {

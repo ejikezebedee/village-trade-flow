@@ -160,7 +160,7 @@ export const PaymentSuccess = () => {
 
           <div className="flex gap-4 pt-4">
             <Button 
-              onClick={() => navigate("/buyer-dashboard")}
+              onClick={() => navigate("/dashboard/buyer")}
               className="flex-1"
             >
               View My Orders

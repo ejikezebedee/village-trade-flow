@@ -46,26 +46,26 @@ export const RoleBasedDashboard: React.FC = () => {
       case 'buyer':
         return [
           { label: 'Browse Products', action: () => navigate('/'), icon: ShoppingBag },
-          { label: 'My Orders', action: () => navigate('/buyer-dashboard'), icon: ShoppingBag },
-          { label: 'Track Deliveries', action: () => navigate('/buyer-dashboard'), icon: Truck }
+          { label: 'My Orders', action: () => navigate('/dashboard/buyer'), icon: ShoppingBag },
+          { label: 'Track Deliveries', action: () => navigate('/dashboard/buyer'), icon: Truck }
         ];
       case 'seller':
         return [
-          { label: 'My Products', action: () => navigate('/seller-dashboard'), icon: Store },
-          { label: 'Add New Product', action: () => navigate('/product-listing'), icon: Store },
-          { label: 'Sales Analytics', action: () => navigate('/seller-dashboard'), icon: Star }
+          { label: 'My Products', action: () => navigate('/dashboard/seller'), icon: Store },
+          { label: 'Add New Product', action: () => navigate('/products'), icon: Store },
+          { label: 'Sales Analytics', action: () => navigate('/dashboard/seller'), icon: Star }
         ];
       case 'driver':
         return [
-          { label: 'Available Deliveries', action: () => navigate('/driver-dashboard'), icon: Truck },
-          { label: 'My Routes', action: () => navigate('/driver-dashboard'), icon: Truck },
-          { label: 'Earnings', action: () => navigate('/driver-dashboard'), icon: Star }
+          { label: 'Available Deliveries', action: () => navigate('/dashboard/driver'), icon: Truck },
+          { label: 'My Routes', action: () => navigate('/dashboard/driver'), icon: Truck },
+          { label: 'Earnings', action: () => navigate('/dashboard/driver'), icon: Star }
         ];
       case 'agent':
         return [
-          { label: 'Help Users', action: () => navigate('/agent-dashboard'), icon: Users },
-          { label: 'Community Management', action: () => navigate('/agent-dashboard'), icon: Users },
-          { label: 'Reports', action: () => navigate('/agent-dashboard'), icon: Star }
+          { label: 'Help Users', action: () => navigate('/dashboard/agent'), icon: Users },
+          { label: 'Community Management', action: () => navigate('/dashboard/agent'), icon: Users },
+          { label: 'Reports', action: () => navigate('/dashboard/agent'), icon: Star }
         ];
       default:
         return [
