@@ -26,9 +26,10 @@ interface ProductCardProps {
     inStock: boolean;
     featured?: boolean;
   };
+  onBuyNow?: (product: any, quantity: number) => void;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, onBuyNow }: ProductCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
@@ -144,6 +145,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <Button 
             className="flex-1 h-11 font-semibold"
             disabled={!product.inStock}
+            onClick={() => onBuyNow?.(product, 1)}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             {product.inStock ? "🛒 Buy Now" : "❌ Out of Stock"}

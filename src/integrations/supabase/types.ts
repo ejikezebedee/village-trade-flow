@@ -14,7 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          buyer_id: string | null
+          created_at: string
+          escrow_release_date: string | null
+          id: string
+          order_status: string
+          payment_status: string
+          product_name: string
+          product_price: number
+          quantity: number
+          seller_id: string | null
+          shipping_address: Json
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          buyer_id?: string | null
+          created_at?: string
+          escrow_release_date?: string | null
+          id?: string
+          order_status?: string
+          payment_status?: string
+          product_name: string
+          product_price: number
+          quantity?: number
+          seller_id?: string | null
+          shipping_address: Json
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          buyer_id?: string | null
+          created_at?: string
+          escrow_release_date?: string | null
+          id?: string
+          order_status?: string
+          payment_status?: string
+          product_name?: string
+          product_price?: number
+          quantity?: number
+          seller_id?: string | null
+          shipping_address?: Json
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          escrow_status: string
+          held_at: string
+          id: string
+          order_id: string | null
+          payment_method: string
+          released_at: string | null
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          escrow_status?: string
+          held_at?: string
+          id?: string
+          order_id?: string | null
+          payment_method: string
+          released_at?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          escrow_status?: string
+          held_at?: string
+          id?: string
+          order_id?: string | null
+          payment_method?: string
+          released_at?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

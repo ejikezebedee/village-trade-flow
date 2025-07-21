@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/marketplace/ProductCard";
 import { Header } from "@/components/marketplace/Header";
+import { CheckoutFlow } from "@/components/checkout/CheckoutFlow";
 import { Search, Filter, Grid, List, MapPin, SlidersHorizontal } from "lucide-react";
 
 const products = [
@@ -128,6 +129,8 @@ export default function ProductListing() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
+  const [checkoutQuantity, setCheckoutQuantity] = useState(1);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -270,7 +273,17 @@ export default function ProductListing() {
                   : "grid-cols-1 max-w-4xl mx-auto"
               }`}>
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    onBuyNow={(product, quantity) => {
+                      setCheckoutProduct({
+                        ...product,
+                        seller_id: 'seller-' + Math.random().toString(36).substr(2, 9)
+                      });
+                      setCheckoutQuantity(quantity);
+                    }}
+                  />
                 ))}
               </div>
             ) : (
@@ -305,6 +318,14 @@ export default function ProductListing() {
           </div>
         </section>
       </main>
+      
+      {checkoutProduct && (
+        <CheckoutFlow
+          product={checkoutProduct}
+          quantity={checkoutQuantity}
+          onClose={() => setCheckoutProduct(null)}
+        />
+      )}
     </div>
   );
 }
