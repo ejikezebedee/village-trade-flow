@@ -22,6 +22,7 @@ import LanguageSettingsPage from "./pages/LanguageSettingsPage";
 import TwoFactorSettings from "./pages/TwoFactorSettings";
 import DisputePage from "./pages/DisputePage";
 import NotFound from "./pages/NotFound";
+import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/verify-email" element={<EmailVerificationHandler />} />
         <Route path="/products" element={<ProductListing />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
