@@ -3,6 +3,8 @@ import { HeroSection } from "@/components/marketplace/HeroSection";
 import { SearchSection } from "@/components/marketplace/SearchSection";
 import { FeaturedProducts } from "@/components/marketplace/FeaturedProducts";
 import { FlashSalesSection } from "@/components/flash-sales/FlashSalesSection";
+import { BestSellersSection } from "@/components/marketplace/BestSellersSection";
+import { NewProductsSection } from "@/components/marketplace/NewProductsSection";
 import { DashboardNavigation } from "@/components/marketplace/DashboardNavigation";
 import { RoleBasedDashboard } from "@/components/auth/RoleBasedDashboard";
 import { Footer } from "@/components/Footer";
@@ -35,6 +37,8 @@ const Index = () => {
             <HeroSection />
             <SearchSection />
             <FlashSalesSection showHeader={true} maxItems={4} className="container mx-auto px-6 lg:px-8 py-8" />
+            <NewProductsSection maxItems={6} />
+            <BestSellersSection maxItems={6} />
             <FeaturedProducts />
             <DashboardNavigation />
           </>
