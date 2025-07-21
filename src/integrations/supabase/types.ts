@@ -511,6 +511,196 @@ export type Database = {
         }
         Relationships: []
       }
+      kyc_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          file_name: string | null
+          file_size: number | null
+          file_url: string
+          id: string
+          kyc_verification_id: string
+          mime_type: string | null
+          processing_results: Json | null
+          upload_status: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          file_name?: string | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          kyc_verification_id: string
+          mime_type?: string | null
+          processing_results?: Json | null
+          upload_status?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          file_name?: string | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          kyc_verification_id?: string
+          mime_type?: string | null
+          processing_results?: Json | null
+          upload_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kyc_documents_kyc_verification_id_fkey"
+            columns: ["kyc_verification_id"]
+            isOneToOne: false
+            referencedRelation: "kyc_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kyc_requirements: {
+        Row: {
+          created_at: string
+          daily_transaction_limit: number | null
+          id: string
+          is_active: boolean | null
+          max_transaction_amount: number | null
+          monthly_transaction_limit: number | null
+          required_documents: string[]
+          requirement_level: string
+        }
+        Insert: {
+          created_at?: string
+          daily_transaction_limit?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_transaction_amount?: number | null
+          monthly_transaction_limit?: number | null
+          required_documents: string[]
+          requirement_level: string
+        }
+        Update: {
+          created_at?: string
+          daily_transaction_limit?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_transaction_amount?: number | null
+          monthly_transaction_limit?: number | null
+          required_documents?: string[]
+          requirement_level?: string
+        }
+        Relationships: []
+      }
+      kyc_verification_logs: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          kyc_verification_id: string
+          metadata: Json | null
+          new_status: string | null
+          old_status: string | null
+          performed_by: string | null
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          kyc_verification_id: string
+          metadata?: Json | null
+          new_status?: string | null
+          old_status?: string | null
+          performed_by?: string | null
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          kyc_verification_id?: string
+          metadata?: Json | null
+          new_status?: string | null
+          old_status?: string | null
+          performed_by?: string | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kyc_verification_logs_kyc_verification_id_fkey"
+            columns: ["kyc_verification_id"]
+            isOneToOne: false
+            referencedRelation: "kyc_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kyc_verifications: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          document_country: string | null
+          document_expiry_date: string | null
+          document_number: string | null
+          document_type: string | null
+          expires_at: string | null
+          id: string
+          last_attempt_date: string | null
+          provider_verification_id: string | null
+          rejected_at: string | null
+          rejection_reason: string | null
+          updated_at: string
+          user_id: string
+          verification_attempts: number | null
+          verification_level: string
+          verification_provider: string | null
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          document_country?: string | null
+          document_expiry_date?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          expires_at?: string | null
+          id?: string
+          last_attempt_date?: string | null
+          provider_verification_id?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          updated_at?: string
+          user_id: string
+          verification_attempts?: number | null
+          verification_level?: string
+          verification_provider?: string | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          document_country?: string | null
+          document_expiry_date?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          expires_at?: string | null
+          id?: string
+          last_attempt_date?: string | null
+          provider_verification_id?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_attempts?: number | null
+          verification_level?: string
+          verification_provider?: string | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       languages: {
         Row: {
           code: string
@@ -1086,6 +1276,8 @@ export type Database = {
           first_name: string | null
           id: string
           is_active: boolean | null
+          kyc_level: string | null
+          kyc_status: string | null
           last_name: string | null
           location: Json | null
           phone_number: string | null
@@ -1097,7 +1289,9 @@ export type Database = {
           user_role: Database["public"]["Enums"]["user_role"] | null
           user_type: string
           verification_documents: Json | null
+          verification_expires_at: string | null
           verification_status: string | null
+          verified_at: string | null
         }
         Insert: {
           auto_translate_messages?: boolean | null
@@ -1108,6 +1302,8 @@ export type Database = {
           first_name?: string | null
           id?: string
           is_active?: boolean | null
+          kyc_level?: string | null
+          kyc_status?: string | null
           last_name?: string | null
           location?: Json | null
           phone_number?: string | null
@@ -1119,7 +1315,9 @@ export type Database = {
           user_role?: Database["public"]["Enums"]["user_role"] | null
           user_type: string
           verification_documents?: Json | null
+          verification_expires_at?: string | null
           verification_status?: string | null
+          verified_at?: string | null
         }
         Update: {
           auto_translate_messages?: boolean | null
@@ -1130,6 +1328,8 @@ export type Database = {
           first_name?: string | null
           id?: string
           is_active?: boolean | null
+          kyc_level?: string | null
+          kyc_status?: string | null
           last_name?: string | null
           location?: Json | null
           phone_number?: string | null
@@ -1141,7 +1341,9 @@ export type Database = {
           user_role?: Database["public"]["Enums"]["user_role"] | null
           user_type?: string
           verification_documents?: Json | null
+          verification_expires_at?: string | null
           verification_status?: string | null
+          verified_at?: string | null
         }
         Relationships: [
           {
@@ -1494,6 +1696,10 @@ export type Database = {
         Args: { dispute_uuid: string }
         Returns: string
       }
+      can_user_transact: {
+        Args: { p_user_id: string; p_transaction_amount?: number }
+        Returns: boolean
+      }
       create_notification: {
         Args: {
           p_user_id: string
@@ -1519,6 +1725,10 @@ export type Database = {
       detect_browser_language: {
         Args: { accept_language: string }
         Returns: string
+      }
+      expire_kyc_verifications: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       generate_qr_identifier: {
         Args: { order_uuid: string; stage: string }
