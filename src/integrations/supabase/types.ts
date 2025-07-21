@@ -218,6 +218,62 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_checkpoints: {
+        Row: {
+          checkpoint_location: string | null
+          checkpoint_time: string
+          checkpoint_type: string
+          created_at: string
+          delivery_tracking_id: string | null
+          id: string
+          location_coordinates: Json | null
+          notes: string | null
+          photos: Json | null
+          qr_code_used: string | null
+          scanned_by: string | null
+          signature_data: string | null
+          weather_conditions: string | null
+        }
+        Insert: {
+          checkpoint_location?: string | null
+          checkpoint_time?: string
+          checkpoint_type: string
+          created_at?: string
+          delivery_tracking_id?: string | null
+          id?: string
+          location_coordinates?: Json | null
+          notes?: string | null
+          photos?: Json | null
+          qr_code_used?: string | null
+          scanned_by?: string | null
+          signature_data?: string | null
+          weather_conditions?: string | null
+        }
+        Update: {
+          checkpoint_location?: string | null
+          checkpoint_time?: string
+          checkpoint_type?: string
+          created_at?: string
+          delivery_tracking_id?: string | null
+          id?: string
+          location_coordinates?: Json | null
+          notes?: string | null
+          photos?: Json | null
+          qr_code_used?: string | null
+          scanned_by?: string | null
+          signature_data?: string | null
+          weather_conditions?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_checkpoints_delivery_tracking_id_fkey"
+            columns: ["delivery_tracking_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_tracking"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_logs: {
         Row: {
           driver_id: string | null
@@ -259,6 +315,62 @@ export type Database = {
           },
           {
             foreignKeyName: "delivery_logs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_tracking: {
+        Row: {
+          actual_delivery_time: string | null
+          created_at: string
+          current_holder_id: string | null
+          current_holder_type: string | null
+          current_location: string | null
+          delivery_instructions: string | null
+          estimated_delivery_time: string | null
+          id: string
+          order_id: string | null
+          priority_level: string | null
+          special_handling_notes: string | null
+          tracking_number: string
+          updated_at: string
+        }
+        Insert: {
+          actual_delivery_time?: string | null
+          created_at?: string
+          current_holder_id?: string | null
+          current_holder_type?: string | null
+          current_location?: string | null
+          delivery_instructions?: string | null
+          estimated_delivery_time?: string | null
+          id?: string
+          order_id?: string | null
+          priority_level?: string | null
+          special_handling_notes?: string | null
+          tracking_number: string
+          updated_at?: string
+        }
+        Update: {
+          actual_delivery_time?: string | null
+          created_at?: string
+          current_holder_id?: string | null
+          current_holder_type?: string | null
+          current_location?: string | null
+          delivery_instructions?: string | null
+          estimated_delivery_time?: string | null
+          id?: string
+          order_id?: string | null
+          priority_level?: string | null
+          special_handling_notes?: string | null
+          tracking_number?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
@@ -2700,6 +2812,17 @@ export type Database = {
           p_ip_address?: unknown
         }
         Returns: string
+      }
+      update_delivery_status: {
+        Args: {
+          p_order_id: string
+          p_checkpoint_type: string
+          p_scanned_by: string
+          p_location?: string
+          p_notes?: string
+          p_coordinates?: Json
+        }
+        Returns: Json
       }
       verify_qr_scan: {
         Args: { p_qr_code: string; p_scanner_id: string; p_location?: Json }

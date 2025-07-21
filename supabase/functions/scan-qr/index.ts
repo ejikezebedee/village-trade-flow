@@ -138,7 +138,7 @@ serve(async (req) => {
       throw new Error('Failed to record QR scan');
     }
 
-    // Update order stage
+    // Update order stage and trigger delivery tracking
     const { error: updateError } = await supabaseClient
       .from('orders')
       .update({ 
@@ -150,6 +150,39 @@ serve(async (req) => {
     if (updateError) {
       console.error('Order update error:', updateError);
       throw new Error('Failed to update order status');
+    }
+
+    // Update delivery tracking with checkpoint
+    let checkpointType = '';
+    switch (scanStage) {
+      case 'seller_to_driver':
+        checkpointType = 'picked_up';
+        break;
+      case 'driver_to_shop':
+        checkpointType = 'arrived_at_destination';
+        break;
+      case 'shop_to_buyer':
+        checkpointType = 'delivered';
+        break;
+    }
+
+    if (checkpointType) {
+      const { data: deliveryUpdate, error: deliveryError } = await supabaseClient
+        .rpc('update_delivery_status', {
+          p_order_id: orderId,
+          p_checkpoint_type: checkpointType,
+          p_scanned_by: user.id,
+          p_location: location_data?.address || 'Location not provided',
+          p_notes: notes || `QR scan: ${scanStage}`,
+          p_coordinates: location_data?.coordinates || null
+        });
+
+      if (deliveryError) {
+        console.error('Delivery tracking error:', deliveryError);
+        // Don't fail the scan if delivery tracking fails
+      } else {
+        console.log('Delivery tracking updated:', deliveryUpdate);
+      }
     }
 
     // Enhanced automatic status progression based on scan stage
@@ -185,6 +218,7 @@ serve(async (req) => {
         new_stage: finalStatus,
         scan_stage: scanStage,
         payment_released: paymentReleased,
+        delivery_checkpoint: checkpointType,
         message: paymentReleased ? 'Order completed and payment released from escrow' : 'Order status updated successfully'
       }),
       {

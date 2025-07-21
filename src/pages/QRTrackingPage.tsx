@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedQRSystem } from "@/components/qr/EnhancedQRSystem";
 import { TransactionQRSystem } from "@/components/qr/TransactionQRSystem";
-import { QrCode, Package } from "lucide-react";
+import { DeliveryTrackingSystem } from "@/components/qr/DeliveryTrackingSystem";
+import { QrCode, Package, Truck } from "lucide-react";
 
 const QRTrackingPage = () => {
   return (
@@ -16,17 +17,34 @@ const QRTrackingPage = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="transaction" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="delivery" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="delivery" className="flex items-center gap-2">
+            <Truck className="h-4 w-4" />
+            Live Delivery Tracking
+          </TabsTrigger>
           <TabsTrigger value="transaction" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
             Transaction QR System
           </TabsTrigger>
-          <TabsTrigger value="delivery" className="flex items-center gap-2">
+          <TabsTrigger value="legacy" className="flex items-center gap-2">
             <QrCode className="h-4 w-4" />
-            Delivery Tracking
+            Legacy QR System
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="delivery" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Live Delivery Tracking</CardTitle>
+              <CardDescription>
+                Real-time delivery tracking with automatic status updates and notifications.
+                QR codes automatically update transaction status as goods move through the delivery chain.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <DeliveryTrackingSystem />
+        </TabsContent>
 
         <TabsContent value="transaction" className="space-y-6">
           <Card>
@@ -41,12 +59,12 @@ const QRTrackingPage = () => {
           <TransactionQRSystem />
         </TabsContent>
 
-        <TabsContent value="delivery" className="space-y-6">
+        <TabsContent value="legacy" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Delivery Tracking System</CardTitle>
+              <CardTitle>Legacy QR Tracking System</CardTitle>
               <CardDescription>
-                Secure QR codes for tracking packages through the delivery chain: 
+                Original QR tracking system for delivery chain management: 
                 seller → driver → shop → buyer.
               </CardDescription>
             </CardHeader>
