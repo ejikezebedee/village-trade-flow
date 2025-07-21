@@ -27,6 +27,12 @@ export function Header() {
 
           {/* Desktop Navigation - Apple-style clean */}
           <nav className="hidden lg:flex items-center space-x-1">
+            <a href="/brands" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              Top Brands
+            </a>
+            <a href="/auctions" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              Auctions
+            </a>
             <a href="/how-it-works" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
               How It Works
             </a>
@@ -73,6 +79,20 @@ export function Header() {
         {isMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/98 backdrop-blur-md">
             <nav className="py-6 space-y-1">
+              <a 
+                href="/brands" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                👑 Top Brands
+              </a>
+              <a 
+                href="/auctions" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                🔨 Auctions
+              </a>
               <a 
                 href="/how-it-works" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"

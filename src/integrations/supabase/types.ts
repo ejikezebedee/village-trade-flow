@@ -351,6 +351,147 @@ export type Database = {
           },
         ]
       }
+      brand_followers: {
+        Row: {
+          brand_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_followers_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_products: {
+        Row: {
+          brand_id: string
+          created_at: string | null
+          id: string
+          product_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string | null
+          id?: string
+          product_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string | null
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_products_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brand_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brand_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          average_rating: number | null
+          category: string | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          founded_year: number | null
+          id: string
+          is_active: boolean | null
+          is_featured: boolean | null
+          logo_url: string | null
+          name: string
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
+          slug: string
+          total_products: number | null
+          total_ratings: number | null
+          total_sales: number | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          average_rating?: number | null
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          founded_year?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name: string
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          slug: string
+          total_products?: number | null
+          total_ratings?: number | null
+          total_sales?: number | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          average_rating?: number | null
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          founded_year?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name?: string
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          slug?: string
+          total_products?: number | null
+          total_ratings?: number | null
+          total_sales?: number | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string
