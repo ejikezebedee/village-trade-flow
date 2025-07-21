@@ -147,8 +147,8 @@ export default function BuyerDashboard() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <a href="/orders/all" className="block">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <a href="/orders/all" className="block transition-transform hover:scale-105">
+              <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-2 hover:border-primary/20">
                 <CardContent className="p-4 text-center">
                   <ShoppingCart className="h-8 w-8 mx-auto mb-2 text-primary" />
                   <div className="text-2xl font-bold text-foreground">{stats.total}</div>
@@ -156,8 +156,8 @@ export default function BuyerDashboard() {
                 </CardContent>
               </Card>
             </a>
-            <a href="/orders/pending" className="block">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <a href="/orders/pending" className="block transition-transform hover:scale-105">
+              <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-2 hover:border-yellow-500/20">
                 <CardContent className="p-4 text-center">
                   <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
                   <div className="text-2xl font-bold text-foreground">{stats.pending}</div>
@@ -165,8 +165,8 @@ export default function BuyerDashboard() {
                 </CardContent>
               </Card>
             </a>
-            <a href="/orders/completed" className="block">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <a href="/orders/completed" className="block transition-transform hover:scale-105">
+              <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-2 hover:border-green-500/20">
                 <CardContent className="p-4 text-center">
                   <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
                   <div className="text-2xl font-bold text-foreground">{stats.completed}</div>
@@ -174,8 +174,8 @@ export default function BuyerDashboard() {
                 </CardContent>
               </Card>
             </a>
-            <a href="/favorites" className="block">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <a href="/favorites" className="block transition-transform hover:scale-105">
+              <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-2 hover:border-red-500/20">
                 <CardContent className="p-4 text-center">
                   <Heart className="h-8 w-8 mx-auto mb-2 text-red-500" />
                   <div className="text-2xl font-bold text-foreground">-</div>
