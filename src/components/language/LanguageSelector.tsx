@@ -1,182 +1,269 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Globe, Languages, Settings } from 'lucide-react';
+import { 
+  Globe, 
+  Languages, 
+  MapPin, 
+  Settings,
+  Check,
+  Zap,
+  Eye
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const LanguageSelector: React.FC = () => {
   const { 
     currentLanguage, 
-    setCurrentLanguage, 
-    languages, 
-    t, 
-    detectLanguage,
-    isRTL 
+    availableLanguages, 
+    setLanguage, 
+    autoDetectEnabled, 
+    setAutoDetectEnabled,
+    detectUserLanguage,
+    isLoading 
   } = useLanguage();
-  const { profile } = useAuth();
+  
+  const [detectedLanguage, setDetectedLanguage] = useState<string>('');
   const { toast } = useToast();
-  const [autoTranslate, setAutoTranslate] = useState(profile?.auto_translate_messages ?? true);
-  const [autoDetect, setAutoDetect] = useState(profile?.detect_language_automatically ?? true);
 
-  const handleLanguageChange = async (newLanguage: string) => {
-    setCurrentLanguage(newLanguage);
-    
-    toast({
-      title: t('common.success', 'Success'),
-      description: `Language changed to ${languages.find(l => l.code === newLanguage)?.native_name}`,
-    });
-  };
+  useEffect(() => {
+    // Get browser's preferred language for display
+    const browserLang = navigator.language.split('-')[0];
+    setDetectedLanguage(browserLang);
+  }, []);
 
-  const handleAutoDetect = async () => {
-    const detected = detectLanguage();
-    setCurrentLanguage(detected);
-    
-    toast({
-      title: t('settings.detect_language', 'Language Detected'),
-      description: `Detected language: ${languages.find(l => l.code === detected)?.native_name}`,
-    });
-  };
-
-  const handleSettingsUpdate = async (setting: string, value: boolean) => {
-    if (!profile) return;
-
+  const handleLanguageChange = async (languageCode: string) => {
     try {
-      const updates: any = {};
-      if (setting === 'auto_translate') {
-        updates.auto_translate_messages = value;
-        setAutoTranslate(value);
-      } else if (setting === 'auto_detect') {
-        updates.detect_language_automatically = value;
-        setAutoDetect(value);
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('user_id', profile.user_id);
-
-      if (error) throw error;
-
+      await setLanguage(languageCode);
+      
+      const selectedLang = availableLanguages.find(lang => lang.code === languageCode);
       toast({
-        title: t('common.success', 'Success'),
-        description: t('settings.updated', 'Settings updated successfully'),
+        title: "Language Updated",
+        description: `Language changed to ${selectedLang?.native_name || languageCode}`,
       });
     } catch (error) {
-      console.error('Error updating settings:', error);
+      console.error('Error changing language:', error);
       toast({
-        title: t('common.error', 'Error'),
-        description: t('settings.update_failed', 'Failed to update settings'),
-        variant: 'destructive'
+        title: "Error",
+        description: "Failed to change language",
+        variant: "destructive"
       });
     }
   };
 
-  const currentLang = languages.find(lang => lang.code === currentLanguage);
+  const handleAutoDetectToggle = (enabled: boolean) => {
+    setAutoDetectEnabled(enabled);
+    
+    if (enabled) {
+      detectUserLanguage();
+      toast({
+        title: "Auto-Detection Enabled",
+        description: "Language will be automatically detected from your browser settings",
+      });
+    } else {
+      toast({
+        title: "Auto-Detection Disabled",
+        description: "You can now manually select your preferred language",
+      });
+    }
+  };
+
+  const getLanguageRegion = (code: string) => {
+    const regions: { [key: string]: string } = {
+      'en': 'Global',
+      'es': 'Spain & Latin America',
+      'fr': 'France & Francophone',
+      'de': 'Germany & DACH',
+      'pt': 'Portugal & Brazil',
+      'it': 'Italy',
+      'ru': 'Russia & CIS',
+      'ja': 'Japan',
+      'ko': 'South Korea',
+      'zh': 'China',
+      'ar': 'Middle East & North Africa',
+      'hi': 'India',
+      'th': 'Thailand',
+      'vi': 'Vietnam',
+      'tr': 'Turkey',
+      'pl': 'Poland',
+      'nl': 'Netherlands',
+      'sv': 'Sweden',
+      'da': 'Denmark',
+      'no': 'Norway',
+      'fi': 'Finland'
+    };
+    
+    return regions[code] || 'Global';
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="w-full max-w-2xl">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <span className="ml-2">Loading languages...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className={`w-full max-w-md ${isRTL ? 'text-right' : 'text-left'}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Globe className="w-5 h-5" />
-          {t('settings.language', 'Language Settings')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Current Language Display */}
-        <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-          <div className="flex items-center gap-2">
-            <Languages className="w-4 h-4" />
-            <span className="font-medium">{t('settings.current_language', 'Current Language')}</span>
-          </div>
-          <Badge variant="secondary" className="gap-1">
-            {currentLang?.native_name}
-            {currentLang?.is_rtl && <span className="text-xs">(RTL)</span>}
-          </Badge>
-        </div>
-
-        {/* Language Selector */}
-        <div className="space-y-2">
-          <Label htmlFor="language-select">{t('settings.select_language', 'Select Language')}</Label>
-          <Select value={currentLanguage} onValueChange={handleLanguageChange}>
-            <SelectTrigger id="language-select">
-              <SelectValue placeholder={t('settings.choose_language', 'Choose language')} />
-            </SelectTrigger>
-            <SelectContent>
-              {languages.map((language) => (
-                <SelectItem key={language.code} value={language.code}>
-                  <div className="flex items-center justify-between w-full">
-                    <span>{language.native_name}</span>
-                    <span className="text-sm text-muted-foreground ml-2">
-                      {language.name}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Auto-detect Button */}
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={handleAutoDetect}
-        >
-          <Globe className="w-4 h-4 mr-2" />
-          {t('settings.auto_detect', 'Auto-detect Language')}
-        </Button>
-
-        {/* Translation Settings */}
-        {profile && (
-          <div className="space-y-4 pt-4 border-t">
-            <h4 className="font-medium flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              {t('settings.translation_preferences', 'Translation Preferences')}
-            </h4>
-            
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="auto-translate" className="text-sm">
-                  {t('settings.auto_translate', 'Auto-translate messages')}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="w-5 h-5" />
+            Language Preferences
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Auto-Detection Toggle */}
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Zap className="w-5 h-5 text-blue-600" />
+              <div>
+                <Label htmlFor="auto-detect" className="font-medium">
+                  Auto-Detect Language
                 </Label>
-                <Switch
-                  id="auto-translate"
-                  checked={autoTranslate}
-                  onCheckedChange={(checked) => handleSettingsUpdate('auto_translate', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <Label htmlFor="auto-detect-lang" className="text-sm">
-                  {t('settings.detect_language', 'Auto-detect language')}
-                </Label>
-                <Switch
-                  id="auto-detect-lang"
-                  checked={autoDetect}
-                  onCheckedChange={(checked) => handleSettingsUpdate('auto_detect', checked)}
-                />
+                <p className="text-sm text-muted-foreground">
+                  Automatically detect language from browser settings
+                </p>
               </div>
             </div>
+            <Switch
+              id="auto-detect"
+              checked={autoDetectEnabled}
+              onCheckedChange={handleAutoDetectToggle}
+            />
           </div>
-        )}
 
-        {/* Language Info */}
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p>{t('settings.language_info', 'Your language preference will be saved and used across the platform.')}</p>
-          {isRTL && (
-            <p className="text-orange-600">
-              {t('settings.rtl_notice', 'Right-to-left layout is active for this language.')}
-            </p>
+          {/* Browser Detection Info */}
+          {detectedLanguage && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <Eye className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-800">
+                  Browser Detected: {detectedLanguage.toUpperCase()}
+                </span>
+              </div>
+              <p className="text-xs text-blue-600 mt-1">
+                Based on your browser's language settings
+              </p>
+            </div>
           )}
-        </div>
-      </CardContent>
-    </Card>
+
+          {/* Current Language Display */}
+          <div className="p-4 border rounded-lg bg-primary/5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="text-2xl">
+                  {availableLanguages.find(lang => lang.code === currentLanguage)?.flag || '🌐'}
+                </div>
+                <div>
+                  <p className="font-medium">
+                    {availableLanguages.find(lang => lang.code === currentLanguage)?.native_name || 'English'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Current Language
+                  </p>
+                </div>
+              </div>
+              <Badge variant="default" className="bg-primary/10 text-primary">
+                Active
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Language Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Languages className="w-5 h-5" />
+            Available Languages
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {availableLanguages.map((language) => (
+              <div
+                key={language.code}
+                className={`p-4 border rounded-lg cursor-pointer transition-all hover:border-primary/50 ${
+                  currentLanguage === language.code 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-border hover:bg-muted/50'
+                }`}
+                onClick={() => handleLanguageChange(language.code)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-xl">{language.flag}</span>
+                    <div>
+                      <p className="font-medium">{language.native_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {language.name}
+                      </p>
+                      <div className="flex items-center space-x-1 mt-1">
+                        <MapPin className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
+                          {getLanguageRegion(language.code)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  {currentLanguage === language.code && (
+                    <Check className="w-5 h-5 text-primary" />
+                  )}
+                </div>
+                
+                {language.is_rtl && (
+                  <Badge variant="outline" className="mt-2 text-xs">
+                    RTL Support
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="w-5 h-5" />
+            Quick Actions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={detectUserLanguage}
+            >
+              <Zap className="w-4 h-4 mr-2" />
+              Re-detect Language
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => handleLanguageChange('en')}
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              Reset to English
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };

@@ -1,109 +1,146 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Languages, RotateCcw } from 'lucide-react';
+import { 
+  Languages, 
+  Loader2,
+  CheckCircle,
+  AlertCircle
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/integrations/supabase/client';
 
 interface TranslateButtonProps {
   text: string;
-  messageId?: string;
-  onTranslated?: (translatedText: string, sourceLanguage: string) => void;
+  contentType?: 'product' | 'notification' | 'faq' | 'general';
+  contentId?: string;
+  sourceLanguage?: string;
+  fallback?: string;
+  onTranslated?: (translatedText: string) => void;
   className?: string;
+  variant?: 'default' | 'outline' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg';
+  showOriginal?: boolean;
 }
 
 export const TranslateButton: React.FC<TranslateButtonProps> = ({
   text,
-  messageId,
+  contentType = 'general',
+  contentId,
+  sourceLanguage = 'auto',
+  fallback,
   onTranslated,
-  className = ""
+  className = '',
+  variant = 'outline',
+  size = 'sm',
+  showOriginal = true
 }) => {
-  const { currentLanguage, t } = useLanguage();
+  const { currentLanguage, translate, availableLanguages } = useLanguage();
   const [isTranslating, setIsTranslating] = useState(false);
-  const [isTranslated, setIsTranslated] = useState(false);
-  const [originalText, setOriginalText] = useState(text);
+  const [translatedText, setTranslatedText] = useState<string>('');
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [translationStatus, setTranslationStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const currentLangName = availableLanguages.find(lang => lang.code === currentLanguage)?.native_name || currentLanguage;
 
   const handleTranslate = async () => {
-    if (isTranslated) {
-      // Show original text
-      onTranslated?.(originalText, 'original');
-      setIsTranslated(false);
-      return;
-    }
-
     if (isTranslating) return;
 
-    try {
-      setIsTranslating(true);
-      setOriginalText(text);
+    setIsTranslating(true);
+    setTranslationStatus('idle');
 
-      const { data, error } = await supabase.functions.invoke('translate-content', {
-        body: {
-          text,
-          targetLanguage: currentLanguage,
-          type: messageId ? 'message' : 'text',
-          messageId
-        }
+    try {
+      const result = await translate(text, {
+        sourceLanguage,
+        contentType,
+        contentId,
+        fallback
       });
 
-      if (error) throw error;
-
-      if (data.success) {
-        onTranslated?.(data.translatedText, data.sourceLanguage);
-        setIsTranslated(true);
-      } else {
-        throw new Error(data.error || 'Translation failed');
+      setTranslatedText(result);
+      setShowTranslation(true);
+      setTranslationStatus('success');
+      
+      if (onTranslated) {
+        onTranslated(result);
       }
     } catch (error) {
-      console.error('Translation error:', error);
+      console.error('Translation failed:', error);
+      setTranslationStatus('error');
+      setTranslatedText(fallback || text);
     } finally {
       setIsTranslating(false);
     }
   };
 
-  // Don't show translate button if already in the target language
-  if (currentLanguage === 'en' && !isTranslated) {
+  const toggleView = () => {
+    setShowTranslation(!showTranslation);
+  };
+
+  // Don't show translate button if current language is likely the source language
+  if (currentLanguage === sourceLanguage || currentLanguage === 'en' && sourceLanguage === 'auto') {
     return null;
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleTranslate}
-            disabled={isTranslating}
-            className={`h-6 px-2 ${className}`}
-          >
-            {isTranslating ? (
-              <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            ) : isTranslated ? (
-              <RotateCcw className="w-3 h-3" />
-            ) : (
-              <Languages className="w-3 h-3" />
+    <div className="space-y-2">
+      <div className="flex items-center space-x-2">
+        <Button
+          variant={variant}
+          size={size}
+          onClick={handleTranslate}
+          disabled={isTranslating}
+          className={className}
+        >
+          {isTranslating ? (
+            <>
+              <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+              Translating...
+            </>
+          ) : (
+            <>
+              <Languages className="w-3 h-3 mr-2" />
+              Translate to {currentLangName}
+            </>
+          )}
+        </Button>
+
+        {translationStatus === 'success' && (
+          <Badge variant="secondary" className="text-xs">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Translated
+          </Badge>
+        )}
+
+        {translationStatus === 'error' && (
+          <Badge variant="destructive" className="text-xs">
+            <AlertCircle className="w-3 h-3 mr-1" />
+            Failed
+          </Badge>
+        )}
+      </div>
+
+      {translatedText && showTranslation && (
+        <div className="p-3 border rounded-md bg-muted/30">
+          <div className="flex items-center justify-between mb-2">
+            <Badge variant="outline" className="text-xs">
+              Translated to {currentLangName}
+            </Badge>
+            {showOriginal && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleView}
+                className="text-xs h-6 px-2"
+              >
+                {showTranslation ? 'Show Original' : 'Show Translation'}
+              </Button>
             )}
-            <span className="ml-1 text-xs">
-              {isTranslating 
-                ? t('chat.translating', 'Translating...') 
-                : isTranslated 
-                  ? t('chat.original', 'Original')
-                  : t('chat.translate', 'Translate')
-              }
-            </span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>
-            {isTranslated 
-              ? t('chat.show_original', 'Show original text')
-              : t('chat.translate_to', `Translate to ${currentLanguage.toUpperCase()}`)
-            }
+          </div>
+          <p className="text-sm">
+            {showTranslation ? translatedText : text}
           </p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </div>
+      )}
+    </div>
   );
 };

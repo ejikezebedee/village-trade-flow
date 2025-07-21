@@ -1,199 +1,155 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+interface TranslationRequest {
+  text: string;
+  targetLanguage: string;
+  sourceLanguage?: string;
+  contentType?: 'product' | 'notification' | 'faq' | 'general';
+  contentId?: string;
+}
+
+interface GoogleTranslateResponse {
+  data: {
+    translations: Array<{
+      translatedText: string;
+      detectedSourceLanguage?: string;
+    }>;
+  };
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const googleTranslateApiKey = Deno.env.get('GOOGLE_TRANSLATE_API_KEY');
+    const googleTranslateApiKey = Deno.env.get("GOOGLE_TRANSLATE_API_KEY");
+    
     if (!googleTranslateApiKey) {
-      throw new Error('Google Translate API key not configured');
+      throw new Error("Google Translate API key not configured");
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
 
-    const { 
-      text, 
-      targetLanguage, 
-      sourceLanguage = 'auto',
-      type = 'text', // 'text', 'message', 'product'
-      messageId,
-      productId 
-    } = await req.json();
-
-    console.log('Translation request:', { 
-      text: text?.substring(0, 100), 
-      targetLanguage, 
-      sourceLanguage, 
-      type 
-    });
+    const { text, targetLanguage, sourceLanguage, contentType, contentId }: TranslationRequest = await req.json();
 
     if (!text || !targetLanguage) {
-      throw new Error('Text and target language are required');
+      throw new Error("Text and target language are required");
     }
 
     // Check if translation already exists in cache
-    let cachedTranslation = null;
-    if (type === 'message' && messageId) {
-      const { data } = await supabase
-        .from('message_translations')
-        .select('translated_text, confidence_score')
-        .eq('message_id', messageId)
-        .eq('language_code', targetLanguage)
-        .single();
-      
-      cachedTranslation = data;
+    const { data: existingTranslation } = await supabaseClient
+      .from('content_translations')
+      .select('translated_text, confidence_score')
+      .eq('original_text', text)
+      .eq('target_language', targetLanguage)
+      .eq('source_language', sourceLanguage || 'auto')
+      .single();
+
+    if (existingTranslation) {
+      console.log('Translation found in cache');
+      return new Response(JSON.stringify({
+        translatedText: existingTranslation.translated_text,
+        sourceLanguage: sourceLanguage || 'auto',
+        targetLanguage,
+        cached: true
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    if (cachedTranslation) {
-      console.log('Using cached translation');
-      return new Response(
-        JSON.stringify({
-          success: true,
-          translatedText: cachedTranslation.translated_text,
-          confidence: cachedTranslation.confidence_score,
-          cached: true,
-          sourceLanguage: sourceLanguage
-        }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
-      );
+    // Build Google Translate API request
+    const translateUrl = new URL("https://translation.googleapis.com/language/translate/v2");
+    translateUrl.searchParams.set("key", googleTranslateApiKey);
+
+    const translateBody = {
+      q: text,
+      target: targetLanguage,
+      format: "text"
+    };
+
+    if (sourceLanguage && sourceLanguage !== 'auto') {
+      translateBody.source = sourceLanguage;
     }
 
-    // Call Google Translate API
-    const translateUrl = `https://translation.googleapis.com/language/translate/v2?key=${googleTranslateApiKey}`;
-    
-    const translateResponse = await fetch(translateUrl, {
-      method: 'POST',
+    console.log('Calling Google Translate API:', { targetLanguage, sourceLanguage });
+
+    const response = await fetch(translateUrl.toString(), {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        q: text,
-        target: targetLanguage,
-        source: sourceLanguage === 'auto' ? undefined : sourceLanguage,
-        format: 'text'
-      }),
+      body: JSON.stringify(translateBody)
     });
 
-    if (!translateResponse.ok) {
-      const errorData = await translateResponse.text();
-      console.error('Google Translate API error:', errorData);
-      throw new Error(`Translation service error: ${translateResponse.status}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Google Translate API error:', errorText);
+      throw new Error(`Translation failed: ${response.status} ${response.statusText}`);
     }
 
-    const translateData = await translateResponse.json();
+    const result: GoogleTranslateResponse = await response.json();
     
-    if (!translateData.data || !translateData.data.translations || translateData.data.translations.length === 0) {
-      throw new Error('No translation returned from service');
+    if (!result.data?.translations?.[0]) {
+      throw new Error("Invalid response from Google Translate API");
     }
 
-    const translation = translateData.data.translations[0];
-    const translatedText = translation.translatedText;
-    const detectedSourceLanguage = translation.detectedSourceLanguage || sourceLanguage;
+    const translation = result.data.translations[0];
+    const detectedSourceLanguage = translation.detectedSourceLanguage || sourceLanguage || 'auto';
 
-    console.log('Translation successful:', {
-      originalLength: text.length,
-      translatedLength: translatedText.length,
-      detectedSource: detectedSourceLanguage
-    });
-
-    // Cache the translation if it's a message
-    if (type === 'message' && messageId) {
-      try {
-        await supabase
-          .from('message_translations')
-          .insert({
-            message_id: messageId,
-            language_code: targetLanguage,
-            translated_text: translatedText,
-            confidence_score: 0.95, // Google Translate doesn't provide confidence scores
-            translation_service: 'google_translate'
-          });
-      } catch (error) {
-        console.error('Error caching translation:', error);
-        // Don't fail the request if caching fails
-      }
-    }
-
-    // Cache product translations
-    if (type === 'product' && productId) {
-      try {
-        const { data: existingTranslation } = await supabase
-          .from('product_translations')
-          .select('id')
-          .eq('product_id', productId)
-          .eq('language_code', targetLanguage)
-          .single();
-
-        if (!existingTranslation) {
-          await supabase
-            .from('product_translations')
-            .insert({
-              product_id: productId,
-              language_code: targetLanguage,
-              name: translatedText,
-              description: translatedText, // For now, same as name
-              is_auto_translated: true
-            });
-        }
-      } catch (error) {
-        console.error('Error caching product translation:', error);
-      }
-    }
-
-    // Log the translation event
-    await supabase.rpc('log_security_event', {
-      p_event_type: 'content_translated',
-      p_severity: 'info',
-      p_action_performed: `Content translated from ${detectedSourceLanguage} to ${targetLanguage}`,
-      p_metadata: {
+    // Cache the translation
+    await supabaseClient
+      .from('content_translations')
+      .insert({
+        original_text: text,
+        translated_text: translation.translatedText,
         source_language: detectedSourceLanguage,
         target_language: targetLanguage,
-        content_type: type,
-        content_length: text.length,
+        content_type: contentType || 'general',
+        content_id: contentId,
+        translation_service: 'google_translate',
+        confidence_score: 0.95 // Google Translate typically has high confidence
+      });
+
+    // Log translation usage for analytics
+    await supabaseClient
+      .from('translation_usage_logs')
+      .insert({
+        source_language: detectedSourceLanguage,
+        target_language: targetLanguage,
+        character_count: text.length,
+        content_type: contentType || 'general',
         translation_service: 'google_translate'
-      }
+      });
+
+    return new Response(JSON.stringify({
+      translatedText: translation.translatedText,
+      sourceLanguage: detectedSourceLanguage,
+      targetLanguage,
+      cached: false
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        translatedText: translatedText,
-        sourceLanguage: detectedSourceLanguage,
-        targetLanguage: targetLanguage,
-        confidence: 0.95,
-        cached: false
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
-    );
-
   } catch (error) {
-    console.error('Translation error:', error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
-    );
+    console.error("Translation error:", error);
+    
+    return new Response(JSON.stringify({ 
+      error: error.message || "Translation failed",
+      fallbackText: "Translation unavailable"
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

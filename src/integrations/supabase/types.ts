@@ -157,6 +157,48 @@ export type Database = {
         }
         Relationships: []
       }
+      content_translations: {
+        Row: {
+          confidence_score: number | null
+          content_id: string | null
+          content_type: string | null
+          created_at: string
+          id: string
+          original_text: string
+          source_language: string
+          target_language: string
+          translated_text: string
+          translation_service: string | null
+          updated_at: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          content_id?: string | null
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          original_text: string
+          source_language?: string
+          target_language: string
+          translated_text: string
+          translation_service?: string | null
+          updated_at?: string
+        }
+        Update: {
+          confidence_score?: number | null
+          content_id?: string | null
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          original_text?: string
+          source_language?: string
+          target_language?: string
+          translated_text?: string
+          translation_service?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -1364,6 +1406,39 @@ export type Database = {
           is_rtl?: boolean | null
           name?: string
           native_name?: string
+        }
+        Relationships: []
+      }
+      localized_content: {
+        Row: {
+          content_key: string
+          content_text: string
+          content_type: string
+          created_at: string
+          id: string
+          language_code: string
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          content_key: string
+          content_text: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          language_code: string
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content_key?: string
+          content_text?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          language_code?: string
+          region?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2690,6 +2765,36 @@ export type Database = {
           },
         ]
       }
+      translation_usage_logs: {
+        Row: {
+          character_count: number
+          content_type: string | null
+          created_at: string
+          id: string
+          source_language: string
+          target_language: string
+          translation_service: string | null
+        }
+        Insert: {
+          character_count?: number
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          source_language: string
+          target_language: string
+          translation_service?: string | null
+        }
+        Update: {
+          character_count?: number
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          source_language?: string
+          target_language?: string
+          translation_service?: string | null
+        }
+        Relationships: []
+      }
       translations: {
         Row: {
           context: string | null
@@ -2866,6 +2971,42 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+        }
+        Relationships: []
+      }
+      user_language_preferences: {
+        Row: {
+          auto_detect_language: boolean
+          browser_languages: Json | null
+          created_at: string
+          detected_language: string | null
+          detected_region: string | null
+          id: string
+          preferred_language: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_detect_language?: boolean
+          browser_languages?: Json | null
+          created_at?: string
+          detected_language?: string | null
+          detected_region?: string | null
+          id?: string
+          preferred_language?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_detect_language?: boolean
+          browser_languages?: Json | null
+          created_at?: string
+          detected_language?: string | null
+          detected_region?: string | null
+          id?: string
+          preferred_language?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -3070,6 +3211,14 @@ export type Database = {
         }
         Returns: string
       }
+      detect_and_save_user_language: {
+        Args: {
+          p_user_id: string
+          p_accept_language?: string
+          p_detected_region?: string
+        }
+        Returns: string
+      }
       detect_browser_language: {
         Args: { accept_language: string }
         Returns: string
@@ -3123,6 +3272,10 @@ export type Database = {
       }
       generate_verification_token: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_localized_content: {
+        Args: { p_content_key: string; p_language_code?: string }
         Returns: string
       }
       get_user_language: {
