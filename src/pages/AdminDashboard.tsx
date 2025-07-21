@@ -17,12 +17,12 @@ import {
   UserCheck,
   Settings
 } from 'lucide-react';
-import { AdminSecurityPanel } from '@/components/admin/AdminSecurityPanel';
+import AdminSecurityPanel from '@/components/admin/AdminSecurityPanel';
+import { AutomatedMessageMonitoring } from '@/components/admin/AutomatedMessageMonitoring';
 import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { ComprehensivePlatformDashboard } from '@/components/admin/ComprehensivePlatformDashboard';
-import { AutomatedMessageMonitoring } from '@/components/admin/AutomatedMessageMonitoring';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -398,7 +398,6 @@ export default function AdminDashboard() {
           <TabsContent value="automated">
             <AutomatedMessageMonitoring />
           </TabsContent>
-
           <TabsContent value="users">
             <UserManagement />
           </TabsContent>

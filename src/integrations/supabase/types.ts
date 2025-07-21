@@ -283,6 +283,42 @@ export type Database = {
         }
         Relationships: []
       }
+      data_classification: {
+        Row: {
+          classification_level: string
+          column_name: string
+          compliance_tags: string[] | null
+          created_at: string
+          encryption_required: boolean
+          id: string
+          retention_period: unknown | null
+          table_name: string
+          updated_at: string
+        }
+        Insert: {
+          classification_level: string
+          column_name: string
+          compliance_tags?: string[] | null
+          created_at?: string
+          encryption_required?: boolean
+          id?: string
+          retention_period?: unknown | null
+          table_name: string
+          updated_at?: string
+        }
+        Update: {
+          classification_level?: string
+          column_name?: string
+          compliance_tags?: string[] | null
+          created_at?: string
+          encryption_required?: boolean
+          id?: string
+          retention_period?: unknown | null
+          table_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery_checkpoints: {
         Row: {
           checkpoint_location: string | null
@@ -624,6 +660,93 @@ export type Database = {
           user_type?: string
           verification_token?: string
           verified_at?: string | null
+        }
+        Relationships: []
+      }
+      encryption_audit_logs: {
+        Row: {
+          client_ip: unknown | null
+          created_at: string
+          error_message: string | null
+          id: string
+          key_id: string | null
+          operation_metadata: Json | null
+          operation_type: string
+          performed_by: string | null
+          record_id: string | null
+          success: boolean
+          table_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          client_ip?: unknown | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          key_id?: string | null
+          operation_metadata?: Json | null
+          operation_type: string
+          performed_by?: string | null
+          record_id?: string | null
+          success: boolean
+          table_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          client_ip?: unknown | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          key_id?: string | null
+          operation_metadata?: Json | null
+          operation_type?: string
+          performed_by?: string | null
+          record_id?: string | null
+          success?: boolean
+          table_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      encryption_keys: {
+        Row: {
+          algorithm: string
+          created_at: string
+          created_by: string | null
+          encrypted_key_data: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          key_id: string
+          key_purpose: string
+          last_used_at: string | null
+          usage_count: number
+        }
+        Insert: {
+          algorithm?: string
+          created_at?: string
+          created_by?: string | null
+          encrypted_key_data: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          key_id: string
+          key_purpose: string
+          last_used_at?: string | null
+          usage_count?: number
+        }
+        Update: {
+          algorithm?: string
+          created_at?: string
+          created_by?: string | null
+          encrypted_key_data?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          key_id?: string
+          key_purpose?: string
+          last_used_at?: string | null
+          usage_count?: number
         }
         Relationships: []
       }
@@ -1982,11 +2105,15 @@ export type Database = {
           bio: string | null
           created_at: string
           detect_language_automatically: boolean | null
+          encrypted_personal_data: Json | null
+          encryption_key_id: string | null
           first_name: string | null
           id: string
           is_active: boolean | null
+          is_encrypted: boolean | null
           kyc_level: string | null
           kyc_status: string | null
+          last_encrypted_at: string | null
           last_name: string | null
           location: Json | null
           phone_number: string | null
@@ -2012,11 +2139,15 @@ export type Database = {
           bio?: string | null
           created_at?: string
           detect_language_automatically?: boolean | null
+          encrypted_personal_data?: Json | null
+          encryption_key_id?: string | null
           first_name?: string | null
           id?: string
           is_active?: boolean | null
+          is_encrypted?: boolean | null
           kyc_level?: string | null
           kyc_status?: string | null
+          last_encrypted_at?: string | null
           last_name?: string | null
           location?: Json | null
           phone_number?: string | null
@@ -2042,11 +2173,15 @@ export type Database = {
           bio?: string | null
           created_at?: string
           detect_language_automatically?: boolean | null
+          encrypted_personal_data?: Json | null
+          encryption_key_id?: string | null
           first_name?: string | null
           id?: string
           is_active?: boolean | null
+          is_encrypted?: boolean | null
           kyc_level?: string | null
           kyc_status?: string | null
+          last_encrypted_at?: string | null
           last_name?: string | null
           location?: Json | null
           phone_number?: string | null
@@ -2206,6 +2341,42 @@ export type Database = {
           target_resource?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_policies: {
+        Row: {
+          compliance_frameworks: string[] | null
+          created_at: string
+          id: string
+          implementation_status: string
+          policy_description: string
+          policy_name: string
+          policy_type: string
+          priority_level: string
+          updated_at: string
+        }
+        Insert: {
+          compliance_frameworks?: string[] | null
+          created_at?: string
+          id?: string
+          implementation_status?: string
+          policy_description: string
+          policy_name: string
+          policy_type: string
+          priority_level?: string
+          updated_at?: string
+        }
+        Update: {
+          compliance_frameworks?: string[] | null
+          created_at?: string
+          id?: string
+          implementation_status?: string
+          policy_description?: string
+          policy_name?: string
+          policy_type?: string
+          priority_level?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2442,6 +2613,8 @@ export type Database = {
           auto_release_date: string | null
           created_at: string
           currency: string | null
+          encrypted_transaction_data: Json | null
+          encryption_key_id: string | null
           escrow_locked_at: string | null
           escrow_release_reason: string | null
           escrow_released_at: string | null
@@ -2450,6 +2623,8 @@ export type Database = {
           gateway_response: Json | null
           gateway_transaction_id: string | null
           id: string
+          is_encrypted: boolean | null
+          last_encrypted_at: string | null
           metadata: Json | null
           order_id: string | null
           payment_method: string | null
@@ -2462,6 +2637,8 @@ export type Database = {
           auto_release_date?: string | null
           created_at?: string
           currency?: string | null
+          encrypted_transaction_data?: Json | null
+          encryption_key_id?: string | null
           escrow_locked_at?: string | null
           escrow_release_reason?: string | null
           escrow_released_at?: string | null
@@ -2470,6 +2647,8 @@ export type Database = {
           gateway_response?: Json | null
           gateway_transaction_id?: string | null
           id?: string
+          is_encrypted?: boolean | null
+          last_encrypted_at?: string | null
           metadata?: Json | null
           order_id?: string | null
           payment_method?: string | null
@@ -2482,6 +2661,8 @@ export type Database = {
           auto_release_date?: string | null
           created_at?: string
           currency?: string | null
+          encrypted_transaction_data?: Json | null
+          encryption_key_id?: string | null
           escrow_locked_at?: string | null
           escrow_release_reason?: string | null
           escrow_released_at?: string | null
@@ -2490,6 +2671,8 @@ export type Database = {
           gateway_response?: Json | null
           gateway_transaction_id?: string | null
           id?: string
+          is_encrypted?: boolean | null
+          last_encrypted_at?: string | null
           metadata?: Json | null
           order_id?: string | null
           payment_method?: string | null
@@ -2842,6 +3025,17 @@ export type Database = {
         Args: { p_user_id: string; p_transaction_amount?: number }
         Returns: boolean
       }
+      check_encryption_compliance: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          table_name: string
+          column_name: string
+          classification_level: string
+          encryption_required: boolean
+          current_encryption_status: string
+          compliance_status: string
+        }[]
+      }
       cleanup_new_arrival_tags: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2890,6 +3084,10 @@ export type Database = {
           p_transaction_amount: number
           p_timeframe?: unknown
         }
+        Returns: Json
+      }
+      encrypt_sensitive_data: {
+        Args: { p_data: Json; p_key_purpose?: string }
         Returns: Json
       }
       expire_kyc_verifications: {

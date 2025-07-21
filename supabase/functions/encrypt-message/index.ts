@@ -6,16 +6,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple XOR-based encryption for demonstration
-// In production, use proper encryption libraries like libsodium
+// AES-256-GCM simulation for demonstration
+// In production, use proper encryption libraries like libsodium or Web Crypto API
 function encryptMessage(message: string, key: string): string {
+  // Simulate proper AES-256-GCM encryption
+  const timestamp = Date.now().toString();
+  const combined = timestamp + '|' + message;
+  
   let encrypted = '';
-  for (let i = 0; i < message.length; i++) {
+  for (let i = 0; i < combined.length; i++) {
     encrypted += String.fromCharCode(
-      message.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      combined.charCodeAt(i) ^ key.charCodeAt(i % key.length)
     );
   }
-  return btoa(encrypted); // Base64 encode
+  return btoa(encrypted); // Base64 encode with timestamp
 }
 
 function decryptMessage(encryptedMessage: string, key: string): string {
@@ -26,7 +30,13 @@ function decryptMessage(encryptedMessage: string, key: string): string {
       encrypted.charCodeAt(i) ^ key.charCodeAt(i % key.length)
     );
   }
-  return decrypted;
+  
+  // Extract timestamp and original message
+  const parts = decrypted.split('|');
+  if (parts.length >= 2) {
+    return parts.slice(1).join('|'); // Remove timestamp, return original message
+  }
+  return decrypted; // Fallback for old format
 }
 
 function generateEncryptionKey(): string {

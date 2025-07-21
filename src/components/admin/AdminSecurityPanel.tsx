@@ -1,71 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Shield, 
-  AlertTriangle, 
-  Users, 
-  Ban,
-  Eye,
-  Search,
-  Filter,
-  UserX,
-  FileText,
-  Clock,
-  CheckCircle,
-  XCircle
-} from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Shield, Key, AlertTriangle, Lock, Eye, RotateCcw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-interface SecurityAuditLog {
+interface EncryptionKey {
   id: string;
-  event_type: string;
-  severity: string;
-  user_id?: string;
-  admin_id?: string;
-  target_resource?: string;
-  target_id?: string;
-  action_performed: string;
-  metadata?: any;
+  key_id: string;
+  algorithm: string;
+  key_purpose: string;
   created_at: string;
-}
-
-interface UserRestriction {
-  id: string;
-  user_id: string;
-  restriction_type: string;
-  reason: string;
-  restricted_by?: string;
-  expires_at?: string;
+  expires_at: string | null;
   is_active: boolean;
-  created_at: string;
+  usage_count: number;
+  last_used_at: string | null;
 }
 
-interface FraudReport {
+interface SecurityPolicy {
   id: string;
-  reported_user_id: string;
-  reporter_id?: string;
-  report_type: string;
-  description: string;
-  evidence?: any;
-  status: string;
-  assigned_to?: string;
-  resolution_notes?: string;
-  created_at: string;
-  updated_at: string;
+  policy_name: string;
+  policy_description: string;
+  policy_type: string;
+  implementation_status: string;
+  priority_level: string;
+  compliance_frameworks: string[];
 }
 
-export const AdminSecurityPanel: React.FC = () => {
-  const [auditLogs, setAuditLogs] = useState<SecurityAuditLog[]>([]);
-  const [userRestrictions, setUserRestrictions] = useState<UserRestriction[]>([]);
-  const [fraudReports, setFraudReports] = useState<FraudReport[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [severityFilter, setSeverityFilter] = useState('all');
+interface ComplianceCheck {
+  table_name: string;
+  column_name: string;
+  classification_level: string;
+  encryption_required: boolean;
+  current_encryption_status: string;
+  compliance_status: string;
+}
+
+export default function AdminSecurityPanel() {
+  const [encryptionKeys, setEncryptionKeys] = useState<EncryptionKey[]>([]);
+  const [securityPolicies, setSecurityPolicies] = useState<SecurityPolicy[]>([]);
+  const [complianceChecks, setComplianceChecks] = useState<ComplianceCheck[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -75,142 +51,133 @@ export const AdminSecurityPanel: React.FC = () => {
 
   const fetchSecurityData = async () => {
     try {
-      // Fetch audit logs
-      const { data: logsData, error: logsError } = await supabase
-        .from('security_audit_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
+      setLoading(true);
 
-      if (logsError) throw logsError;
-
-      // Fetch user restrictions
-      const { data: restrictionsData, error: restrictionsError } = await supabase
-        .from('user_restrictions')
-        .select('*')
+      // Fetch encryption keys (metadata only)
+      const { data: keys, error: keysError } = await supabase
+        .from('encryption_keys')
+        .select('id, key_id, algorithm, key_purpose, created_at, expires_at, is_active, usage_count, last_used_at')
         .order('created_at', { ascending: false });
 
-      if (restrictionsError) throw restrictionsError;
+      if (keysError) throw keysError;
 
-      // Fetch fraud reports
-      const { data: reportsData, error: reportsError } = await supabase
-        .from('fraud_reports')
+      // Fetch security policies
+      const { data: policies, error: policiesError } = await supabase
+        .from('security_policies')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('priority_level', { ascending: false });
 
-      if (reportsError) throw reportsError;
+      if (policiesError) throw policiesError;
 
-      setAuditLogs(logsData || []);
-      setUserRestrictions(restrictionsData || []);
-      setFraudReports(reportsData || []);
-    } catch (error) {
-      console.error('Error fetching security data:', error);
+      // Fetch compliance data
+      const { data: compliance, error: complianceError } = await supabase
+        .rpc('check_encryption_compliance');
+
+      if (complianceError) throw complianceError;
+
+      setEncryptionKeys(keys || []);
+      setSecurityPolicies(policies || []);
+      setComplianceChecks(compliance || []);
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to load security data.",
-        variant: "destructive"
+        title: "Error loading security data",
+        description: error.message,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBlockUser = async (userId: string, reason: string) => {
+  const generateNewKey = async (purpose: string) => {
     try {
+      const keyId = `${purpose}_${Date.now()}`;
+      const keyData = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
       const { error } = await supabase
-        .from('user_restrictions')
+        .from('encryption_keys')
         .insert({
-          user_id: userId,
-          restriction_type: 'blocked',
-          reason: reason,
-          restricted_by: (await supabase.auth.getUser()).data.user?.id
+          key_id: keyId,
+          encrypted_key_data: keyData,
+          key_purpose: purpose,
+          algorithm: 'AES-256-GCM'
         });
 
       if (error) throw error;
 
-      // Log the security action
-      await supabase.rpc('log_security_event', {
-        p_event_type: 'user_blocked',
-        p_severity: 'warning',
-        p_user_id: userId,
-        p_action_performed: `User blocked: ${reason}`,
-        p_metadata: { reason }
-      });
-
       toast({
-        title: "User Blocked",
-        description: "User has been successfully blocked.",
+        title: "Encryption key generated",
+        description: `New ${purpose} key created successfully`,
       });
 
       fetchSecurityData();
-    } catch (error) {
-      console.error('Error blocking user:', error);
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to block user.",
-        variant: "destructive"
+        title: "Error generating key",
+        description: error.message,
+        variant: "destructive",
       });
     }
   };
 
-  const handleResolveFraudReport = async (reportId: string, resolution: string) => {
+  const deactivateKey = async (keyId: string) => {
     try {
       const { error } = await supabase
-        .from('fraud_reports')
-        .update({
-          status: 'resolved',
-          resolution_notes: resolution,
-          assigned_to: (await supabase.auth.getUser()).data.user?.id
-        })
-        .eq('id', reportId);
+        .from('encryption_keys')
+        .update({ is_active: false })
+        .eq('id', keyId);
 
       if (error) throw error;
 
       toast({
-        title: "Report Resolved",
-        description: "Fraud report has been resolved.",
+        title: "Key deactivated",
+        description: "Encryption key has been safely deactivated",
       });
 
       fetchSecurityData();
-    } catch (error) {
-      console.error('Error resolving fraud report:', error);
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to resolve fraud report.",
-        variant: "destructive"
+        title: "Error deactivating key",
+        description: error.message,
+        variant: "destructive",
       });
     }
   };
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-      case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'info': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'critical': return 'destructive';
+      case 'high': return 'destructive';
+      case 'medium': return 'default';
+      case 'low': return 'secondary';
+      default: return 'default';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'investigating': return 'bg-blue-100 text-blue-800';
-      case 'resolved': return 'bg-green-100 text-green-800';
-      case 'dismissed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'implemented': return 'default';
+      case 'pending': return 'destructive';
+      case 'review_required': return 'secondary';
+      default: return 'default';
     }
   };
 
-  const filteredLogs = auditLogs.filter(log => {
-    const matchesSearch = log.action_performed.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         log.event_type.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSeverity = severityFilter === 'all' || log.severity === severityFilter;
-    return matchesSearch && matchesSeverity;
-  });
+  const getComplianceColor = (status: string) => {
+    switch (status) {
+      case 'COMPLIANT': return 'default';
+      case 'REQUIRES_REVIEW': return 'destructive';
+      case 'NOT_ENCRYPTED': return 'destructive';
+      case 'PARTIALLY_ENCRYPTED': return 'secondary';
+      default: return 'default';
+    }
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -218,162 +185,157 @@ export const AdminSecurityPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Security Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Security Events</p>
-                <p className="text-2xl font-bold">{auditLogs.length}</p>
-              </div>
-              <Shield className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Restrictions</p>
-                <p className="text-2xl font-bold">{userRestrictions.filter(r => r.is_active).length}</p>
-              </div>
-              <UserX className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Fraud Reports</p>
-                <p className="text-2xl font-bold">{fraudReports.filter(r => r.status === 'pending').length}</p>
-              </div>
-              <AlertTriangle className="w-8 h-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Critical Alerts</p>
-                <p className="text-2xl font-bold">{auditLogs.filter(l => l.severity === 'critical').length}</p>
-              </div>
-              <AlertTriangle className="w-8 h-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex items-center gap-2">
+        <Shield className="h-6 w-6" />
+        <h2 className="text-2xl font-bold">Security Administration</h2>
       </div>
 
-      <Tabs defaultValue="audit-logs" className="space-y-6">
+      <Tabs defaultValue="encryption" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="audit-logs">Audit Logs</TabsTrigger>
-          <TabsTrigger value="restrictions">User Restrictions</TabsTrigger>
-          <TabsTrigger value="fraud-reports">Fraud Reports</TabsTrigger>
+          <TabsTrigger value="encryption">Encryption Management</TabsTrigger>
+          <TabsTrigger value="policies">Security Policies</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance Status</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="audit-logs">
+        <TabsContent value="encryption" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Keys</CardTitle>
+                <Key className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {encryptionKeys.filter(k => k.is_active).length}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Usage</CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {encryptionKeys.reduce((sum, k) => sum + k.usage_count, 0)}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Expired Keys</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {encryptionKeys.filter(k => k.expires_at && new Date(k.expires_at) < new Date()).length}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Key Types</CardTitle>
+                <Lock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {new Set(encryptionKeys.map(k => k.key_purpose)).size}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>Security Audit Logs</CardTitle>
-                <div className="flex space-x-2">
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder="Search logs..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-64"
-                    />
-                  </div>
-                  <select
-                    value={severityFilter}
-                    onChange={(e) => setSeverityFilter(e.target.value)}
-                    className="px-3 py-2 border rounded-md"
-                  >
-                    <option value="all">All Severities</option>
-                    <option value="critical">Critical</option>
-                    <option value="warning">Warning</option>
-                    <option value="info">Info</option>
-                  </select>
+              <CardTitle>Encryption Keys</CardTitle>
+              <CardDescription>
+                Manage encryption keys for different data types
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex gap-2 mb-4">
+                  <Button onClick={() => generateNewKey('profile_data')} size="sm">
+                    <Key className="h-4 w-4 mr-2" />
+                    Generate Profile Key
+                  </Button>
+                  <Button onClick={() => generateNewKey('transaction_data')} size="sm">
+                    <Key className="h-4 w-4 mr-2" />
+                    Generate Transaction Key
+                  </Button>
+                  <Button onClick={() => generateNewKey('message_data')} size="sm">
+                    <Key className="h-4 w-4 mr-2" />
+                    Generate Message Key
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  {encryptionKeys.map((key) => (
+                    <div key={key.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <div className="font-medium">{key.key_id}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {key.key_purpose} • {key.algorithm} • Used {key.usage_count} times
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={key.is_active ? "default" : "secondary"}>
+                          {key.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                        {key.is_active && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deactivateKey(key.id)}
+                          >
+                            <RotateCcw className="h-4 w-4 mr-1" />
+                            Deactivate
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {filteredLogs.map((log) => (
-                  <div key={log.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold">{log.event_type}</h3>
-                        <p className="text-sm text-muted-foreground">{log.action_performed}</p>
-                      </div>
-                      <Badge className={getSeverityColor(log.severity)}>
-                        {log.severity}
-                      </Badge>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium">Resource:</span> {log.target_resource || 'N/A'}
-                      </div>
-                      <div>
-                        <span className="font-medium">User ID:</span> {log.user_id?.slice(0, 8) || 'N/A'}...
-                      </div>
-                      <div>
-                        <span className="font-medium">Admin ID:</span> {log.admin_id?.slice(0, 8) || 'N/A'}...
-                      </div>
-                      <div>
-                        <span className="font-medium">Time:</span> {new Date(log.created_at).toLocaleString()}
-                      </div>
-                    </div>
-
-                    {log.metadata && (
-                      <div className="mt-2 p-2 bg-muted rounded text-xs">
-                        <strong>Metadata:</strong> {JSON.stringify(log.metadata, null, 2)}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="restrictions">
+        <TabsContent value="policies" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>User Restrictions</CardTitle>
+              <CardTitle>Security Policies</CardTitle>
+              <CardDescription>
+                Review and manage security policy implementation status
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {userRestrictions.map((restriction) => (
-                  <div key={restriction.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold capitalize">{restriction.restriction_type}</h3>
-                        <p className="text-sm text-muted-foreground">{restriction.reason}</p>
+                {securityPolicies.map((policy) => (
+                  <div key={policy.id} className="p-4 border rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-medium">{policy.policy_name}</h3>
+                      <div className="flex gap-2">
+                        <Badge variant={getPriorityColor(policy.priority_level)}>
+                          {policy.priority_level}
+                        </Badge>
+                        <Badge variant={getStatusColor(policy.implementation_status)}>
+                          {policy.implementation_status}
+                        </Badge>
                       </div>
-                      <Badge variant={restriction.is_active ? "destructive" : "secondary"}>
-                        {restriction.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium">User ID:</span> {restriction.user_id.slice(0, 8)}...
-                      </div>
-                      <div>
-                        <span className="font-medium">Expires:</span> {restriction.expires_at ? new Date(restriction.expires_at).toLocaleDateString() : 'Never'}
-                      </div>
-                      <div>
-                        <span className="font-medium">Created:</span> {new Date(restriction.created_at).toLocaleDateString()}
-                      </div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {policy.policy_description}
+                    </p>
+                    <div className="flex gap-1">
+                      {policy.compliance_frameworks.map((framework) => (
+                        <Badge key={framework} variant="outline" className="text-xs">
+                          {framework}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -382,62 +344,35 @@ export const AdminSecurityPanel: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="fraud-reports">
+        <TabsContent value="compliance" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Fraud Reports</CardTitle>
+              <CardTitle>Data Classification & Compliance</CardTitle>
+              <CardDescription>
+                Review encryption compliance for sensitive data fields
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {fraudReports.map((report) => (
-                  <div key={report.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold capitalize">{report.report_type.replace('_', ' ')}</h3>
-                        <p className="text-sm text-muted-foreground">{report.description}</p>
+              <div className="space-y-2">
+                {complianceChecks.map((check, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">
+                        {check.table_name}.{check.column_name}
                       </div>
-                      <Badge className={getStatusColor(report.status)}>
-                        {report.status}
+                      <div className="text-sm text-muted-foreground">
+                        Classification: {check.classification_level}
+                        {check.encryption_required && " • Encryption Required"}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getComplianceColor(check.current_encryption_status)}>
+                        {check.current_encryption_status}
+                      </Badge>
+                      <Badge variant={getComplianceColor(check.compliance_status)}>
+                        {check.compliance_status}
                       </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-4">
-                      <div>
-                        <span className="font-medium">Reported User:</span> {report.reported_user_id.slice(0, 8)}...
-                      </div>
-                      <div>
-                        <span className="font-medium">Reporter:</span> {report.reporter_id?.slice(0, 8) || 'Anonymous'}...
-                      </div>
-                      <div>
-                        <span className="font-medium">Created:</span> {new Date(report.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-
-                    {report.status === 'pending' && (
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleBlockUser(report.reported_user_id, `Fraud report: ${report.description}`)}
-                        >
-                          <Ban className="w-4 h-4 mr-2" />
-                          Block User
-                        </Button>
-                        <Button 
-                          size="sm"
-                          onClick={() => handleResolveFraudReport(report.id, 'Investigated and resolved')}
-                        >
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Resolve
-                        </Button>
-                      </div>
-                    )}
-
-                    {report.resolution_notes && (
-                      <div className="mt-2 p-2 bg-green-50 rounded text-sm">
-                        <strong>Resolution:</strong> {report.resolution_notes}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -447,4 +382,4 @@ export const AdminSecurityPanel: React.FC = () => {
       </Tabs>
     </div>
   );
-};
+}
