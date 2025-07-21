@@ -79,11 +79,18 @@ export function FeaturesPage() {
             We've built the safest, easiest, and most reliable way to trade in your community. 
             Here's what makes us different.
           </p>
-          <Link to="/auth">
-            <Button size="xl" variant="hero" className="text-lg px-8 py-4">
-              🚀 Start Trading Now
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/">
+              <Button variant="outline" size="lg" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+                ← Back to Home
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button size="xl" variant="hero" className="text-lg px-8 py-4">
+                🚀 Start Trading Now
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
