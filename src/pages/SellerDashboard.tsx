@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Header } from "@/components/marketplace/Header";
 import { StockAlerts } from "@/components/marketplace/StockAlerts";
 import { EnhancedAddProduct } from "@/components/marketplace/EnhancedAddProduct";
+import { SalesAnalytics } from "@/components/seller/SalesAnalytics";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -88,6 +89,7 @@ const recentSales = [
 
 export default function SellerDashboard() {
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [products, setProducts] = useState(currentProducts);
   const [stockAlertCount, setStockAlertCount] = useState(0);
   const { toast } = useToast();
@@ -229,6 +231,13 @@ export default function SellerDashboard() {
             />
           )}
 
+          {/* Sales Analytics */}
+          {showAnalytics && (
+            <div className="mb-8">
+              <SalesAnalytics onClose={() => setShowAnalytics(false)} />
+            </div>
+          )}
+
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Current Products */}
             <div className="lg:col-span-2 space-y-6">
@@ -304,7 +313,11 @@ export default function SellerDashboard() {
                       Auto
                     </Badge>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start h-12"
+                    onClick={() => setShowAnalytics(!showAnalytics)}
+                  >
                     <BarChart3 className="h-4 w-4 mr-3" />
                     View Analytics
                   </Button>
@@ -312,7 +325,11 @@ export default function SellerDashboard() {
                     <MessageCircle className="h-4 w-4 mr-3" />
                     Messages (5)
                   </Button>
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start h-12"
+                    onClick={() => setShowAnalytics(!showAnalytics)}
+                  >
                     <TrendingUp className="h-4 w-4 mr-3" />
                     Sales Reports
                   </Button>
