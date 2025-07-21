@@ -90,9 +90,9 @@ export function FeaturedProducts() {
                 <p className="text-xs text-muted-foreground mb-3">{product.location}</p>
                 
                 <div className="flex items-center gap-1 mb-3">
-                  <Star className="h-4 w-4 fill-accent text-accent" />
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-medium">{product.rating}</span>
-                  <span className="text-xs text-muted-foreground">({product.reviews})</span>
+                  <span className="text-xs text-muted-foreground">({product.reviews} reviews)</span>
                 </div>
                 
                 <div className="flex items-center justify-between">

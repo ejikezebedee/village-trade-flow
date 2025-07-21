@@ -174,6 +174,103 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          feedback_type: string
+          helpful_count: number | null
+          id: string
+          is_anonymous: boolean | null
+          order_id: string | null
+          rating: number
+          reviewee_id: string | null
+          reviewer_id: string | null
+          reviewer_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          feedback_type: string
+          helpful_count?: number | null
+          id?: string
+          is_anonymous?: boolean | null
+          order_id?: string | null
+          rating: number
+          reviewee_id?: string | null
+          reviewer_id?: string | null
+          reviewer_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          feedback_type?: string
+          helpful_count?: number | null
+          id?: string
+          is_anonymous?: boolean | null
+          order_id?: string | null
+          rating?: number
+          reviewee_id?: string | null
+          reviewer_id?: string | null
+          reviewer_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_prompts: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_completed: boolean | null
+          last_reminded_at: string | null
+          order_id: string | null
+          prompt_type: string
+          reminded_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_reminded_at?: string | null
+          order_id?: string | null
+          prompt_type: string
+          reminded_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_reminded_at?: string | null
+          order_id?: string | null
+          prompt_type?: string
+          reminded_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_prompts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachments: Json | null
