@@ -271,12 +271,56 @@ export type Database = {
           },
         ]
       }
+      fraud_reports: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          description: string
+          evidence: Json | null
+          id: string
+          report_type: string
+          reported_user_id: string
+          reporter_id: string | null
+          resolution_notes: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description: string
+          evidence?: Json | null
+          id?: string
+          report_type: string
+          reported_user_id: string
+          reporter_id?: string | null
+          resolution_notes?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description?: string
+          evidence?: Json | null
+          id?: string
+          report_type?: string
+          reported_user_id?: string
+          reporter_id?: string | null
+          resolution_notes?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           attachments: Json | null
           conversation_id: string
           created_at: string
+          encryption_key_id: string | null
           id: string
+          is_encrypted: boolean | null
           is_read: boolean | null
           message_text: string | null
           message_type: string | null
@@ -289,7 +333,9 @@ export type Database = {
           attachments?: Json | null
           conversation_id: string
           created_at?: string
+          encryption_key_id?: string | null
           id?: string
+          is_encrypted?: boolean | null
           is_read?: boolean | null
           message_text?: string | null
           message_type?: string | null
@@ -302,7 +348,9 @@ export type Database = {
           attachments?: Json | null
           conversation_id?: string
           created_at?: string
+          encryption_key_id?: string | null
           id?: string
+          is_encrypted?: boolean | null
           is_read?: boolean | null
           message_text?: string | null
           message_type?: string | null
@@ -686,6 +734,7 @@ export type Database = {
           total_ratings: number | null
           updated_at: string
           user_id: string
+          user_role: Database["public"]["Enums"]["user_role"] | null
           user_type: string
           verification_documents: Json | null
           verification_status: string | null
@@ -704,6 +753,7 @@ export type Database = {
           total_ratings?: number | null
           updated_at?: string
           user_id: string
+          user_role?: Database["public"]["Enums"]["user_role"] | null
           user_type: string
           verification_documents?: Json | null
           verification_status?: string | null
@@ -722,6 +772,7 @@ export type Database = {
           total_ratings?: number | null
           updated_at?: string
           user_id?: string
+          user_role?: Database["public"]["Enums"]["user_role"] | null
           user_type?: string
           verification_documents?: Json | null
           verification_status?: string | null
@@ -768,6 +819,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_audit_logs: {
+        Row: {
+          action_performed: string
+          admin_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          severity: string
+          target_id: string | null
+          target_resource: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_performed: string
+          admin_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          severity?: string
+          target_id?: string | null
+          target_resource?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_performed?: string
+          admin_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          severity?: string
+          target_id?: string | null
+          target_resource?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       stock_alerts: {
         Row: {
@@ -891,6 +987,42 @@ export type Database = {
           },
         ]
       }
+      user_restrictions: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          reason: string
+          restricted_by: string | null
+          restriction_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason: string
+          restricted_by?: string | null
+          restriction_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string
+          restricted_by?: string | null
+          restriction_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -922,9 +1054,26 @@ export type Database = {
         Args: { order_uuid: string; stage: string }
         Returns: string
       }
+      is_admin: {
+        Args: { user_uuid?: string }
+        Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          p_event_type: string
+          p_severity?: string
+          p_user_id?: string
+          p_admin_id?: string
+          p_target_resource?: string
+          p_target_id?: string
+          p_action_performed?: string
+          p_metadata?: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1051,6 +1200,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

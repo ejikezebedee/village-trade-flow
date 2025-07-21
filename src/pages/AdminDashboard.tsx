@@ -13,8 +13,13 @@ import {
   AlertCircle,
   Shield,
   Search,
-  Filter
+  Filter,
+  UserCheck,
+  Settings
 } from 'lucide-react';
+import { AdminSecurityPanel } from '@/components/admin/AdminSecurityPanel';
+import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
+import { UserManagement } from '@/components/admin/UserManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -227,6 +232,8 @@ export default function AdminDashboard() {
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -368,20 +375,15 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="messages">
-            <Card>
-              <CardHeader>
-                <CardTitle>Message Monitoring</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <MessageCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Message System Coming Soon</h3>
-                  <p className="text-muted-foreground">
-                    This section will display all communication between buyers and sellers for monitoring purposes.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <MessageMonitoring />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="security">
+            <AdminSecurityPanel />
           </TabsContent>
         </Tabs>
       </div>
