@@ -8,53 +8,54 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Marketplace color palette */
+    /* Apple-inspired minimalist palette */
     --background: 0 0% 100%;
-    --foreground: 215 25% 27%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Trust & Professional Blues */
-    --primary: 217 91% 60%;
+    /* Apple-style blues */
+    --primary: 212 100% 47%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 217 91% 75%;
-    --primary-dark: 217 91% 45%;
+    --primary-light: 212 100% 60%;
+    --primary-dark: 212 100% 35%;
 
-    /* Success & Growth Greens */
-    --secondary: 142 71% 45%;
+    /* Apple-style greens */
+    --secondary: 142 76% 36%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-light: 142 71% 60%;
+    --secondary-light: 142 76% 45%;
 
-    /* Warm Marketplace Orange */
-    --accent: 25 95% 53%;
+    /* Apple-style orange */
+    --accent: 28 100% 52%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 25 95% 68%;
+    --accent-light: 28 100% 60%;
 
-    /* Neutral tones */
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Apple-style grays */
+    --muted: 0 0% 98%;
+    --muted-foreground: 0 0% 45%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --border: 0 0% 93%;
+    --input: 0 0% 95%;
+    --ring: 212 100% 47%;
 
-    /* Gradients */
+    /* Apple-style gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
     --gradient-success: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
 
-    /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.1);
-    --shadow-card: 0 4px 12px -2px hsl(var(--foreground) / 0.05);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+    /* Apple-style shadows */
+    --shadow-elegant: 0 25px 50px -12px hsl(var(--foreground) / 0.08);
+    --shadow-card: 0 4px 25px -2px hsl(var(--foreground) / 0.04);
+    --shadow-glow: 0 0 0 1px hsl(var(--border));
+    --shadow-button: 0 1px 3px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.08);
 
     /* QR Code theme */
     --qr-primary: 215 25% 27%;
@@ -65,9 +66,10 @@ All colors MUST be HSL.
     --escrow-locked: 217 91% 60%;
     --escrow-released: 142 71% 45%;
 
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Apple-style animations */
+    --transition-smooth: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-spring: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-fade: opacity 0.15s ease-in-out;
 
     --radius: 0.5rem;
 
@@ -89,33 +91,33 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 212 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 142 76% 40%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 28 100% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 85% 65%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 212 100% 50%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -133,6 +135,48 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-medium;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .apple-glass {
+    background: hsl(var(--background) / 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .apple-button {
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-button);
+  }
+
+  .apple-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--foreground) / 0.15), 0 2px 4px hsl(var(--foreground) / 0.12);
+  }
+
+  .apple-button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-button);
+  }
+
+  .apple-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+
+  .apple-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elegant);
   }
 }

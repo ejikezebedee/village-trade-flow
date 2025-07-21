@@ -92,28 +92,28 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
 
   return (
     <Card 
-      className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer"
+      className="apple-card group overflow-hidden cursor-pointer"
       onClick={handleProductClick}
     >
       <div className="relative">
         <img 
           src={product.image}
           alt={product.name}
-          className="w-full h-48 sm:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
         />
         
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          <Badge className="bg-primary text-primary-foreground text-xs font-medium">
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
+          <Badge className="bg-background/90 text-foreground text-xs font-medium border-0">
             {product.category}
           </Badge>
           {product.featured && (
-            <Badge className="bg-accent text-accent-foreground text-xs font-medium">
-              ⭐ Featured
+            <Badge className="bg-primary text-primary-foreground text-xs font-medium border-0">
+              Featured
             </Badge>
           )}
           {!product.inStock && (
-            <Badge variant="destructive" className="text-xs font-medium">
+            <Badge variant="destructive" className="text-xs font-medium border-0">
               Out of Stock
             </Badge>
           )}
@@ -123,7 +123,7 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
         <Button
           size="sm"
           variant="ghost"
-          className={`absolute top-3 right-3 h-8 w-8 p-0 bg-background/80 hover:bg-background ${
+          className={`absolute top-4 right-4 h-9 w-9 p-0 apple-glass rounded-full ${
             isFavorited ? "text-red-500" : "text-muted-foreground"
           }`}
           onClick={handleFavorite}
@@ -133,22 +133,22 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
         </Button>
       </div>
       
-      <CardContent className="p-4 space-y-4">
+      <CardContent className="p-6 space-y-4">
         {/* Product Info */}
-        <div className="space-y-2">
-          <h3 className="font-semibold text-foreground text-lg leading-tight line-clamp-2">
+        <div className="space-y-3">
+          <h3 className="font-semibold text-foreground text-lg leading-tight tracking-tight">
             {product.name}
           </h3>
-          <p className="text-muted-foreground text-sm line-clamp-2">
+          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
             {product.description}
           </p>
         </div>
 
         {/* Price and Rating */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-primary text-xl">{product.price}</span>
+            <div className="flex items-baseline gap-2">
+              <span className="font-semibold text-foreground text-xl tracking-tight">{product.price}</span>
               {product.originalPrice && (
                 <span className="text-muted-foreground text-sm line-through">
                   {product.originalPrice}
@@ -157,18 +157,20 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
             </div>
           </div>
           
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-accent text-accent" />
-            <span className="text-sm font-medium text-foreground">{product.rating}</span>
+          <div className="flex items-center gap-1 bg-muted/50 px-2 py-1 rounded-full">
+            <Star className="h-3 w-3 fill-accent text-accent" />
+            <span className="text-xs font-medium text-foreground">{product.rating}</span>
             <span className="text-xs text-muted-foreground">({product.reviews})</span>
           </div>
         </div>
 
         {/* Seller Info */}
-        <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-xl">
           <Avatar className="h-8 w-8">
             <AvatarImage src={product.seller.avatar} alt={product.seller.name} />
-            <AvatarFallback>{product.seller.name.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+              {product.seller.name.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           
           <div className="flex-1 min-w-0">
@@ -188,28 +190,28 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
             </div>
           </div>
           
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 bg-accent/10 px-2 py-1 rounded-full">
             <Star className="h-3 w-3 fill-accent text-accent" />
             <span className="text-xs font-medium">{product.seller.rating}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3 pt-2">
           <Button 
             variant="outline" 
-            className="flex-1 h-11"
+            className="flex-1 h-11 apple-button font-medium"
             disabled={!product.inStock}
           >
-            💬 Contact Seller
+            Contact Seller
           </Button>
           <Button 
-            className="flex-1 h-11 font-semibold"
+            className="flex-1 h-11 apple-button font-medium bg-primary hover:bg-primary/90"
             disabled={!product.inStock}
             onClick={handleBuyNow}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            {product.inStock ? "🛒 Buy Now" : "❌ Out of Stock"}
+            {product.inStock ? "Buy Now" : "Out of Stock"}
           </Button>
         </div>
       </CardContent>

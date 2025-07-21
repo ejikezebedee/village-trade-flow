@@ -52,63 +52,69 @@ const products = [
 
 export function FeaturedProducts() {
   return (
-    <section className="py-16 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-2">
+    <section className="py-24 bg-background">
+      <div className="container mx-auto px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4 tracking-tight">
             Featured Products
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
             Discover quality products from rural communities. Each purchase supports local economies and sustainable practices.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <Card key={product.id} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products.map((product, index) => (
+            <Card 
+              key={product.id} 
+              className="apple-card group"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
               <div className="relative">
                 <img 
                   src={`https://images.unsplash.com/${product.image}?auto=format&fit=crop&w=400&h=300`}
                   alt={product.name}
-                  className="w-full h-48 object-cover rounded-t-lg"
+                  className="w-full h-56 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-500"
                 />
                 <Button
-                  size="icon"
+                  size="sm"
                   variant="ghost"
-                  className="absolute top-2 right-2 bg-background/80 hover:bg-background"
+                  className="absolute top-4 right-4 h-9 w-9 p-0 apple-glass rounded-full text-muted-foreground hover:text-red-500"
                 >
                   <Heart className="h-4 w-4" />
                 </Button>
-                <Badge className="absolute top-2 left-2 bg-primary">
+                <Badge className="absolute top-4 left-4 bg-background/90 text-foreground border-0 text-xs font-medium">
                   {product.category}
                 </Badge>
               </div>
               
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-foreground mb-1">{product.name}</h3>
-                <p className="text-sm text-muted-foreground mb-2">{product.seller}</p>
-                <p className="text-xs text-muted-foreground mb-3">{product.location}</p>
-                
-                <div className="flex items-center gap-1 mb-3">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium">{product.rating}</span>
-                  <span className="text-xs text-muted-foreground">({product.reviews} reviews)</span>
+              <CardContent className="p-6 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-foreground text-lg tracking-tight">{product.name}</h3>
+                  <p className="text-sm text-muted-foreground">{product.seller}</p>
+                  <p className="text-xs text-muted-foreground">{product.location}</p>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-primary">{product.price}</span>
-                  <Button size="sm" className="h-8">
-                    <ShoppingCart className="h-3 w-3 mr-1" />
-                    Add
-                  </Button>
+                  <div className="flex items-center gap-1 bg-muted/50 px-2 py-1 rounded-full">
+                    <Star className="h-3 w-3 fill-accent text-accent" />
+                    <span className="text-xs font-medium">{product.rating}</span>
+                    <span className="text-xs text-muted-foreground">({product.reviews})</span>
+                  </div>
+                  <span className="font-semibold text-foreground text-lg tracking-tight">{product.price}</span>
                 </div>
+                
+                <Button className="w-full h-11 apple-button font-medium bg-primary hover:bg-primary/90">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
         
-        <div className="text-center mt-8">
-          <Button variant="outline" size="lg" asChild>
+        <div className="text-center mt-12">
+          <Button variant="outline" size="lg" className="apple-button font-medium px-8" asChild>
             <a href="/products">View All Products</a>
           </Button>
         </div>
