@@ -69,6 +69,11 @@ const App = () => (
             <TwoFactorSettings />
           </ProtectedRoute>
         } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <BuyerDashboard />
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/buyer" element={
                 <ProtectedRoute requiredRole="buyer">
                   <BuyerDashboard />
