@@ -85,11 +85,7 @@ export default function DisputeManagement({ disputeId }: DisputeManagementProps)
     try {
       let query = supabase
         .from('disputes')
-        .select(`
-          *,
-          filed_by_profile:profiles!disputes_filed_by_fkey(first_name, last_name, user_type),
-          respondent_profile:profiles!disputes_respondent_id_fkey(first_name, last_name, user_type)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       // If not admin, only show user's disputes
@@ -100,7 +96,32 @@ export default function DisputeManagement({ disputeId }: DisputeManagementProps)
       const { data, error } = await query;
 
       if (error) throw error;
-      setDisputes(data || []);
+
+      // Fetch profile data separately
+      const disputesWithProfiles = await Promise.all(
+        (data || []).map(async (dispute) => {
+          const [filedByProfile, respondentProfile] = await Promise.all([
+            supabase
+              .from('profiles')
+              .select('first_name, last_name, user_type')
+              .eq('user_id', dispute.filed_by)
+              .single(),
+            supabase
+              .from('profiles')
+              .select('first_name, last_name, user_type')
+              .eq('user_id', dispute.respondent_id)
+              .single()
+          ]);
+
+          return {
+            ...dispute,
+            filed_by_profile: filedByProfile.data,
+            respondent_profile: respondentProfile.data
+          };
+        })
+      );
+
+      setDisputes(disputesWithProfiles);
     } catch (error) {
       console.error('Error fetching disputes:', error);
       toast({
@@ -118,16 +139,33 @@ export default function DisputeManagement({ disputeId }: DisputeManagementProps)
     try {
       const { data, error } = await supabase
         .from('disputes')
-        .select(`
-          *,
-          filed_by_profile:profiles!disputes_filed_by_fkey(first_name, last_name, user_type),
-          respondent_profile:profiles!disputes_respondent_id_fkey(first_name, last_name, user_type)
-        `)
+        .select('*')
         .eq('id', id)
         .single();
 
       if (error) throw error;
-      setSelectedDispute(data);
+
+      // Fetch profile data separately
+      const [filedByProfile, respondentProfile] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('first_name, last_name, user_type')
+          .eq('user_id', data.filed_by)
+          .single(),
+        supabase
+          .from('profiles')
+          .select('first_name, last_name, user_type')
+          .eq('user_id', data.respondent_id)
+          .single()
+      ]);
+
+      const disputeWithProfiles = {
+        ...data,
+        filed_by_profile: filedByProfile.data,
+        respondent_profile: respondentProfile.data
+      };
+
+      setSelectedDispute(disputeWithProfiles);
       setNewStatus(data.status);
       setResolutionNotes(data.resolution_notes || '');
       
