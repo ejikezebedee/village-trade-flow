@@ -100,6 +100,151 @@ export type Database = {
           },
         ]
       }
+      dispute_evidence: {
+        Row: {
+          created_at: string
+          description: string | null
+          dispute_id: string
+          evidence_type: string
+          file_url: string | null
+          id: string
+          metadata: Json | null
+          submitted_by: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          dispute_id: string
+          evidence_type: string
+          file_url?: string | null
+          id?: string
+          metadata?: Json | null
+          submitted_by: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          dispute_id?: string
+          evidence_type?: string
+          file_url?: string | null
+          id?: string
+          metadata?: Json | null
+          submitted_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_evidence_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispute_votes: {
+        Row: {
+          created_at: string
+          dispute_id: string
+          id: string
+          mediator_id: string
+          reasoning: string | null
+          vote: string
+        }
+        Insert: {
+          created_at?: string
+          dispute_id: string
+          id?: string
+          mediator_id: string
+          reasoning?: string | null
+          vote: string
+        }
+        Update: {
+          created_at?: string
+          dispute_id?: string
+          id?: string
+          mediator_id?: string
+          reasoning?: string | null
+          vote?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_votes_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_votes_mediator_id_fkey"
+            columns: ["mediator_id"]
+            isOneToOne: false
+            referencedRelation: "mediators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      disputes: {
+        Row: {
+          assigned_mediator_id: string | null
+          created_at: string
+          description: string
+          dispute_type: string
+          filed_by: string
+          id: string
+          order_id: string
+          priority: string
+          resolution_notes: string | null
+          resolution_tier: string
+          resolved_at: string | null
+          respondent_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_mediator_id?: string | null
+          created_at?: string
+          description: string
+          dispute_type: string
+          filed_by: string
+          id?: string
+          order_id: string
+          priority?: string
+          resolution_notes?: string | null
+          resolution_tier?: string
+          resolved_at?: string | null
+          respondent_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_mediator_id?: string | null
+          created_at?: string
+          description?: string
+          dispute_type?: string
+          filed_by?: string
+          id?: string
+          order_id?: string
+          priority?: string
+          resolution_notes?: string | null
+          resolution_tier?: string
+          resolved_at?: string | null
+          respondent_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_disputes: {
         Row: {
           created_at: string
@@ -170,6 +315,59 @@ export type Database = {
             columns: ["transaction_id"]
             isOneToOne: false
             referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escrow_transactions: {
+        Row: {
+          amount_held: number
+          auto_release_date: string | null
+          created_at: string
+          currency: string
+          escrow_status: string
+          id: string
+          order_id: string
+          platform_fee: number | null
+          release_reason: string | null
+          released_by: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_held: number
+          auto_release_date?: string | null
+          created_at?: string
+          currency?: string
+          escrow_status?: string
+          id?: string
+          order_id: string
+          platform_fee?: number | null
+          release_reason?: string | null
+          released_by?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_held?: number
+          auto_release_date?: string | null
+          created_at?: string
+          currency?: string
+          escrow_status?: string
+          id?: string
+          order_id?: string
+          platform_fee?: number | null
+          release_reason?: string | null
+          released_by?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -340,6 +538,42 @@ export type Database = {
           is_rtl?: boolean | null
           name?: string
           native_name?: string
+        }
+        Relationships: []
+      }
+      mediators: {
+        Row: {
+          certified_at: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          rating: number | null
+          specializations: string[] | null
+          successful_resolutions: number | null
+          total_cases: number | null
+          user_id: string
+        }
+        Insert: {
+          certified_at?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          rating?: number | null
+          specializations?: string[] | null
+          successful_resolutions?: number | null
+          total_cases?: number | null
+          user_id: string
+        }
+        Update: {
+          certified_at?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          rating?: number | null
+          specializations?: string[] | null
+          successful_resolutions?: number | null
+          total_cases?: number | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -960,6 +1194,53 @@ export type Database = {
           },
         ]
       }
+      qr_verification_logs: {
+        Row: {
+          expires_at: string
+          id: string
+          location_data: Json | null
+          order_id: string
+          qr_code: string
+          scan_stage: string
+          scanned_at: string
+          scanned_by: string
+          security_hash: string
+          verification_status: string
+        }
+        Insert: {
+          expires_at: string
+          id?: string
+          location_data?: Json | null
+          order_id: string
+          qr_code: string
+          scan_stage: string
+          scanned_at?: string
+          scanned_by: string
+          security_hash: string
+          verification_status?: string
+        }
+        Update: {
+          expires_at?: string
+          id?: string
+          location_data?: Json | null
+          order_id?: string
+          qr_code?: string
+          scan_stage?: string
+          scanned_at?: string
+          scanned_by?: string
+          security_hash?: string
+          verification_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_verification_logs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_audit_logs: {
         Row: {
           action_performed: string
@@ -1209,6 +1490,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_mediator_to_dispute: {
+        Args: { dispute_uuid: string }
+        Returns: string
+      }
       create_notification: {
         Args: {
           p_user_id: string
@@ -1239,6 +1524,10 @@ export type Database = {
         Args: { order_uuid: string; stage: string }
         Returns: string
       }
+      generate_secure_qr: {
+        Args: { p_order_id: string; p_stage: string; p_expires_hours?: number }
+        Returns: string
+      }
       get_user_language: {
         Args: { user_uuid?: string }
         Returns: string
@@ -1259,6 +1548,14 @@ export type Database = {
           p_metadata?: Json
         }
         Returns: string
+      }
+      resolve_dispute_by_votes: {
+        Args: { dispute_uuid: string }
+        Returns: string
+      }
+      verify_qr_scan: {
+        Args: { p_qr_code: string; p_scanner_id: string; p_location?: Json }
+        Returns: boolean
       }
     }
     Enums: {
