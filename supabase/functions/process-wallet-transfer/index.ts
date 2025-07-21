@@ -194,41 +194,43 @@ const handler = async (req: Request): Promise<Response> => {
         })
         .eq('id', transfer.id);
 
-      // Send notifications
+      // Send enhanced notifications
       const senderName = `${senderProfile.first_name} ${senderProfile.last_name}`.trim();
       const recipientName = `${recipientProfile.first_name} ${recipientProfile.last_name}`.trim();
 
-      // Notify sender
-      await supabase.rpc('create_notification', {
+      // Create notification variables
+      const notificationVariables = {
+        amount: amount.toFixed(2),
+        fee: fee.toFixed(2),
+        reference_number: referenceNumber,
+        sender_name: senderName,
+        recipient_name: recipientName,
+        message: message || ''
+      };
+
+      // Notify sender about transfer completion
+      await supabase.rpc('create_enhanced_notification', {
         p_user_id: user.id,
-        p_type: 'transfer_sent',
-        p_title: 'Money Sent Successfully',
-        p_message: `You have successfully sent $${amount.toFixed(2)} to ${recipientName}. Reference: ${referenceNumber}`,
-        p_data: {
-          transfer_id: transfer.id,
-          amount: amount,
-          fee: fee,
-          recipient_name: recipientName,
-          reference_number: referenceNumber
-        },
+        p_template_name: 'transfer_completed',
+        p_variables: notificationVariables,
         p_priority: 'normal'
       });
 
-      // Notify recipient
-      await supabase.rpc('create_notification', {
+      // Notify recipient about money received
+      await supabase.rpc('create_enhanced_notification', {
         p_user_id: recipient_id,
-        p_type: 'transfer_received',
-        p_title: 'Money Received',
-        p_message: `You have received $${amount.toFixed(2)} from ${senderName}. Reference: ${referenceNumber}`,
-        p_data: {
-          transfer_id: transfer.id,
-          amount: amount,
-          sender_name: senderName,
-          reference_number: referenceNumber,
-          message: message
-        },
+        p_template_name: 'transfer_received',
+        p_variables: notificationVariables,
         p_priority: 'high'
       });
+
+      // Create transaction receipt
+      await supabase.rpc('create_transaction_receipt', {
+        p_transfer_id: transfer.id
+      });
+
+      // Trigger notification delivery processing
+      await supabase.functions.invoke('send-transfer-notifications');
     }
 
     console.log(`Transfer ${requires_2fa ? 'initiated (pending 2FA)' : 'completed'}: ${referenceNumber}`);

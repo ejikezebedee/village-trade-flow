@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Header } from "@/components/marketplace/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Search, Filter, Download, ArrowUpDown } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Search, Filter, Download, ArrowUpDown, Receipt, FileText, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface TransferRecord {
@@ -33,6 +34,7 @@ interface TransferRecord {
 export default function WalletHistoryPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const [transfers, setTransfers] = useState<TransferRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,7 @@ export default function WalletHistoryPage() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [downloadingReceipts, setDownloadingReceipts] = useState<Set<string>>(new Set());
   const itemsPerPage = 20;
 
   useEffect(() => {
@@ -206,6 +209,48 @@ export default function WalletHistoryPage() {
     window.URL.revokeObjectURL(url);
   };
 
+  const downloadReceipt = async (transferId: string, format: 'json' | 'pdf' = 'pdf') => {
+    setDownloadingReceipts(prev => new Set(prev).add(transferId));
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-receipt', {
+        body: { transfer_id: transferId, format }
+      });
+
+      if (error) throw error;
+
+      if (format === 'pdf') {
+        // Create blob and download HTML file (which can be printed as PDF)
+        const blob = new Blob([data], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `receipt-${transferId}.html`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+
+      toast({
+        title: "Receipt Downloaded",
+        description: "Transaction receipt has been downloaded successfully.",
+      });
+
+    } catch (error: any) {
+      console.error('Error downloading receipt:', error);
+      toast({
+        title: "Download Failed",
+        description: error.message || "Failed to download receipt",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingReceipts(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(transferId);
+        return newSet;
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -230,7 +275,7 @@ export default function WalletHistoryPage() {
                     Transaction History
                   </h1>
                   <p className="text-muted-foreground">
-                    View all your wallet transactions
+                    View all your wallet transactions and download receipts
                   </p>
                 </div>
               </div>
@@ -348,7 +393,7 @@ export default function WalletHistoryPage() {
                         key={transfer.id}
                         className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                       >
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 flex-1">
                           <div className={`p-2 rounded-full ${
                             transfer.is_sender 
                               ? 'bg-orange-100 text-orange-600' 
@@ -358,7 +403,7 @@ export default function WalletHistoryPage() {
                               transfer.is_sender ? 'rotate-90' : '-rotate-90'
                             }`} />
                           </div>
-                          <div>
+                          <div className="flex-1">
                             <div className="font-medium">
                               {transfer.is_sender ? 'Sent to' : 'Received from'}{' '}
                               {transfer.is_sender 
@@ -376,20 +421,41 @@ export default function WalletHistoryPage() {
                             )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className={`font-medium ${
-                            transfer.is_sender ? 'text-orange-600' : 'text-green-600'
-                          }`}>
-                            {transfer.is_sender ? '-' : '+'}${transfer.amount.toFixed(2)}
-                          </div>
-                          {transfer.is_sender && transfer.transaction_fee > 0 && (
-                            <div className="text-xs text-muted-foreground">
-                              Fee: ${transfer.transaction_fee.toFixed(2)}
+                        
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <div className={`font-medium ${
+                              transfer.is_sender ? 'text-orange-600' : 'text-green-600'
+                            }`}>
+                              {transfer.is_sender ? '-' : '+'}${transfer.amount.toFixed(2)}
                             </div>
-                          )}
-                          <div className="mt-1">
-                            {getStatusBadge(transfer.status)}
+                            {transfer.is_sender && transfer.transaction_fee > 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                Fee: ${transfer.transaction_fee.toFixed(2)}
+                              </div>
+                            )}
+                            <div className="mt-1">
+                              {getStatusBadge(transfer.status)}
+                            </div>
                           </div>
+
+                          {/* Receipt Download Button */}
+                          {transfer.status === 'completed' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => downloadReceipt(transfer.id)}
+                              disabled={downloadingReceipts.has(transfer.id)}
+                              className="flex items-center gap-2"
+                            >
+                              {downloadingReceipts.has(transfer.id) ? (
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                              ) : (
+                                <Receipt className="h-3 w-3" />
+                              )}
+                              Receipt
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}

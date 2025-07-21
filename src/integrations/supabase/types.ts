@@ -1632,6 +1632,137 @@ export type Database = {
           },
         ]
       }
+      notification_deliveries: {
+        Row: {
+          created_at: string
+          delivered_at: string | null
+          delivery_channel: string
+          delivery_status: string
+          error_message: string | null
+          id: string
+          notification_id: string
+          provider_id: string | null
+          read_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          delivered_at?: string | null
+          delivery_channel: string
+          delivery_status?: string
+          error_message?: string | null
+          id?: string
+          notification_id: string
+          provider_id?: string | null
+          read_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          delivered_at?: string | null
+          delivery_channel?: string
+          delivery_status?: string
+          error_message?: string | null
+          id?: string
+          notification_id?: string
+          provider_id?: string | null
+          read_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_enabled: boolean
+          id: string
+          in_app_enabled: boolean
+          marketing_notifications: boolean
+          phone_number: string | null
+          push_enabled: boolean
+          security_notifications: boolean
+          sms_enabled: boolean
+          transfer_notifications: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_enabled?: boolean
+          id?: string
+          in_app_enabled?: boolean
+          marketing_notifications?: boolean
+          phone_number?: string | null
+          push_enabled?: boolean
+          security_notifications?: boolean
+          sms_enabled?: boolean
+          transfer_notifications?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_enabled?: boolean
+          id?: string
+          in_app_enabled?: boolean
+          marketing_notifications?: boolean
+          phone_number?: string | null
+          push_enabled?: boolean
+          security_notifications?: boolean
+          sms_enabled?: boolean
+          transfer_notifications?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_templates: {
+        Row: {
+          created_at: string
+          email_template: string | null
+          id: string
+          is_active: boolean
+          message_template: string
+          notification_type: string
+          sms_template: string | null
+          template_name: string
+          title_template: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          created_at?: string
+          email_template?: string | null
+          id?: string
+          is_active?: boolean
+          message_template: string
+          notification_type: string
+          sms_template?: string | null
+          template_name: string
+          title_template: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          created_at?: string
+          email_template?: string | null
+          id?: string
+          is_active?: boolean
+          message_template?: string
+          notification_type?: string
+          sms_template?: string | null
+          template_name?: string
+          title_template?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -2718,6 +2849,47 @@ export type Database = {
           },
         ]
       }
+      transaction_receipts: {
+        Row: {
+          download_count: number
+          downloaded_at: string | null
+          generated_at: string
+          id: string
+          pdf_url: string | null
+          receipt_data: Json
+          receipt_number: string
+          transfer_id: string
+        }
+        Insert: {
+          download_count?: number
+          downloaded_at?: string | null
+          generated_at?: string
+          id?: string
+          pdf_url?: string | null
+          receipt_data: Json
+          receipt_number: string
+          transfer_id: string
+        }
+        Update: {
+          download_count?: number
+          downloaded_at?: string | null
+          generated_at?: string
+          id?: string
+          pdf_url?: string | null
+          receipt_data?: Json
+          receipt_number?: string
+          transfer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_receipts_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
@@ -3461,6 +3633,10 @@ export type Database = {
       }
       generate_qr_identifier: {
         Args: { order_uuid: string; stage: string }
+        Returns: string
+      }
+      generate_receipt_number: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       generate_secure_qr: {
