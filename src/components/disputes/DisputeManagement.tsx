@@ -470,7 +470,7 @@ export default function DisputeManagement({ disputeId }: DisputeManagementProps)
                       </span>
                       <span className="flex items-center gap-1">
                         <User className="w-3 h-3" />
-                        Filed by: {dispute.filed_by_profile?.first_name} {dispute.filed_by_profile?.last_name}
+                        Filed by: User {dispute.filed_by.slice(0, 8)}
                       </span>
                       {dispute.order_id && (
                         <span className="flex items-center gap-1">
