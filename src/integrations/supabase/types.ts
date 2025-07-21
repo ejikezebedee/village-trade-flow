@@ -14,6 +14,278 @@ export type Database = {
   }
   public: {
     Tables: {
+      auction_bids: {
+        Row: {
+          auction_id: string
+          bid_amount: number
+          bid_time: string
+          bidder_id: string
+          id: string
+          invalidation_reason: string | null
+          ip_address: unknown | null
+          is_valid: boolean
+          is_winning_bid: boolean
+          max_bid: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          auction_id: string
+          bid_amount: number
+          bid_time?: string
+          bidder_id: string
+          id?: string
+          invalidation_reason?: string | null
+          ip_address?: unknown | null
+          is_valid?: boolean
+          is_winning_bid?: boolean
+          max_bid?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          auction_id?: string
+          bid_amount?: number
+          bid_time?: string
+          bidder_id?: string
+          id?: string
+          invalidation_reason?: string | null
+          ip_address?: unknown | null
+          is_valid?: boolean
+          is_winning_bid?: boolean
+          max_bid?: number | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auction_escrow: {
+        Row: {
+          auction_id: string
+          created_at: string
+          escrow_status: string
+          funded_at: string | null
+          id: string
+          payment_intent_id: string | null
+          platform_fee: number
+          refunded_at: string | null
+          released_at: string | null
+          seller_id: string
+          updated_at: string
+          winner_id: string
+          winning_bid: number
+        }
+        Insert: {
+          auction_id: string
+          created_at?: string
+          escrow_status?: string
+          funded_at?: string | null
+          id?: string
+          payment_intent_id?: string | null
+          platform_fee?: number
+          refunded_at?: string | null
+          released_at?: string | null
+          seller_id: string
+          updated_at?: string
+          winner_id: string
+          winning_bid: number
+        }
+        Update: {
+          auction_id?: string
+          created_at?: string
+          escrow_status?: string
+          funded_at?: string | null
+          id?: string
+          payment_intent_id?: string | null
+          platform_fee?: number
+          refunded_at?: string | null
+          released_at?: string | null
+          seller_id?: string
+          updated_at?: string
+          winner_id?: string
+          winning_bid?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_escrow_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auction_notifications: {
+        Row: {
+          auction_id: string
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          auction_id: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          auction_id?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_notifications_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auction_watchers: {
+        Row: {
+          auction_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          auction_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          auction_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_watchers_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auctions: {
+        Row: {
+          auto_extend_on_bid: boolean | null
+          bid_increment: number
+          bid_increment_type: Database["public"]["Enums"]["bid_increment_type"]
+          cancelled_at: string | null
+          cancelled_by: string | null
+          cancelled_reason: string | null
+          category: string | null
+          created_at: string
+          current_bid: number
+          description: string
+          end_time: string
+          extension_time_minutes: number | null
+          id: string
+          images: Json | null
+          location: string | null
+          product_id: string | null
+          reserve_price: number | null
+          seller_id: string
+          shipping_details: Json | null
+          start_time: string
+          starting_bid: number
+          status: Database["public"]["Enums"]["auction_status"]
+          terms_conditions: string | null
+          title: string
+          total_bids: number
+          updated_at: string
+          watchers_count: number
+          winner_id: string | null
+        }
+        Insert: {
+          auto_extend_on_bid?: boolean | null
+          bid_increment?: number
+          bid_increment_type?: Database["public"]["Enums"]["bid_increment_type"]
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          cancelled_reason?: string | null
+          category?: string | null
+          created_at?: string
+          current_bid?: number
+          description: string
+          end_time: string
+          extension_time_minutes?: number | null
+          id?: string
+          images?: Json | null
+          location?: string | null
+          product_id?: string | null
+          reserve_price?: number | null
+          seller_id: string
+          shipping_details?: Json | null
+          start_time?: string
+          starting_bid?: number
+          status?: Database["public"]["Enums"]["auction_status"]
+          terms_conditions?: string | null
+          title: string
+          total_bids?: number
+          updated_at?: string
+          watchers_count?: number
+          winner_id?: string | null
+        }
+        Update: {
+          auto_extend_on_bid?: boolean | null
+          bid_increment?: number
+          bid_increment_type?: Database["public"]["Enums"]["bid_increment_type"]
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          cancelled_reason?: string | null
+          category?: string | null
+          created_at?: string
+          current_bid?: number
+          description?: string
+          end_time?: string
+          extension_time_minutes?: number | null
+          id?: string
+          images?: Json | null
+          location?: string | null
+          product_id?: string | null
+          reserve_price?: number | null
+          seller_id?: string
+          shipping_details?: Json | null
+          start_time?: string
+          starting_bid?: number
+          status?: Database["public"]["Enums"]["auction_status"]
+          terms_conditions?: string | null
+          title?: string
+          total_bids?: number
+          updated_at?: string
+          watchers_count?: number
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       automated_messages: {
         Row: {
           created_at: string
@@ -3538,6 +3810,10 @@ export type Database = {
         Args: { dispute_uuid: string }
         Returns: string
       }
+      calculate_next_minimum_bid: {
+        Args: { p_auction_id: string }
+        Returns: number
+      }
       calculate_transaction_fee: {
         Args: { p_amount: number; p_transaction_type: string }
         Returns: number
@@ -3621,6 +3897,10 @@ export type Database = {
       }
       encrypt_sensitive_data: {
         Args: { p_data: Json; p_key_purpose?: string }
+        Returns: Json
+      }
+      end_auction: {
+        Args: { p_auction_id: string }
         Returns: Json
       }
       expire_kyc_verifications: {
@@ -3720,6 +4000,15 @@ export type Database = {
       match_faq_response: {
         Args: { p_message_text: string }
         Returns: string
+      }
+      place_auction_bid: {
+        Args: {
+          p_auction_id: string
+          p_bidder_id: string
+          p_bid_amount: number
+          p_max_bid?: number
+        }
+        Returns: Json
       }
       refresh_stats_views: {
         Args: Record<PropertyKey, never>
@@ -3830,6 +4119,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      auction_status: "draft" | "active" | "ended" | "cancelled" | "suspended"
+      bid_increment_type: "fixed" | "percentage" | "dynamic"
       product_category_enhanced:
         | "fruits"
         | "vegetables"
@@ -3980,6 +4271,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      auction_status: ["draft", "active", "ended", "cancelled", "suspended"],
+      bid_increment_type: ["fixed", "percentage", "dynamic"],
       product_category_enhanced: [
         "fruits",
         "vegetables",
