@@ -238,6 +238,57 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          email_sent: boolean | null
+          expires_at: string | null
+          id: string
+          message: string
+          priority: string | null
+          push_sent: boolean | null
+          read: boolean | null
+          read_at: string | null
+          sms_sent: boolean | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          email_sent?: boolean | null
+          expires_at?: string | null
+          id?: string
+          message: string
+          priority?: string | null
+          push_sent?: boolean | null
+          read?: boolean | null
+          read_at?: string | null
+          sms_sent?: boolean | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          email_sent?: boolean | null
+          expires_at?: string | null
+          id?: string
+          message?: string
+          priority?: string | null
+          push_sent?: boolean | null
+          read?: boolean | null
+          read_at?: string | null
+          sms_sent?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       order_status_history: {
         Row: {
           change_reason: string | null
@@ -748,6 +799,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_notification: {
+        Args: {
+          p_user_id: string
+          p_type: string
+          p_title: string
+          p_message: string
+          p_data?: Json
+          p_priority?: string
+        }
+        Returns: string
+      }
       create_payment_notification: {
         Args: {
           p_transaction_id: string

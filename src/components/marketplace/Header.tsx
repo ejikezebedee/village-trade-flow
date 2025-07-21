@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { QrCode, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +45,10 @@ export function Header() {
           {/* Action Buttons - Larger and clearer */}
           <div className="hidden lg:flex items-center space-x-4">
             {user ? (
-              <UserMenu />
+              <div className="flex items-center gap-4">
+                <NotificationBell />
+                <UserMenu />
+              </div>
             ) : (
               <>
                 <Button variant="ghost" size="lg" className="text-base" onClick={() => navigate('/auth')}>
@@ -94,9 +98,10 @@ export function Header() {
               >
                 🆘 Get Help
               </a>
-              <div className="flex flex-col space-y-3 px-4 pt-6 border-t border-border">
+                <div className="flex flex-col space-y-3 px-4 pt-6 border-t border-border">
                 {user ? (
-                  <div className="text-center">
+                  <div className="flex flex-col items-center space-y-3">
+                    <NotificationBell />
                     <UserMenu />
                   </div>
                 ) : (

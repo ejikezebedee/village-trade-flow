@@ -13,6 +13,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/products" element={<ProductListing />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/dashboard/buyer" element={
               <ProtectedRoute requiredRole="buyer">
                 <BuyerDashboard />
