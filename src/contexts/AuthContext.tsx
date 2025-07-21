@@ -163,20 +163,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      // Create user account
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            first_name: userData?.firstName,
-            last_name: userData?.lastName,
-            user_type: userData?.userType || 'buyer'
-          }
+          emailRedirectTo: `${window.location.origin}/auth`,
         }
       });
 
-      return { error };
+      if (error) {
+        return { error };
+      }
+
+      // If user was created successfully, send verification email
+      if (data.user && !data.user.email_confirmed_at) {
+        try {
+          await supabase.functions.invoke('send-verification-email', {
+            body: {
+              email: email,
+              userId: data.user.id,
+              firstName: userData?.firstName || '',
+              lastName: userData?.lastName || '',
+              userType: userData?.userType || 'buyer'
+            }
+          });
+        } catch (emailError) {
+          console.error('Error sending verification email:', emailError);
+          // Don't fail the signup if email sending fails
+        }
+      }
+
+      return { error: null, user: data.user };
     } catch (error) {
       return { error };
     }

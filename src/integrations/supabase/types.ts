@@ -523,6 +523,45 @@ export type Database = {
           },
         ]
       }
+      email_verifications: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          updated_at: string
+          user_data: Json | null
+          user_id: string
+          user_type: string
+          verification_token: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          updated_at?: string
+          user_data?: Json | null
+          user_id: string
+          user_type?: string
+          verification_token: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          updated_at?: string
+          user_data?: Json | null
+          user_id?: string
+          user_type?: string
+          verification_token?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       escrow_disputes: {
         Row: {
           created_at: string
@@ -2731,6 +2770,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      generate_verification_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_language: {
         Args: { user_uuid?: string }
         Returns: string
@@ -2774,6 +2817,10 @@ export type Database = {
       resolve_dispute_by_votes: {
         Args: { dispute_uuid: string }
         Returns: string
+      }
+      schedule_verification_cleanup: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       track_page_view: {
         Args: {
@@ -2822,6 +2869,10 @@ export type Database = {
           p_notes?: string
           p_coordinates?: Json
         }
+        Returns: Json
+      }
+      verify_email_and_complete_registration: {
+        Args: { p_token: string }
         Returns: Json
       }
       verify_qr_scan: {

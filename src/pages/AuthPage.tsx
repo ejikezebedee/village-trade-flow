@@ -117,8 +117,18 @@ export default function AuthPage() {
         });
       } else {
         toast({
-          title: "Account Created!",
-          description: "Please check your email to verify your account.",
+          title: "Account Created Successfully!",
+          description: `Welcome ${signUpData.firstName}! Please check your email to verify your account and unlock all ${signUpData.userType} features.`,
+        });
+        
+        // Clear form and switch to sign in
+        setSignUpData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          userType: 'buyer'
         });
         setActiveTab('signin');
       }
