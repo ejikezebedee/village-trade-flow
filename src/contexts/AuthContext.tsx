@@ -6,6 +6,7 @@ interface Profile {
   id: string;
   user_id: string;
   user_type: string;
+  user_role?: 'user' | 'admin' | 'moderator';
   first_name?: string;
   last_name?: string;
   phone_number?: string;
@@ -17,6 +18,9 @@ interface Profile {
   rating: number;
   total_ratings: number;
   is_active: boolean;
+  preferred_language?: string;
+  auto_translate_messages?: boolean;
+  detect_language_automatically?: boolean;
   created_at: string;
   updated_at: string;
 }

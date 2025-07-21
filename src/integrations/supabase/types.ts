@@ -313,6 +313,81 @@ export type Database = {
         }
         Relationships: []
       }
+      languages: {
+        Row: {
+          code: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_rtl: boolean | null
+          name: string
+          native_name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_rtl?: boolean | null
+          name: string
+          native_name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_rtl?: boolean | null
+          name?: string
+          native_name?: string
+        }
+        Relationships: []
+      }
+      message_translations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          language_code: string
+          message_id: string
+          translated_text: string
+          translation_service: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          language_code: string
+          message_id: string
+          translated_text: string
+          translation_service?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          language_code?: string
+          message_id?: string
+          translated_text?: string
+          translation_service?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "message_translations_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachments: Json | null
@@ -654,6 +729,54 @@ export type Database = {
           },
         ]
       }
+      product_translations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_auto_translated: boolean | null
+          language_code: string
+          name: string
+          product_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_auto_translated?: boolean | null
+          language_code: string
+          name: string
+          product_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_auto_translated?: boolean | null
+          language_code?: string
+          name?: string
+          product_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "product_translations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -721,15 +844,18 @@ export type Database = {
       }
       profiles: {
         Row: {
+          auto_translate_messages: boolean | null
           avatar_url: string | null
           bio: string | null
           created_at: string
+          detect_language_automatically: boolean | null
           first_name: string | null
           id: string
           is_active: boolean | null
           last_name: string | null
           location: Json | null
           phone_number: string | null
+          preferred_language: string | null
           rating: number | null
           total_ratings: number | null
           updated_at: string
@@ -740,15 +866,18 @@ export type Database = {
           verification_status: string | null
         }
         Insert: {
+          auto_translate_messages?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          detect_language_automatically?: boolean | null
           first_name?: string | null
           id?: string
           is_active?: boolean | null
           last_name?: string | null
           location?: Json | null
           phone_number?: string | null
+          preferred_language?: string | null
           rating?: number | null
           total_ratings?: number | null
           updated_at?: string
@@ -759,15 +888,18 @@ export type Database = {
           verification_status?: string | null
         }
         Update: {
+          auto_translate_messages?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          detect_language_automatically?: boolean | null
           first_name?: string | null
           id?: string
           is_active?: boolean | null
           last_name?: string | null
           location?: Json | null
           phone_number?: string | null
+          preferred_language?: string | null
           rating?: number | null
           total_ratings?: number | null
           updated_at?: string
@@ -777,7 +909,15 @@ export type Database = {
           verification_documents?: Json | null
           verification_status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_preferred_language_fkey"
+            columns: ["preferred_language"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       qr_scans: {
         Row: {
@@ -987,6 +1127,47 @@ export type Database = {
           },
         ]
       }
+      translations: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          id: string
+          is_auto_translated: boolean | null
+          language_code: string
+          translated_text: string
+          translation_key: string
+          updated_at: string | null
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          is_auto_translated?: boolean | null
+          language_code: string
+          translated_text: string
+          translation_key: string
+          updated_at?: string | null
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          is_auto_translated?: boolean | null
+          language_code?: string
+          translated_text?: string
+          translation_key?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       user_restrictions: {
         Row: {
           created_at: string | null
@@ -1050,8 +1231,16 @@ export type Database = {
         }
         Returns: string
       }
+      detect_browser_language: {
+        Args: { accept_language: string }
+        Returns: string
+      }
       generate_qr_identifier: {
         Args: { order_uuid: string; stage: string }
+        Returns: string
+      }
+      get_user_language: {
+        Args: { user_uuid?: string }
         Returns: string
       }
       is_admin: {
