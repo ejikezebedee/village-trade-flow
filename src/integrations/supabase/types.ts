@@ -1614,6 +1614,8 @@ export type Database = {
           id: string
           images: Json | null
           is_active: boolean | null
+          listing_created_at: string | null
+          listing_qr_code: string | null
           location: Json | null
           name: string
           price: number
@@ -1632,6 +1634,8 @@ export type Database = {
           id?: string
           images?: Json | null
           is_active?: boolean | null
+          listing_created_at?: string | null
+          listing_qr_code?: string | null
           location?: Json | null
           name: string
           price: number
@@ -1650,6 +1654,8 @@ export type Database = {
           id?: string
           images?: Json | null
           is_active?: boolean | null
+          listing_created_at?: string | null
+          listing_qr_code?: string | null
           location?: Json | null
           name?: string
           price?: number
@@ -2049,6 +2055,86 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      transaction_qr_codes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          order_id: string | null
+          payment_id: string | null
+          product_id: string | null
+          qr_code_identifier: string
+          qr_data_url: string | null
+          scan_count: number | null
+          transaction_id: string
+          transaction_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          order_id?: string | null
+          payment_id?: string | null
+          product_id?: string | null
+          qr_code_identifier: string
+          qr_data_url?: string | null
+          scan_count?: number | null
+          transaction_id: string
+          transaction_type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          order_id?: string | null
+          payment_id?: string | null
+          product_id?: string | null
+          qr_code_identifier?: string
+          qr_data_url?: string | null
+          scan_count?: number | null
+          transaction_id?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_qr_codes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transaction_qr_codes_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transaction_qr_codes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transaction_qr_codes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transactions: {
         Row: {
@@ -2516,6 +2602,17 @@ export type Database = {
       }
       generate_secure_qr: {
         Args: { p_order_id: string; p_stage: string; p_expires_hours?: number }
+        Returns: string
+      }
+      generate_transaction_qr: {
+        Args: {
+          p_transaction_type: string
+          p_transaction_id: string
+          p_product_id?: string
+          p_order_id?: string
+          p_payment_id?: string
+          p_metadata?: Json
+        }
         Returns: string
       }
       generate_verification_code: {
