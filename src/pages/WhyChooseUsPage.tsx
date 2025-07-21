@@ -2,6 +2,7 @@ import { Header } from "@/components/marketplace/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { 
   Shield, 
   Clock, 
@@ -32,10 +33,15 @@ export default function WhyChooseUsPage() {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
               Why Choose VillageMarket?
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               We're not just another marketplace. We're your trusted partner in local commerce,
               built with security, simplicity, and community at our core.
             </p>
+            <Link to="/">
+              <Button variant="outline" size="lg" className="mb-4">
+                ← Back to Home
+              </Button>
+            </Link>
           </div>
 
           {/* Key Benefits Grid */}
