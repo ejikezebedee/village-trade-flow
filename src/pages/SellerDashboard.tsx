@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Header } from "@/components/marketplace/Header";
+import { StockAlerts } from "@/components/marketplace/StockAlerts";
+import { EnhancedAddProduct } from "@/components/marketplace/EnhancedAddProduct";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Store, 
   Package, 
@@ -19,8 +19,8 @@ import {
   MessageCircle,
   Star,
   BarChart3,
-  Camera,
-  Save
+  Sparkles,
+  AlertTriangle
 } from "lucide-react";
 
 const currentProducts = [
@@ -88,7 +88,44 @@ const recentSales = [
 
 export default function SellerDashboard() {
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<number | null>(null);
+  const [products, setProducts] = useState(currentProducts);
+  const [stockAlertCount, setStockAlertCount] = useState(0);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchStockAlertCount();
+  }, []);
+
+  const fetchStockAlertCount = async () => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      if (!profile) return;
+
+      const { count, error } = await supabase
+        .from('stock_alerts')
+        .select('*', { count: 'exact', head: true })
+        .eq('seller_id', profile.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      setStockAlertCount(count || 0);
+    } catch (error) {
+      console.error('Error fetching stock alert count:', error);
+    }
+  };
+
+  const handleProductAdded = () => {
+    toast({
+      title: "Product Added Successfully!",
+      description: "Your product has been automatically categorized and is now live.",
+    });
+    fetchStockAlertCount();
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -108,91 +145,6 @@ export default function SellerDashboard() {
     }
   };
 
-  const AddProductForm = () => (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>📦 Add New Product</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="productName">Product Name</Label>
-            <Input id="productName" placeholder="Enter product name..." />
-          </div>
-          <div>
-            <Label htmlFor="category">Category</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border z-50">
-                <SelectItem value="vegetables">🥕 Vegetables</SelectItem>
-                <SelectItem value="fruits">🍎 Fruits</SelectItem>
-                <SelectItem value="crafts">🧺 Crafts</SelectItem>
-                <SelectItem value="food">🍯 Food</SelectItem>
-                <SelectItem value="grains">🌾 Grains</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-4">
-          <div>
-            <Label htmlFor="price">Price</Label>
-            <Input id="price" placeholder="$0.00" />
-          </div>
-          <div>
-            <Label htmlFor="stock">Stock Quantity</Label>
-            <Input id="stock" type="number" placeholder="0" />
-          </div>
-          <div>
-            <Label htmlFor="unit">Unit</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select unit" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border z-50">
-                <SelectItem value="kg">per kg</SelectItem>
-                <SelectItem value="piece">per piece</SelectItem>
-                <SelectItem value="jar">per jar</SelectItem>
-                <SelectItem value="bundle">per bundle</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="description">Description</Label>
-          <Textarea 
-            id="description" 
-            placeholder="Describe your product..."
-            className="min-h-[100px]"
-          />
-        </div>
-
-        <div>
-          <Label>Product Images</Label>
-          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-            <Camera className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-muted-foreground mb-2">Click to upload images</p>
-            <Button variant="outline">
-              Choose Files
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <Button className="flex-1">
-            <Save className="h-4 w-4 mr-2" />
-            Save Product
-          </Button>
-          <Button variant="outline" onClick={() => setShowAddProduct(false)}>
-            Cancel
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -215,13 +167,25 @@ export default function SellerDashboard() {
                   <p className="text-muted-foreground">Village Farm Co-op • Verified Seller</p>
                 </div>
               </div>
-              <Button 
-                onClick={() => setShowAddProduct(!showAddProduct)}
-                className="h-12 px-6"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Product
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => setShowAddProduct(!showAddProduct)}
+                  className="h-12 px-6"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Product
+                  <Badge variant="secondary" className="ml-2">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Auto-categorization
+                  </Badge>
+                </Button>
+                {stockAlertCount > 0 && (
+                  <Button variant="outline" className="h-12 px-4">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    {stockAlertCount} Alerts
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -258,11 +222,20 @@ export default function SellerDashboard() {
           </div>
 
           {/* Add Product Form */}
-          {showAddProduct && <AddProductForm />}
+          {showAddProduct && (
+            <EnhancedAddProduct 
+              onClose={() => setShowAddProduct(false)}
+              onProductAdded={handleProductAdded}
+            />
+          )}
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Current Products */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Stock Alerts */}
+              <StockAlerts />
+              
+              {/* Products List */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -320,9 +293,16 @@ export default function SellerDashboard() {
                   <CardTitle>🚀 Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full justify-start h-12">
+                  <Button 
+                    className="w-full justify-start h-12"
+                    onClick={() => setShowAddProduct(!showAddProduct)}
+                  >
                     <Plus className="h-4 w-4 mr-3" />
                     Add New Product
+                    <Badge variant="secondary" className="ml-auto">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Auto
+                    </Badge>
                   </Button>
                   <Button variant="outline" className="w-full justify-start h-12">
                     <BarChart3 className="h-4 w-4 mr-3" />

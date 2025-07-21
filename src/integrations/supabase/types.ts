@@ -574,6 +574,57 @@ export type Database = {
           },
         ]
       }
+      stock_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          product_id: string | null
+          read_at: string | null
+          seller_id: string | null
+          threshold_quantity: number | null
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          product_id?: string | null
+          read_at?: string | null
+          seller_id?: string | null
+          threshold_quantity?: number | null
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          product_id?: string | null
+          read_at?: string | null
+          seller_id?: string | null
+          threshold_quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_alerts_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
