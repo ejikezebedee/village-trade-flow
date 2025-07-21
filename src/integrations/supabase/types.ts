@@ -1405,6 +1405,13 @@ export type Database = {
             foreignKeyName: "product_translations_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_translations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -1748,6 +1755,13 @@ export type Database = {
             foreignKeyName: "stock_alerts_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -2071,7 +2085,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      optimized_product_listings: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          featured: boolean | null
+          id: string | null
+          images: Json | null
+          location: Json | null
+          name: string | null
+          price: number | null
+          seller_id: string | null
+          seller_name: string | null
+          seller_rating: number | null
+          stock_quantity: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       assign_mediator_to_dispute: {
@@ -2179,6 +2219,10 @@ export type Database = {
       match_faq_response: {
         Args: { p_message_text: string }
         Returns: string
+      }
+      refresh_stats_views: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       resolve_dispute_by_votes: {
         Args: { dispute_uuid: string }
