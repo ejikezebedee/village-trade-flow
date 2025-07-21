@@ -100,6 +100,80 @@ export type Database = {
           },
         ]
       }
+      escrow_disputes: {
+        Row: {
+          created_at: string
+          dispute_description: string | null
+          dispute_reason: string
+          filed_by: string | null
+          id: string
+          order_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string | null
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dispute_description?: string | null
+          dispute_reason: string
+          filed_by?: string | null
+          id?: string
+          order_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dispute_description?: string | null
+          dispute_reason?: string
+          filed_by?: string | null
+          id?: string
+          order_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_disputes_filed_by_fkey"
+            columns: ["filed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_disputes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_disputes_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_disputes_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachments: Json | null
@@ -229,6 +303,63 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      payment_notifications: {
+        Row: {
+          created_at: string
+          email_sent: boolean | null
+          id: string
+          in_app_read: boolean | null
+          message_body: string
+          message_title: string
+          notification_type: string
+          order_id: string | null
+          recipient_type: string
+          sms_sent: boolean | null
+          transaction_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_sent?: boolean | null
+          id?: string
+          in_app_read?: boolean | null
+          message_body: string
+          message_title: string
+          notification_type: string
+          order_id?: string | null
+          recipient_type: string
+          sms_sent?: boolean | null
+          transaction_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_sent?: boolean | null
+          id?: string
+          in_app_read?: boolean | null
+          message_body?: string
+          message_title?: string
+          notification_type?: string
+          order_id?: string | null
+          recipient_type?: string
+          sms_sent?: boolean | null
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_notifications_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payments: {
         Row: {
@@ -446,9 +577,16 @@ export type Database = {
       transactions: {
         Row: {
           amount: number
+          auto_release_date: string | null
           created_at: string
           currency: string | null
+          escrow_locked_at: string | null
+          escrow_release_reason: string | null
+          escrow_released_at: string | null
           external_transaction_id: string | null
+          gateway_provider: string | null
+          gateway_response: Json | null
+          gateway_transaction_id: string | null
           id: string
           metadata: Json | null
           order_id: string | null
@@ -459,9 +597,16 @@ export type Database = {
         }
         Insert: {
           amount: number
+          auto_release_date?: string | null
           created_at?: string
           currency?: string | null
+          escrow_locked_at?: string | null
+          escrow_release_reason?: string | null
+          escrow_released_at?: string | null
           external_transaction_id?: string | null
+          gateway_provider?: string | null
+          gateway_response?: Json | null
+          gateway_transaction_id?: string | null
           id?: string
           metadata?: Json | null
           order_id?: string | null
@@ -472,9 +617,16 @@ export type Database = {
         }
         Update: {
           amount?: number
+          auto_release_date?: string | null
           created_at?: string
           currency?: string | null
+          escrow_locked_at?: string | null
+          escrow_release_reason?: string | null
+          escrow_released_at?: string | null
           external_transaction_id?: string | null
+          gateway_provider?: string | null
+          gateway_response?: Json | null
+          gateway_transaction_id?: string | null
           id?: string
           metadata?: Json | null
           order_id?: string | null
@@ -498,6 +650,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_payment_notification: {
+        Args: {
+          p_transaction_id: string
+          p_order_id: string
+          p_notification_type: string
+          p_recipient_type: string
+          p_title: string
+          p_body: string
+        }
+        Returns: string
+      }
       generate_qr_identifier: {
         Args: { order_uuid: string; stage: string }
         Returns: string
