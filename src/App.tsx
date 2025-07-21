@@ -28,6 +28,9 @@ import { FeaturesPage } from "./pages/FeaturesPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import WhyChooseUsPage from "./pages/WhyChooseUsPage";
 import GetHelpPage from "./pages/GetHelpPage";
+import MessagesPage from "./pages/MessagesPage";
+import PaymentMethodsPage from "./pages/PaymentMethodsPage";
+import DeliveryAddressesPage from "./pages/DeliveryAddressesPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -67,6 +70,21 @@ const App = () => (
         <Route path="/2fa-settings" element={
           <ProtectedRoute>
             <TwoFactorSettings />
+          </ProtectedRoute>
+        } />
+        <Route path="/messages" element={
+          <ProtectedRoute>
+            <MessagesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/payment-methods" element={
+          <ProtectedRoute>
+            <PaymentMethodsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/delivery-addresses" element={
+          <ProtectedRoute>
+            <DeliveryAddressesPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={

@@ -237,17 +237,23 @@ export default function BuyerDashboard() {
                       Browse Products
                     </a>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <MessageCircle className="h-4 w-4 mr-3" />
-                    Messages
+                  <Button variant="outline" className="w-full justify-start h-12" asChild>
+                    <a href="/messages">
+                      <MessageCircle className="h-4 w-4 mr-3" />
+                      Messages
+                    </a>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <CreditCard className="h-4 w-4 mr-3" />
-                    Payment Methods
+                  <Button variant="outline" className="w-full justify-start h-12" asChild>
+                    <a href="/payment-methods">
+                      <CreditCard className="h-4 w-4 mr-3" />
+                      Payment Methods
+                    </a>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <MapPin className="h-4 w-4 mr-3" />
-                    Delivery Addresses
+                  <Button variant="outline" className="w-full justify-start h-12" asChild>
+                    <a href="/delivery-addresses">
+                      <MapPin className="h-4 w-4 mr-3" />
+                      Delivery Addresses
+                    </a>
                   </Button>
                 </CardContent>
               </Card>
