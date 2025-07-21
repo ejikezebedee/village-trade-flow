@@ -101,24 +101,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        if (!mounted) return;
+        
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await fetchUserProfile(session.user.id);
-          
-          // Send welcome email for new users
-          if (event === 'INITIAL_SESSION') {
-            // Check if this is a newly created user by checking profile creation time
-            setTimeout(async () => {
-              if (profile && new Date(profile.created_at) > new Date(Date.now() - 10000)) {
-                await sendWelcomeEmail('welcome');
-              }
-            }, 3000); // Wait 3 seconds for profile to be created
-          }
+          // Use setTimeout to avoid potential deadlock with onAuthStateChange
+          setTimeout(() => {
+            if (mounted) {
+              fetchUserProfile(session.user.id);
+            }
+          }, 0);
         } else {
           setProfile(null);
           setLoading(false);
@@ -127,35 +126,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      } else {
-        setLoading(false);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setLoading(false);
+        }
       }
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to handle missing profiles gracefully
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" which is ok
         console.error('Error fetching profile:', error);
         setProfile(null);
-        return;
+      } else {
+        setProfile(data);
       }
-
-      setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
