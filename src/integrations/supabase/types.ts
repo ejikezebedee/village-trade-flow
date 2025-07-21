@@ -469,6 +469,98 @@ export type Database = {
           },
         ]
       }
+      fraud_alerts: {
+        Row: {
+          alert_type: string
+          assigned_to: string | null
+          auto_generated: boolean | null
+          created_at: string
+          description: string
+          evidence: Json
+          id: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          rule_id: string | null
+          severity: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          alert_type: string
+          assigned_to?: string | null
+          auto_generated?: boolean | null
+          created_at?: string
+          description: string
+          evidence: Json
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          rule_id?: string | null
+          severity: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          alert_type?: string
+          assigned_to?: string | null
+          auto_generated?: boolean | null
+          created_at?: string
+          description?: string
+          evidence?: Json
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          rule_id?: string | null
+          severity?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fraud_alerts_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "fraud_detection_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fraud_detection_rules: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          rule_name: string
+          rule_type: string
+          severity: string | null
+          threshold_timeframe: unknown | null
+          threshold_value: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          rule_name: string
+          rule_type: string
+          severity?: string | null
+          threshold_timeframe?: unknown | null
+          threshold_value?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          rule_name?: string
+          rule_type?: string
+          severity?: string | null
+          threshold_timeframe?: unknown | null
+          threshold_value?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fraud_reports: {
         Row: {
           assigned_to: string | null
@@ -1696,6 +1788,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activities: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          created_at: string
+          geolocation: Json | null
+          id: string
+          ip_address: unknown
+          risk_score: number | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          created_at?: string
+          geolocation?: Json | null
+          id?: string
+          ip_address: unknown
+          risk_score?: number | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          created_at?: string
+          geolocation?: Json | null
+          id?: string
+          ip_address?: unknown
+          risk_score?: number | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_restrictions: {
         Row: {
           created_at: string | null
@@ -1779,6 +1910,18 @@ export type Database = {
         Args: { accept_language: string }
         Returns: string
       }
+      detect_ip_fraud: {
+        Args: { p_ip_address: unknown; p_timeframe?: unknown }
+        Returns: Json
+      }
+      detect_velocity_fraud: {
+        Args: {
+          p_user_id: string
+          p_transaction_amount: number
+          p_timeframe?: unknown
+        }
+        Returns: Json
+      }
       expire_kyc_verifications: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -1802,6 +1945,17 @@ export type Database = {
       is_admin: {
         Args: { user_uuid?: string }
         Returns: boolean
+      }
+      log_activity_and_check_fraud: {
+        Args: {
+          p_user_id: string
+          p_ip_address: unknown
+          p_activity_type: string
+          p_activity_data?: Json
+          p_user_agent?: string
+          p_session_id?: string
+        }
+        Returns: Json
       }
       log_security_event: {
         Args: {
