@@ -111,6 +111,20 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ product, quantity, o
       if (paymentData.url) {
         window.open(paymentData.url, '_blank');
         onClose();
+        
+        // Send automated messages for order placed
+        try {
+          await supabase.functions.invoke('send-automated-messages', {
+            body: {
+              messageType: 'order_placed',
+              orderId: order.id
+            }
+          });
+        } catch (messageError) {
+          console.error('Failed to send automated messages:', messageError);
+          // Don't fail the whole process if messaging fails
+        }
+
         toast({
           title: "Redirecting to payment",
           description: "Complete your secure payment with escrow protection in the new tab.",

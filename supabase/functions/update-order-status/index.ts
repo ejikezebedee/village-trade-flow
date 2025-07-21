@@ -137,6 +137,18 @@ serve(async (req) => {
           },
           priority: "high"
         });
+        
+        // Send automated messages for order shipped
+        try {
+          await supabaseService.functions.invoke('send-automated-messages', {
+            body: {
+              messageType: 'order_shipped',
+              orderId: orderId
+            }
+          });
+        } catch (messageError) {
+          console.error('Failed to send automated messages:', messageError);
+        }
 
         // Notify seller about payment release
         await supabaseService.from("notifications").insert({
@@ -174,7 +186,22 @@ serve(async (req) => {
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
-    });
+        });
+        
+        // Send automated messages for delivery confirmed
+        try {
+          await supabaseService.functions.invoke('send-automated-messages', {
+            body: {
+              messageType: 'delivery_confirmed',
+              orderId: orderId,
+              customData: {
+                amount: order.total_amount
+              }
+            }
+          });
+        } catch (messageError) {
+          console.error('Failed to send automated messages:', messageError);
+        }
 
   } catch (error) {
     console.error("Order status update error:", error);

@@ -67,6 +67,22 @@ serve(async (req) => {
         escrow_status: "held"
       });
 
+      // Send automated messages for payment received
+      try {
+        await supabaseService.functions.invoke('send-automated-messages', {
+          body: {
+            messageType: 'payment_received',
+            orderId: orderId,
+            customData: {
+              amount: session.amount_total / 100
+            }
+          }
+        });
+      } catch (messageError) {
+        console.error('Failed to send automated messages:', messageError);
+        // Don't fail the payment verification if messaging fails
+      }
+
       return new Response(JSON.stringify({ 
         success: true, 
         message: "Payment verified and locked in escrow" 

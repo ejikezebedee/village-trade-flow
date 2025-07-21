@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      automated_messages: {
+        Row: {
+          created_at: string
+          delivered_at: string | null
+          delivery_status: string
+          failure_reason: string | null
+          id: string
+          message_content: string
+          message_type: string
+          metadata: Json | null
+          order_id: string | null
+          recipient_id: string
+          recipient_type: string
+          retry_count: number
+          sent_at: string | null
+          subject: string
+          template_used: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delivered_at?: string | null
+          delivery_status?: string
+          failure_reason?: string | null
+          id?: string
+          message_content: string
+          message_type: string
+          metadata?: Json | null
+          order_id?: string | null
+          recipient_id: string
+          recipient_type: string
+          retry_count?: number
+          sent_at?: string | null
+          subject: string
+          template_used?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delivered_at?: string | null
+          delivery_status?: string
+          failure_reason?: string | null
+          id?: string
+          message_content?: string
+          message_type?: string
+          metadata?: Json | null
+          order_id?: string | null
+          recipient_id?: string
+          recipient_type?: string
+          retry_count?: number
+          sent_at?: string | null
+          subject?: string
+          template_used?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automated_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           created_at: string
@@ -1212,6 +1277,45 @@ export type Database = {
           successful_resolutions?: number | null
           total_cases?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      message_templates: {
+        Row: {
+          content_template: string
+          created_at: string
+          id: string
+          is_active: boolean
+          message_type: string
+          recipient_type: string
+          subject_template: string
+          template_name: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          content_template: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          message_type: string
+          recipient_type: string
+          subject_template: string
+          template_name: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          content_template?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          message_type?: string
+          recipient_type?: string
+          subject_template?: string
+          template_name?: string
+          updated_at?: string
+          variables?: Json | null
         }
         Relationships: []
       }

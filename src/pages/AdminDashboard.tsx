@@ -22,6 +22,7 @@ import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { ComprehensivePlatformDashboard } from '@/components/admin/ComprehensivePlatformDashboard';
+import { AutomatedMessageMonitoring } from '@/components/admin/AutomatedMessageMonitoring';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -233,12 +234,13 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-7 w-full">
+          <TabsList className="grid grid-cols-8 w-full">
             <TabsTrigger value="dashboard">Platform Overview</TabsTrigger>
             <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="automated">Automated</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
@@ -391,6 +393,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="messages">
             <MessageMonitoring />
+          </TabsContent>
+
+          <TabsContent value="automated">
+            <AutomatedMessageMonitoring />
           </TabsContent>
 
           <TabsContent value="users">
