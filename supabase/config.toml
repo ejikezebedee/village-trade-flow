@@ -5,3 +5,15 @@ verify_jwt = true
 
 [functions.scan-qr]  
 verify_jwt = true
+
+[functions.send-welcome-email]
+verify_jwt = true
+
+[functions.create-payment]
+verify_jwt = true
+
+[functions.verify-payment]
+verify_jwt = true
+
+[functions.release-payment]
+verify_jwt = true

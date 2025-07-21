@@ -65,6 +65,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const sendWelcomeEmail = async (emailType: string) => {
+    if (!user || !profile) return;
+
+    try {
+      await supabase.functions.invoke('send-welcome-email', {
+        body: {
+          emailType: emailType,
+          profileData: profile
+        }
+      });
+    } catch (error) {
+      console.error('Error sending welcome email:', error);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -74,6 +89,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (session?.user) {
           await fetchUserProfile(session.user.id);
+          
+          // Send welcome email for new users
+          if (event === 'INITIAL_SESSION') {
+            // Check if this is a newly created user by checking profile creation time
+            setTimeout(async () => {
+              if (profile && new Date(profile.created_at) > new Date(Date.now() - 10000)) {
+                await sendWelcomeEmail('welcome');
+              }
+            }, 3000); // Wait 3 seconds for profile to be created
+          }
         } else {
           setProfile(null);
         }
@@ -190,6 +215,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return { error: new Error('No user found') };
 
     try {
+      const oldUserType = profile?.user_type;
+      
       const { error } = await supabase
         .from('profiles')
         .update(updates)
@@ -197,6 +224,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (!error) {
         await fetchUserProfile(user.id);
+        
+        // Send notification email if profile was updated
+        if (updates.user_type && updates.user_type !== oldUserType) {
+          await sendWelcomeEmail('role_assigned');
+        } else {
+          await sendWelcomeEmail('profile_updated');
+        }
       }
 
       return { error };
