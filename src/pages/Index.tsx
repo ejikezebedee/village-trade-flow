@@ -4,9 +4,37 @@ import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      toast.success(`Searching for: ${searchQuery}`);
+      // Navigate to a search results page or filter products
+      // For now, we'll just show a toast
+      console.log("Searching for:", searchQuery);
+    } else {
+      toast.error("Please enter a search term");
+    }
+  };
+
+  const handlePopularSearch = (tag: string) => {
+    setSearchQuery(tag);
+    toast.success(`Searching for: ${tag}`);
+    console.log("Popular search clicked:", tag);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   if (loading) {
     return (
@@ -73,11 +101,15 @@ const Index = () => {
                       <div className="relative flex-1">
                         <input
                           type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onKeyPress={handleKeyPress}
                           placeholder="Search for products, categories, or brands..."
                           className="w-full px-4 py-4 text-lg rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-12"
                         />
                         <Button 
                           size="sm" 
+                          onClick={handleSearch}
                           className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary/90"
                         >
                           Search
@@ -87,16 +119,17 @@ const Index = () => {
                     
                     <div className="flex flex-wrap gap-2 justify-center">
                       <span className="text-sm text-muted-foreground">Popular searches:</span>
-                      {['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'].map((tag) => (
-                        <Button
-                          key={tag}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs px-3 py-1 rounded-full"
-                        >
-                          {tag}
-                        </Button>
-                      ))}
+                       {['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'].map((tag) => (
+                         <Button
+                           key={tag}
+                           variant="outline"
+                           size="sm"
+                           onClick={() => handlePopularSearch(tag)}
+                           className="text-xs px-3 py-1 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+                         >
+                           {tag}
+                         </Button>
+                       ))}
                     </div>
                   </div>
                 </div>
