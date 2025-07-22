@@ -112,16 +112,23 @@ const Index = () => {
             {/* Newsletter Section */}
             <section className="py-8 sm:py-12 bg-muted/30">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center">
+                <div className="max-w-md mx-auto text-center">
                   <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
                     Stay Updated
                   </h2>
                   <p className="text-muted-foreground mb-6">
                     Get the latest deals and updates delivered to your inbox
                   </p>
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">
-                    Subscribe Now
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                    <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
+                      Subscribe Now
+                    </Button>
+                  </div>
                 </div>
               </div>
             </section>
