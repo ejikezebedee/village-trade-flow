@@ -30,8 +30,8 @@ const Index = () => {
         ) : (
           <div className="space-y-8 sm:space-y-12">
             {/* Hero Section */}
-            <section className="relative min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center overflow-hidden pt-16">
-              <div className="container mx-auto px-6 lg:px-8 py-24 relative z-10">
+            <section className="relative bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center overflow-hidden py-16 sm:py-20">
+              <div className="container mx-auto px-6 lg:px-8 relative z-10">
                 <div className="max-w-4xl mx-auto text-center space-y-12">
                   <div className="space-y-6">
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-foreground leading-tight tracking-tighter">
