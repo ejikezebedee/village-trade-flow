@@ -205,8 +205,8 @@ export function BestSellersSection({ maxItems = 6, className = "" }: BestSellers
         </div>
         
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg" className="apple-button font-medium px-8">
-            View All Best Sellers
+          <Button variant="outline" size="lg" className="apple-button font-medium px-8" asChild>
+            <a href="/best-sellers">View All Best Sellers</a>
           </Button>
         </div>
       </div>

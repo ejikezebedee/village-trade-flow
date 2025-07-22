@@ -42,6 +42,8 @@ import BrandsPage from "./pages/BrandsPage";
 import BrandDetailsPage from "./pages/BrandDetailsPage";
 import AuctionPage from "./pages/AuctionPage";
 import FlashSalesPage from "./pages/FlashSalesPage";
+import BestSellersPage from "./pages/BestSellersPage";
+import NewProductsPage from "./pages/NewProductsPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -64,6 +66,8 @@ const App = () => (
         <Route path="/brands/:slug" element={<BrandDetailsPage />} />
         <Route path="/auctions" element={<AuctionPage />} />
         <Route path="/flash-sales" element={<FlashSalesPage />} />
+        <Route path="/best-sellers" element={<BestSellersPage />} />
+        <Route path="/new-products" element={<NewProductsPage />} />
         <Route path="/features" element={<FeaturesPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />

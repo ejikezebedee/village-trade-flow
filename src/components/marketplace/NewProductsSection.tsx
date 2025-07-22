@@ -193,8 +193,8 @@ export function NewProductsSection({
         
         {showHeader && (
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg" className="apple-button font-medium px-8">
-              View All New Products
+            <Button variant="outline" size="lg" className="apple-button font-medium px-8" asChild>
+              <a href="/new-products">View All New Products</a>
             </Button>
           </div>
         )}

@@ -256,6 +256,15 @@ export function FlashSalesSection({
         </div>
       )}
 
+      {/* View All Button */}
+      {showHeader && (
+        <div className="text-center mt-12">
+          <Button variant="outline" size="lg" className="apple-button font-medium px-8" asChild>
+            <a href="/flash-sales">View All Flash Sales</a>
+          </Button>
+        </div>
+      )}
+
       {/* Auto-refresh indicator */}
       <div className="mt-6 text-center">
         <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">

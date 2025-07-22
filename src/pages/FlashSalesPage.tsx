@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import { Header } from "@/components/marketplace/Header";
+import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/seo/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -162,25 +164,29 @@ export default function FlashSalesPage() {
 
   const stats = getFlashSaleStats();
 
+  const seoKeywords = [
+    "flash sales",
+    "limited time offers", 
+    "discount products",
+    "sale items",
+    "special deals",
+    "village market sales",
+    "discounted handmade goods",
+    "lightning deals",
+    "time-sensitive promotions"
+  ];
+
   return (
     <>
-      <Helmet>
-        <title>Flash Sales - Limited Time Offers | VillageMarket</title>
-        <meta 
-          name="description" 
-          content="Don't miss out on our flash sales! Lightning deals with incredible discounts for a limited time only. Shop now before these amazing offers expire!"
-        />
-        <meta 
-          name="keywords" 
-          content="flash sales, limited time offers, discounts, deals, lightning deals, time-sensitive promotions, special offers"
-        />
-        <meta property="og:title" content="Flash Sales - Limited Time Offers | VillageMarket" />
-        <meta property="og:description" content="Lightning deals with incredible discounts for a limited time only!" />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href="/flash-sales" />
-      </Helmet>
+      <SEOHead
+        title="Flash Sales - Limited Time Offers on Rural Products"
+        description="Don't miss out on our flash sales! Lightning deals with incredible discounts for a limited time only. Shop now before these amazing offers expire!"
+        keywords={seoKeywords}
+        canonical="/flash-sales"
+      />
 
       <div className="min-h-screen bg-background">
+        <Header />
         <div className="container mx-auto px-6 lg:px-8 py-8 space-y-8">
           {/* Header */}
           <div className="text-center space-y-4">
@@ -383,6 +389,8 @@ export default function FlashSalesPage() {
             )}
           </div>
         </div>
+        
+        <Footer />
       </div>
     </>
   );
