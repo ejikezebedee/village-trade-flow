@@ -72,10 +72,19 @@ const Index = () => {
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button size="lg" className="text-base px-8 py-3 bg-primary hover:bg-primary/90">
+                    <Button 
+                      size="lg" 
+                      onClick={() => navigate('/auth')}
+                      className="text-base px-8 py-3 bg-primary hover:bg-primary/90"
+                    >
                       Start Trading Now
                     </Button>
-                    <Button size="lg" variant="outline" className="text-base px-8 py-3">
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      onClick={() => navigate('/how-it-works')}
+                      className="text-base px-8 py-3"
+                    >
                       See How It Works
                     </Button>
                   </div>
