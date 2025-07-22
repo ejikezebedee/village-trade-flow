@@ -172,7 +172,10 @@ const App = () => (
                 </ProtectedRoute>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+        <Route path="/affiliate" element={<AffiliatePage />} />
+        <Route path="/affiliate-dashboard" element={<AffiliateDashboard />} />
+        <Route path="/affiliate-tiers/:tierName" element={<AffiliateTierPage />} />
+        <Route path="*" element={<NotFound />} />
               </Routes>
               <LiveChatWidget />
             </AnalyticsProvider>
