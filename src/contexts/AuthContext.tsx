@@ -128,16 +128,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Get initial session
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth...');
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!mounted) return;
         
+        console.log('Initial session:', session);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
           await fetchUserProfile(session.user.id);
         } else {
+          console.log('No session, setting loading to false');
           setLoading(false);
         }
       } catch (error) {
@@ -150,8 +153,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
+    // Fallback timeout to prevent infinite loading
+    const fallbackTimeout = setTimeout(() => {
+      if (mounted) {
+        console.log('Fallback timeout triggered, setting loading to false');
+        setLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
     return () => {
       mounted = false;
+      clearTimeout(fallbackTimeout);
       subscription.unsubscribe();
     };
   }, []);
@@ -163,23 +175,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      console.log('Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle(); // Use maybeSingle instead of single to handle missing profiles gracefully
 
+      console.log('Profile fetch result:', { data, error });
+
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" which is ok
         console.error('Error fetching profile:', error);
         setProfile(null);
       } else {
         setProfile(data);
+        console.log('Profile set:', data);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
     } finally {
       // Always set loading to false after attempting to fetch profile
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
