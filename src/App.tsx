@@ -171,7 +171,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/dashboard/agent" element={
-                <ProtectedRoute requiredRole="agent">
+                <ProtectedRoute>
                   <AgentDashboard />
                 </ProtectedRoute>
               } />
