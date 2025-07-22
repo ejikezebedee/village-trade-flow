@@ -126,7 +126,7 @@ const categories = ["🥕 Vegetables", "🍯 Food", "🧺 Crafts", "🏺 Pottery
 
 export default function ProductListing() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
@@ -135,7 +135,7 @@ export default function ProductListing() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -175,7 +175,7 @@ export default function ProductListing() {
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
@@ -193,9 +193,9 @@ export default function ProductListing() {
               {/* Quick filters */}
               <div className="flex flex-wrap gap-2">
                 <Badge 
-                  variant={selectedCategory === "" ? "default" : "outline"} 
+                  variant={selectedCategory === "all" ? "default" : "outline"} 
                   className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                  onClick={() => setSelectedCategory("")}
+                  onClick={() => setSelectedCategory("all")}
                 >
                   All Products
                 </Badge>
@@ -299,7 +299,7 @@ export default function ProductListing() {
                   variant="outline" 
                   onClick={() => {
                     setSearchTerm("");
-                    setSelectedCategory("");
+                    setSelectedCategory("all");
                   }}
                 >
                   Clear Filters

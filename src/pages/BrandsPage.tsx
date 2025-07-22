@@ -17,8 +17,10 @@ import {
   Crown,
   Package,
   Users,
-  Award
+  Award,
+  ArrowLeft
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Brand {
   id: string;
@@ -166,6 +168,17 @@ export default function BrandsPage() {
 
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-6 lg:px-8 py-8 space-y-8">
+          
+          {/* Back to Home Button */}
+          <div>
+            <Button asChild variant="outline" className="mb-4">
+              <Link to="/" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </Link>
+            </Button>
+          </div>
+
           {/* Header */}
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center gap-2 mb-4">

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Heart, ShoppingCart, MapPin, Verified } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface ProductCardProps {
@@ -32,6 +33,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onBuyNow }: ProductCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
+  const navigate = useNavigate();
   
   // Simplified analytics - no automatic tracking on mount
   const handleProductView = () => {
@@ -61,6 +63,9 @@ export function ProductCard({ product, onBuyNow }: ProductCardProps) {
     } catch (error) {
       console.warn('Analytics tracking failed:', error);
     }
+    
+    // Navigate to product details page
+    navigate(`/products/${product.id}`);
   };
 
   const handleFavorite = (e: React.MouseEvent) => {

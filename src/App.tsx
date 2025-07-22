@@ -54,6 +54,8 @@ import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import CookiesPage from "./pages/CookiesPage";
+import FAQPage from "./pages/FAQPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -74,6 +76,8 @@ const App = () => (
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/verify-email" element={<EmailVerificationHandler />} />
         <Route path="/products" element={<ProductListing />} />
+        <Route path="/products/:id" element={<ProductDetailsPage />} />
+        <Route path="/faq" element={<FAQPage />} />
         <Route path="/blogs" element={<BlogsPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/brands" element={<BrandsPage />} />
