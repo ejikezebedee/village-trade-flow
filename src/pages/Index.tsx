@@ -5,6 +5,10 @@ import { FeaturedProducts } from "@/components/marketplace/FeaturedProducts";
 import { FlashSalesSection } from "@/components/flash-sales/FlashSalesSection";
 import { BestSellersSection } from "@/components/marketplace/BestSellersSection";
 import { NewProductsSection } from "@/components/marketplace/NewProductsSection";
+import { PremiumProductsSection } from "@/components/marketplace/PremiumProductsSection";
+import { TodaysDealsSection } from "@/components/marketplace/TodaysDealsSection";
+import { EmailSubscriptionSection } from "@/components/email/EmailSubscriptionSection";
+import { AffiliateSection } from "@/components/affiliate/AffiliateSection";
 import { DashboardNavigation } from "@/components/marketplace/DashboardNavigation";
 import { RoleBasedDashboard } from "@/components/auth/RoleBasedDashboard";
 import { Footer } from "@/components/Footer";
@@ -36,10 +40,14 @@ const Index = () => {
           <>
             <HeroSection />
             <SearchSection />
+            <TodaysDealsSection maxItems={6} />
+            <PremiumProductsSection maxItems={8} />
             <FlashSalesSection showHeader={true} maxItems={4} className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8" />
             <NewProductsSection maxItems={6} />
             <BestSellersSection maxItems={6} />
             <FeaturedProducts />
+            <EmailSubscriptionSection />
+            <AffiliateSection variant="landing" />
             <DashboardNavigation />
           </>
         )}

@@ -27,24 +27,24 @@ export function Header() {
 
           {/* Desktop Navigation - Apple-style clean */}
           <nav className="hidden lg:flex items-center space-x-1">
-            <a href="/flash-sales" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+            <Link to="/" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              Home
+            </Link>
+            <Link to="/flash-sales" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
               Flash Sales
-            </a>
-            <a href="/brands" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
-              Top Brands
-            </a>
-            <a href="/auctions" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+            </Link>
+            <Link to="/blogs" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              Blogs
+            </Link>
+            <Link to="/brands" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              All Brands
+            </Link>
+            <Link to="/categories" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
+              All Categories
+            </Link>
+            <Link to="/auctions" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
               Auctions
-            </a>
-            <a href="/how-it-works" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
-              How It Works
-            </a>
-            <a href="/why-choose-us" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
-              Why Choose Us
-            </a>
-            <a href="/get-help" className="text-sm text-foreground hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-muted/50 font-medium">
-              Get Help
-            </a>
+            </Link>
           </nav>
 
           {/* Action Buttons - Apple-style clean */}
@@ -82,48 +82,48 @@ export function Header() {
         {isMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/98 backdrop-blur-md">
             <nav className="py-6 space-y-1">
-              <a 
-                href="/flash-sales" 
+              <Link 
+                to="/" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                🏠 Home
+              </Link>
+              <Link 
+                to="/flash-sales" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 ⚡ Flash Sales
-              </a>
-              <a 
-                href="/brands" 
+              </Link>
+              <Link 
+                to="/blogs" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                👑 Top Brands
-              </a>
-              <a 
-                href="/auctions" 
+                📝 Blogs
+              </Link>
+              <Link 
+                to="/brands" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                👑 All Brands
+              </Link>
+              <Link 
+                to="/categories" 
+                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                📂 All Categories
+              </Link>
+              <Link 
+                to="/auctions" 
                 className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 🔨 Auctions
-              </a>
-              <a 
-                href="/how-it-works" 
-                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                📖 How It Works
-              </a>
-              <a 
-                href="/why-choose-us" 
-                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                ⭐ Why Choose Us
-              </a>
-              <a 
-                href="/get-help" 
-                className="block px-4 py-4 text-lg font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                🆘 Get Help
-              </a>
+              </Link>
                 <div className="flex flex-col space-y-3 px-4 pt-6 border-t border-border">
                 {user ? (
                   <div className="flex flex-col items-center space-y-3">
