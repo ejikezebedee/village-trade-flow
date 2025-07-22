@@ -63,9 +63,41 @@ const Index = () => {
                     <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                       🔍 What Are You Looking For?
                     </h2>
-                    <p className="text-muted-foreground text-lg">
+                    <p className="text-muted-foreground text-lg mb-6">
                       Search thousands of products from villages near you
                     </p>
+                  </div>
+                  
+                  <div className="max-w-2xl mx-auto">
+                    <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          placeholder="Search for products, categories, or brands..."
+                          className="w-full px-4 py-4 text-lg rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-12"
+                        />
+                        <Button 
+                          size="sm" 
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary/90"
+                        >
+                          Search
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <span className="text-sm text-muted-foreground">Popular searches:</span>
+                      {['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'].map((tag) => (
+                        <Button
+                          key={tag}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs px-3 py-1 rounded-full"
+                        >
+                          {tag}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
