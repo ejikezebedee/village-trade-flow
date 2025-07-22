@@ -9,6 +9,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { LiveChatWidget } from "@/components/support/LiveChatWidget";
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
+import { SafetyErrorBoundary } from "@/components/SafetyErrorBoundary";
 import Index from "./pages/Index";
 import ProductListing from "./pages/ProductListing";
 import AuthPage from "./pages/AuthPage";
@@ -58,7 +59,8 @@ import { EmailVerificationHandler } from "./components/auth/EmailVerificationHan
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <SafetyErrorBoundary>
+    <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <TooltipProvider>
         <AuthProvider>
@@ -200,6 +202,7 @@ const App = () => (
     </TooltipProvider>
     </HelmetProvider>
   </QueryClientProvider>
+  </SafetyErrorBoundary>
 );
 
 export default App;

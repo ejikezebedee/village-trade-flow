@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Heart, ShoppingCart, MapPin, Verified } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface ProductCardProps {
@@ -32,63 +32,81 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onBuyNow }: ProductCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
-  const { trackProductEvent, trackEvent } = useAnalytics();
-
+  
+  // Simplified analytics - no automatic tracking on mount
   const handleProductView = () => {
-    trackProductEvent(product.id.toString(), 'view', {
-      name: product.name,
-      category: product.category,
-      price: parseFloat(product.price.replace('$', '')),
-      seller: product.seller.name
-    });
+    try {
+      // Only track if useAnalytics is available
+      const { trackProductEvent } = useAnalytics();
+      trackProductEvent(product.id.toString(), 'view', {
+        name: product.name,
+        category: product.category,
+        price: parseFloat(product.price.replace('$', '')),
+        seller: product.seller.name
+      });
+    } catch (error) {
+      console.warn('Analytics tracking failed:', error);
+    }
   };
 
   const handleProductClick = () => {
-    trackProductEvent(product.id.toString(), 'click', {
-      name: product.name,
-      category: product.category,
-      price: parseFloat(product.price.replace('$', '')),
-      seller: product.seller.name
-    });
+    try {
+      const { trackProductEvent } = useAnalytics();
+      trackProductEvent(product.id.toString(), 'click', {
+        name: product.name,
+        category: product.category,
+        price: parseFloat(product.price.replace('$', '')),
+        seller: product.seller.name
+      });
+    } catch (error) {
+      console.warn('Analytics tracking failed:', error);
+    }
   };
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFavorited(!isFavorited);
-    trackProductEvent(product.id.toString(), 'favorite', {
-      name: product.name,
-      category: product.category,
-      favorited: !isFavorited
-    });
-    trackEvent('engagement', 'product_favorited', {
-      product_id: product.id,
-      product_name: product.name,
-      action: !isFavorited ? 'add' : 'remove'
-    });
+    try {
+      const { trackProductEvent, trackEvent } = useAnalytics();
+      trackProductEvent(product.id.toString(), 'favorite', {
+        name: product.name,
+        category: product.category,
+        favorited: !isFavorited
+      });
+      trackEvent('engagement', 'product_favorited', {
+        product_id: product.id,
+        product_name: product.name,
+        action: !isFavorited ? 'add' : 'remove'
+      });
+    } catch (error) {
+      console.warn('Analytics tracking failed:', error);
+    }
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
-    trackProductEvent(product.id.toString(), 'add_to_cart', {
-      name: product.name,
-      category: product.category,
-      price: parseFloat(product.price.replace('$', '')),
-      seller: product.seller.name
-    });
-    trackEvent('ecommerce', 'add_to_cart', {
-      product_id: product.id,
-      product_name: product.name,
-      value: parseFloat(product.price.replace('$', ''))
-    });
+    try {
+      const { trackProductEvent, trackEvent } = useAnalytics();
+      trackProductEvent(product.id.toString(), 'add_to_cart', {
+        name: product.name,
+        category: product.category,
+        price: parseFloat(product.price.replace('$', '')),
+        seller: product.seller.name
+      });
+      trackEvent('ecommerce', 'add_to_cart', {
+        product_id: product.id,
+        product_name: product.name,
+        value: parseFloat(product.price.replace('$', ''))
+      });
+    } catch (error) {
+      console.warn('Analytics tracking failed:', error);
+    }
     if (onBuyNow) {
       onBuyNow(product, 1);
     }
   };
 
-  // Track product view when component mounts
-  useEffect(() => {
-    handleProductView();
-  }, []);
+  // REMOVED: Automatic analytics tracking on mount to prevent delays
 
   return (
     <Card 

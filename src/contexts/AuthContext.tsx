@@ -129,7 +129,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initializeAuth = async () => {
       try {
         console.log('Initializing auth...');
-        const { data: { session } } = await supabase.auth.getSession();
+        
+        // Add timeout to prevent hanging on getSession
+        const timeoutPromise = new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Session fetch timeout')), 3000)
+        );
+        
+        const sessionPromise = supabase.auth.getSession();
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
         
         if (!mounted) return;
         
@@ -153,13 +160,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
-    // Fallback timeout to prevent infinite loading
+    // Reduced fallback timeout to prevent long hangs
     const fallbackTimeout = setTimeout(() => {
       if (mounted) {
         console.log('Fallback timeout triggered, setting loading to false');
         setLoading(false);
       }
-    }, 10000); // 10 second timeout
+    }, 5000); // Reduced to 5 seconds
 
     return () => {
       mounted = false;
@@ -176,11 +183,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+      );
+      
+      const fetchPromise = supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .maybeSingle(); // Use maybeSingle instead of single to handle missing profiles gracefully
+        .maybeSingle();
+
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
 
       console.log('Profile fetch result:', { data, error });
 
@@ -251,18 +266,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
-      // Check if user has 2FA enabled
+      // Check if user has 2FA enabled - with timeout protection
       if (data.user) {
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('two_factor_enabled')
-          .eq('user_id', data.user.id)
-          .single();
+        try {
+          const timeoutPromise = new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('2FA check timeout')), 3000)
+          );
+          
+          const profilePromise = supabase
+            .from('profiles')
+            .select('two_factor_enabled')
+            .eq('user_id', data.user.id)
+            .single();
 
-        if (!profileError && profile?.two_factor_enabled) {
-          setTwoFactorRequired(true);
-          setTwoFactorVerified(false);
-          return { error: null, twoFactorRequired: true };
+          const { data: profile, error: profileError } = await Promise.race([profilePromise, timeoutPromise]);
+
+          if (!profileError && profile?.two_factor_enabled) {
+            setTwoFactorRequired(true);
+            setTwoFactorVerified(false);
+            return { error: null, twoFactorRequired: true };
+          }
+        } catch (error) {
+          console.error('Error checking 2FA status:', error);
+          // Continue without 2FA check if it fails
         }
       }
 

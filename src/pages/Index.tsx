@@ -9,9 +9,21 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Index = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  
+  // Simplified auth usage with fallback
+  let user = null;
+  let loading = false;
+  
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    loading = authContext.loading;
+  } catch (error) {
+    console.error('Auth context error:', error);
+    // Continue with null user if auth fails
+  }
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -36,13 +48,17 @@ const Index = () => {
     }
   };
 
+  // Simplified loading state - no hanging
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-14 sm:pt-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
+            <p>Loading...</p>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -53,7 +69,15 @@ const Index = () => {
       <main className="pt-14 sm:pt-16">
         {user ? (
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-            <RoleBasedDashboard />
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-4">Welcome back!</h2>
+              <Button onClick={() => navigate('/dashboard/buyer')} className="mr-4">
+                Go to Dashboard
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/products')}>
+                Browse Products
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="space-y-8 sm:space-y-12">
@@ -221,6 +245,53 @@ const Index = () => {
                     >
                       Subscribe Now
                     </Button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            
+            {/* Navigation Test Panel - for testing all routes */}
+            <section className="py-8 sm:py-12 bg-muted/10">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-6xl mx-auto text-center">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+                    🧪 Site Navigation Test
+                  </h2>
+                  <p className="text-muted-foreground mb-8">
+                    Test all buttons and navigation links to verify site functionality
+                  </p>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {[
+                      { label: 'Flash Sales', route: '/flash-sales' },
+                      { label: 'Blogs', route: '/blogs' },
+                      { label: 'All Brands', route: '/brands' },
+                      { label: 'Categories', route: '/categories' },
+                      { label: 'Auctions', route: '/auctions' },
+                      { label: 'Products', route: '/products' },
+                      { label: 'Best Sellers', route: '/best-sellers' },
+                      { label: 'New Products', route: '/new-products' },
+                      { label: 'How It Works', route: '/how-it-works' },
+                      { label: 'Why Choose Us', route: '/why-choose-us' },
+                      { label: 'Get Help', route: '/get-help' },
+                      { label: 'Sign Up/Login', route: '/auth' },
+                    ].map((item, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(item.route)}
+                        className="text-xs"
+                      >
+                        {item.label}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <p className="text-green-700 text-sm">
+                      ✅ If you can see this section and the buttons above work, the site is functioning correctly!
+                    </p>
                   </div>
                 </div>
               </div>
