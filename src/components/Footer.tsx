@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "react-router-dom";
 import { 
   QrCode, 
   Mail, 
@@ -39,16 +40,36 @@ export function Footer() {
               Buy and sell with confidence in your neighborhood.
             </p>
             <div className="flex space-x-3">
-              <Button variant="outline" size="sm" className="p-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="p-2"
+                onClick={() => window.open('https://facebook.com/villagemarket', '_blank')}
+              >
                 <Facebook className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="sm" className="p-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="p-2"
+                onClick={() => window.open('https://twitter.com/villagemarket', '_blank')}
+              >
                 <Twitter className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="sm" className="p-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="p-2"
+                onClick={() => window.open('https://instagram.com/villagemarket', '_blank')}
+              >
                 <Instagram className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="sm" className="p-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="p-2"
+                onClick={() => window.open('https://linkedin.com/company/villagemarket', '_blank')}
+              >
                 <Linkedin className="h-4 w-4" />
               </Button>
             </div>
@@ -59,29 +80,29 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
                   How It Works
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/why-choose-us" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/why-choose-us" className="text-muted-foreground hover:text-primary transition-colors">
                   Why Choose Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/products" className="text-muted-foreground hover:text-primary transition-colors">
                   Browse Products
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/auth" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/auth" className="text-muted-foreground hover:text-primary transition-colors">
                   Sign Up / Login
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/feedback" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/feedback" className="text-muted-foreground hover:text-primary transition-colors">
                   Give Feedback
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -91,29 +112,29 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/get-help" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/get-help" className="text-muted-foreground hover:text-primary transition-colors">
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/get-help#faq" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/get-help#faq" className="text-muted-foreground hover:text-primary transition-colors">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/disputes" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/disputes" className="text-muted-foreground hover:text-primary transition-colors">
                   Dispute Resolution
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/qr-tracking" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/qr-tracking" className="text-muted-foreground hover:text-primary transition-colors">
                   QR Tracking
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/language-settings" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/language-settings" className="text-muted-foreground hover:text-primary transition-colors">
                   Language Settings
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -154,15 +175,15 @@ export function Footer() {
           </div>
           
           <div className="flex flex-wrap items-center gap-4 text-sm">
-            <a href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
-            </a>
-            <a href="/terms" className="text-muted-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
               Terms of Service
-            </a>
-            <a href="/cookies" className="text-muted-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/cookies" className="text-muted-foreground hover:text-primary transition-colors">
               Cookie Policy
-            </a>
+            </Link>
             <Badge variant="secondary" className="text-xs">
               v2.1.0
             </Badge>

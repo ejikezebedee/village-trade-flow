@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { FlashSaleCard } from "@/components/flash-sales/FlashSaleCard";
 import { 
   Zap, 
@@ -48,6 +49,7 @@ export default function FlashSalesPage() {
   const [filterBy, setFilterBy] = useState("all");
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchFlashSales();
@@ -146,7 +148,7 @@ export default function FlashSalesPage() {
   };
 
   const handleShopNow = (sale: FlashSale) => {
-    window.location.href = `/products/${sale.product_id}?flash_sale=${sale.id}`;
+    navigate(`/products/${sale.product_id}?flash_sale=${sale.id}`);
   };
 
   const getFlashSaleStats = () => {

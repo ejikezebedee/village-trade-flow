@@ -2,6 +2,7 @@ import { Header } from "@/components/marketplace/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { 
   ShoppingCart, 
   CreditCard, 
@@ -254,10 +255,10 @@ export default function HowItWorksPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="px-8" asChild>
-                <a href="/auth">Start Buying</a>
+                <Link to="/auth">Start Buying</Link>
               </Button>
               <Button variant="outline" size="lg" className="px-8" asChild>
-                <a href="/auth">Start Selling</a>
+                <Link to="/auth">Start Selling</Link>
               </Button>
             </div>
           </div>

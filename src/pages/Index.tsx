@@ -173,7 +173,13 @@ const Index = () => {
                             $49.99
                           </span>
                         </div>
-                        <Button className="w-full bg-primary hover:bg-primary/90">
+                        <Button 
+                          className="w-full bg-primary hover:bg-primary/90"
+                          onClick={() => {
+                            toast.success(`Sample Product ${i} added to cart!`);
+                            console.log(`Added Sample Product ${i} to cart`);
+                          }}
+                        >
                           Add to Cart
                         </Button>
                       </CardContent>
@@ -197,9 +203,22 @@ const Index = () => {
                     <input
                       type="email"
                       placeholder="Enter your email"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
-                    <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
+                    <Button 
+                      size="lg" 
+                      className="bg-primary hover:bg-primary/90 px-8"
+                      onClick={() => {
+                        if (searchQuery.includes('@')) {
+                          toast.success('Thank you for subscribing to our newsletter!');
+                          setSearchQuery('');
+                        } else {
+                          toast.error('Please enter a valid email address');
+                        }
+                      }}
+                    >
                       Subscribe Now
                     </Button>
                   </div>
