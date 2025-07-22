@@ -9,10 +9,10 @@ import { PremiumProductsSection } from "@/components/marketplace/PremiumProducts
 import { TodaysDealsSection } from "@/components/marketplace/TodaysDealsSection";
 import { EmailSubscriptionSection } from "@/components/email/EmailSubscriptionSection";
 import { AffiliateSection } from "@/components/affiliate/AffiliateSection";
-import { DashboardNavigation } from "@/components/marketplace/DashboardNavigation";
 import { RoleBasedDashboard } from "@/components/auth/RoleBasedDashboard";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -29,31 +29,56 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="pt-14 sm:pt-16">
-        {user ? (
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-            <RoleBasedDashboard />
-          </div>
-        ) : (
-          <>
-            <HeroSection />
-            <SearchSection />
-            <TodaysDealsSection maxItems={6} />
-            <PremiumProductsSection maxItems={8} />
-            <FlashSalesSection showHeader={true} maxItems={4} className="py-6 sm:py-8" />
-            <NewProductsSection maxItems={6} />
-            <BestSellersSection maxItems={6} />
-            <FeaturedProducts />
-            <EmailSubscriptionSection />
-            <AffiliateSection variant="landing" />
-            <DashboardNavigation />
-          </>
-        )}
-      </main>
-      <Footer />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-14 sm:pt-16">
+          {user ? (
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+              <ErrorBoundary>
+                <RoleBasedDashboard />
+              </ErrorBoundary>
+            </div>
+          ) : (
+            <div className="animate-fade-in">
+              <ErrorBoundary>
+                <HeroSection />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <SearchSection />
+              </ErrorBoundary>
+              <div className="space-y-8 sm:space-y-12">
+                <ErrorBoundary>
+                  <TodaysDealsSection maxItems={6} showHeader={true} />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <FlashSalesSection showHeader={true} maxItems={4} className="py-6 sm:py-8" />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <BestSellersSection maxItems={6} />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <PremiumProductsSection maxItems={8} />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <NewProductsSection maxItems={6} />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <FeaturedProducts />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <EmailSubscriptionSection />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <AffiliateSection variant="landing" />
+                </ErrorBoundary>
+              </div>
+            </div>
+          )}
+        </main>
+        <Footer />
+      </div>
+    </ErrorBoundary>
   );
 };
 

@@ -47,6 +47,8 @@ import NewProductsPage from "./pages/NewProductsPage";
 import AffiliatePage from "./pages/AffiliatePage";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import AffiliateTierPage from "./pages/AffiliateTierPage";
+import BlogsPage from "./pages/BlogsPage";
+import CategoriesPage from "./pages/CategoriesPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -65,6 +67,8 @@ const App = () => (
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/verify-email" element={<EmailVerificationHandler />} />
         <Route path="/products" element={<ProductListing />} />
+        <Route path="/blogs" element={<BlogsPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/brands" element={<BrandsPage />} />
         <Route path="/brands/:slug" element={<BrandDetailsPage />} />
         <Route path="/auctions" element={<AuctionPage />} />

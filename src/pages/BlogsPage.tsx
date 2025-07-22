@@ -35,7 +35,7 @@ const BlogsPage = () => {
       date: "2024-01-15",
       readTime: "8 min",
       category: "Shopping Tips",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=400&h=300",
       featured: true,
       trending: true
     },
@@ -47,7 +47,7 @@ const BlogsPage = () => {
       date: "2024-01-12",
       readTime: "6 min",
       category: "Seller Stories",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=400&h=300"
     },
     {
       id: "3",
@@ -57,7 +57,7 @@ const BlogsPage = () => {
       date: "2024-01-10",
       readTime: "12 min",
       category: "Market Trends",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=400&h=300",
       trending: true
     },
     {
@@ -68,7 +68,7 @@ const BlogsPage = () => {
       date: "2024-01-08",
       readTime: "10 min",
       category: "Product Reviews",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&h=300"
     },
     {
       id: "5",
@@ -78,7 +78,7 @@ const BlogsPage = () => {
       date: "2024-01-05",
       readTime: "7 min",
       category: "How To",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&h=300"
     },
     {
       id: "6",
@@ -88,7 +88,7 @@ const BlogsPage = () => {
       date: "2024-01-03",
       readTime: "9 min",
       category: "Market Trends",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1516110833967-0b5715da08da?auto=format&fit=crop&w=400&h=300"
     }
   ];
 
