@@ -44,6 +44,9 @@ import AuctionPage from "./pages/AuctionPage";
 import FlashSalesPage from "./pages/FlashSalesPage";
 import BestSellersPage from "./pages/BestSellersPage";
 import NewProductsPage from "./pages/NewProductsPage";
+import AffiliatePage from "./pages/AffiliatePage";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
+import AffiliateTierPage from "./pages/AffiliateTierPage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
