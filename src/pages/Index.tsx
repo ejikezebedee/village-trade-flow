@@ -249,53 +249,6 @@ const Index = () => {
                 </div>
               </div>
             </section>
-            
-            {/* Navigation Test Panel - for testing all routes */}
-            <section className="py-8 sm:py-12 bg-muted/10">
-              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto text-center">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-                    🧪 Site Navigation Test
-                  </h2>
-                  <p className="text-muted-foreground mb-8">
-                    Test all buttons and navigation links to verify site functionality
-                  </p>
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {[
-                      { label: 'Flash Sales', route: '/flash-sales' },
-                      { label: 'Blogs', route: '/blogs' },
-                      { label: 'All Brands', route: '/brands' },
-                      { label: 'Categories', route: '/categories' },
-                      { label: 'Auctions', route: '/auctions' },
-                      { label: 'Products', route: '/products' },
-                      { label: 'Best Sellers', route: '/best-sellers' },
-                      { label: 'New Products', route: '/new-products' },
-                      { label: 'How It Works', route: '/how-it-works' },
-                      { label: 'Why Choose Us', route: '/why-choose-us' },
-                      { label: 'Get Help', route: '/get-help' },
-                      { label: 'Sign Up/Login', route: '/auth' },
-                    ].map((item, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(item.route)}
-                        className="text-xs"
-                      >
-                        {item.label}
-                      </Button>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                    <p className="text-green-700 text-sm">
-                      ✅ If you can see this section and the buttons above work, the site is functioning correctly!
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
           </div>
         )}
       </main>
