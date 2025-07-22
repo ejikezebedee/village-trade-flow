@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { QrCode, Shield, Truck, Users } from "lucide-react";
-import heroImage from "@/assets/hero-marketplace.jpg";
+
 
 export function HeroSection() {
   return (
@@ -49,17 +49,6 @@ export function HeroSection() {
             ))}
           </div>
 
-          {/* Apple-style hero image */}
-          <div className="relative mt-16 animate-slide-up">
-            <div className="relative max-w-3xl mx-auto">
-              <img 
-                src={heroImage} 
-                alt="Village marketplace connecting communities" 
-                className="rounded-3xl w-full h-auto apple-card"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent rounded-3xl"></div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
