@@ -15,14 +15,14 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 apple-glass border-b border-border/50">
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo - Apple-style minimalist */}
-          <Link to="/" className="flex items-center space-x-3 apple-button rounded-lg px-2 py-1">
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <QrCode className="h-5 w-5 text-primary" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
+          {/* Logo - Mobile optimized */}
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 apple-button rounded-lg px-2 py-1">
+            <div className="bg-primary/10 p-1.5 sm:p-2 rounded-lg">
+              <QrCode className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            <h1 className="text-lg font-semibold text-foreground tracking-tight">VillageMarket</h1>
+            <h1 className="text-base sm:text-lg font-semibold text-foreground tracking-tight">VillageMarket</h1>
           </Link>
 
           {/* Desktop Navigation - Apple-style clean */}

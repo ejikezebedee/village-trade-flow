@@ -116,21 +116,21 @@ export function BestSellersSection({ maxItems = 6, className = "" }: BestSellers
   }
 
   return (
-    <section className={`py-16 bg-muted/20 ${className}`}>
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Award className="h-8 w-8 text-accent" />
-            <h2 className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight">
+    <section className={`py-12 sm:py-16 bg-muted/20 ${className}`}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4">
+            <Award className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground tracking-tight">
               Best Sellers
             </h2>
           </div>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg leading-relaxed px-4">
             Top-rated products loved by our community. These items have proven quality and customer satisfaction.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {products.map((product, index) => (
             <Card 
               key={product.id} 

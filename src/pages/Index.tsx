@@ -27,16 +27,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main>
+      <main className="pt-14 sm:pt-16">
         {user ? (
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <RoleBasedDashboard />
           </div>
         ) : (
           <>
             <HeroSection />
             <SearchSection />
-            <FlashSalesSection showHeader={true} maxItems={4} className="container mx-auto px-6 lg:px-8 py-8" />
+            <FlashSalesSection showHeader={true} maxItems={4} className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8" />
             <NewProductsSection maxItems={6} />
             <BestSellersSection maxItems={6} />
             <FeaturedProducts />
