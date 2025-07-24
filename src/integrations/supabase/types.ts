@@ -2732,6 +2732,27 @@ export type Database = {
         }
         Relationships: []
       }
+      password_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          password_hash: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          password_hash: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          password_hash?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_notifications: {
         Row: {
           created_at: string
@@ -3267,6 +3288,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limit_tracking: {
+        Row: {
+          action_type: string
+          attempt_count: number | null
+          blocked_until: string | null
+          first_attempt: string | null
+          id: string
+          identifier: string
+          is_blocked: boolean | null
+          last_attempt: string | null
+        }
+        Insert: {
+          action_type: string
+          attempt_count?: number | null
+          blocked_until?: string | null
+          first_attempt?: string | null
+          id?: string
+          identifier: string
+          is_blocked?: boolean | null
+          last_attempt?: string | null
+        }
+        Update: {
+          action_type?: string
+          attempt_count?: number | null
+          blocked_until?: string | null
+          first_attempt?: string | null
+          id?: string
+          identifier?: string
+          is_blocked?: boolean | null
+          last_attempt?: string | null
+        }
+        Relationships: []
+      }
+      security_audit: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          severity: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          severity?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          severity?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       security_audit_logs: {
         Row: {
@@ -4417,6 +4504,13 @@ export type Database = {
       generate_secure_qr: {
         Args: { p_order_id: string; p_stage: string; p_expires_hours?: number }
         Returns: string
+      }
+      generate_short_lived_otp: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          code: string
+          expires_at: string
+        }[]
       }
       generate_transaction_qr: {
         Args: {
