@@ -247,6 +247,33 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_settings: {
+        Row: {
+          id: string
+          is_active: boolean
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       auction_bids: {
         Row: {
           auction_id: string
@@ -583,6 +610,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      backup_logs: {
+        Row: {
+          backup_duration_seconds: number | null
+          backup_type: string
+          created_at: string
+          error_message: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          metadata: Json | null
+          status: string
+        }
+        Insert: {
+          backup_duration_seconds?: number | null
+          backup_type: string
+          created_at?: string
+          error_message?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          metadata?: Json | null
+          status: string
+        }
+        Update: {
+          backup_duration_seconds?: number | null
+          backup_type?: string
+          created_at?: string
+          error_message?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+        }
+        Relationships: []
       }
       brand_followers: {
         Row: {
@@ -3322,6 +3385,60 @@ export type Database = {
         }
         Relationships: []
       }
+      security_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          actor_id: string | null
+          alert_type: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          message: string
+          metadata: Json | null
+          notified_channels: Json | null
+          severity: string
+          status: string
+          target_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          actor_id?: string | null
+          alert_type: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          message: string
+          metadata?: Json | null
+          notified_channels?: Json | null
+          severity?: string
+          status?: string
+          target_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          actor_id?: string | null
+          alert_type?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          message?: string
+          metadata?: Json | null
+          notified_channels?: Json | null
+          severity?: string
+          status?: string
+          target_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_audit: {
         Row: {
           created_at: string | null
@@ -3397,6 +3514,36 @@ export type Database = {
           target_resource?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_health_checks: {
+        Row: {
+          check_type: string
+          created_at: string
+          details: Json | null
+          error_message: string | null
+          fix_suggestions: string[] | null
+          id: string
+          status: string
+        }
+        Insert: {
+          check_type: string
+          created_at?: string
+          details?: Json | null
+          error_message?: string | null
+          fix_suggestions?: string[] | null
+          id?: string
+          status: string
+        }
+        Update: {
+          check_type?: string
+          created_at?: string
+          details?: Json | null
+          error_message?: string | null
+          fix_suggestions?: string[] | null
+          id?: string
+          status?: string
         }
         Relationships: []
       }
@@ -4490,7 +4637,7 @@ export type Database = {
         Returns: undefined
       }
       generate_qr_identifier: {
-        Args: { order_uuid: string; stage: string }
+        Args: { p_order_id: string; p_stage: string }
         Returns: string
       }
       generate_receipt_number: {
