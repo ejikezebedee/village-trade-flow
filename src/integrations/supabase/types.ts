@@ -4774,6 +4774,10 @@ export type Database = {
         Args: { dispute_uuid: string }
         Returns: string
       }
+      run_security_health_check: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       schedule_verification_cleanup: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -4853,6 +4857,19 @@ export type Database = {
               p_user_agent?: string
               p_ip_address?: unknown
             }
+        Returns: string
+      }
+      trigger_security_alert: {
+        Args: {
+          p_alert_type: string
+          p_severity: string
+          p_title: string
+          p_message: string
+          p_actor_id?: string
+          p_target_id?: string
+          p_ip_address?: unknown
+          p_metadata?: Json
+        }
         Returns: string
       }
       update_affiliate_tier: {

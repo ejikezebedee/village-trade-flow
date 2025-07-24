@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import AdminSecurityPanel from '@/components/admin/AdminSecurityPanel';
 import AdminSecurityDashboard from '@/components/admin/AdminSecurityDashboard';
+import SecurityHealthCheck from '@/components/admin/SecurityHealthCheck';
+import SecurityAlertsManager from '@/components/admin/SecurityAlertsManager';
 import { AutomatedMessageMonitoring } from '@/components/admin/AutomatedMessageMonitoring';
 import { MessageMonitoring } from '@/components/admin/MessageMonitoring';
 import { UserManagement } from '@/components/admin/UserManagement';
@@ -237,7 +239,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-10 w-full">
+          <TabsList className="grid grid-cols-12 w-full">
             <TabsTrigger value="dashboard">Platform Overview</TabsTrigger>
             <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -248,6 +250,8 @@ export default function AdminDashboard() {
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="security">Security Panel</TabsTrigger>
             <TabsTrigger value="security-dashboard">Security Dashboard</TabsTrigger>
+            <TabsTrigger value="health-check">Health Check</TabsTrigger>
+            <TabsTrigger value="alerts">Alerts Manager</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
@@ -366,6 +370,14 @@ export default function AdminDashboard() {
 
           <TabsContent value="security-dashboard">
             <AdminSecurityDashboard />
+          </TabsContent>
+
+          <TabsContent value="health-check">
+            <SecurityHealthCheck />
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <SecurityAlertsManager />
           </TabsContent>
         </Tabs>
       </div>
