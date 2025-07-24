@@ -19,6 +19,7 @@ import {
   Tag,
   Zap
 } from "lucide-react";
+import { ImageUploader } from '@/components/ImageUploader';
 
 interface AddProductFormProps {
   onClose: () => void;
@@ -340,13 +341,16 @@ export function EnhancedAddProduct({ onClose, onProductAdded }: AddProductFormPr
 
           <div>
             <Label>Product Images</Label>
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <Camera className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-muted-foreground mb-2">Click to upload images</p>
-              <Button type="button" variant="outline">
-                Choose Files
-              </Button>
-            </div>
+            <ImageUploader
+              onImageUpload={(file) => {
+                // Handle product image upload
+                console.log('Product image uploaded:', file);
+                // TODO: Upload to storage and set image URL in form
+              }}
+              maxSize={10}
+              label="Upload product image"
+              enableBackgroundRemoval={true}
+            />
           </div>
 
           <div className="flex gap-3">

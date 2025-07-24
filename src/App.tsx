@@ -56,6 +56,7 @@ import TermsPage from "./pages/TermsPage";
 import CookiesPage from "./pages/CookiesPage";
 import FAQPage from "./pages/FAQPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
+import ProfilePage from "./pages/ProfilePage";
 import { EmailVerificationHandler } from "./components/auth/EmailVerificationHandler";
 
 const queryClient = new QueryClient();
@@ -161,7 +162,7 @@ const App = () => (
         } />
         <Route path="/profile" element={
           <ProtectedRoute>
-            <BuyerDashboard />
+            <ProfilePage />
           </ProtectedRoute>
         } />
         <Route path="/dashboard/buyer" element={
