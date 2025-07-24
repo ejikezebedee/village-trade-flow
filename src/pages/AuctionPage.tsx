@@ -10,7 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AuctionCard } from "@/components/auction/AuctionCard";
 import { CreateAuctionDialog } from "@/components/auction/CreateAuctionDialog";
 import { AuctionFilters } from "@/components/auction/AuctionFilters";
-import { Clock, Gavel, TrendingUp, Users } from "lucide-react";
+import { Clock, Gavel, TrendingUp, Users, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 interface Auction {
@@ -44,6 +45,7 @@ export default function AuctionPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAuctions();
@@ -191,6 +193,19 @@ export default function AuctionPage() {
 
   return (
     <div className="container mx-auto px-6 lg:px-8 py-8 space-y-8">
+      {/* Back to Home Button */}
+      <div className="flex items-center mb-4">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors p-2 h-auto"
+          aria-label="Return to homepage"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="text-sm font-medium">Back to Home</span>
+        </Button>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
