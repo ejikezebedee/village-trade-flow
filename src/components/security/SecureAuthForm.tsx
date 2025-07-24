@@ -8,6 +8,7 @@ import { Eye, EyeOff, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { validateEmail, validatePassword, sanitizeInput } from '@/components/security/InputSanitizer';
 import RateLimiter, { useRateLimit } from '@/components/security/RateLimiter';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SecureAuthFormProps {
   mode: 'signin' | 'signup';
@@ -88,18 +89,36 @@ const SecureAuthForm: React.FC<SecureAuthFormProps> = ({
         throw new Error('Please enter a valid email address');
       }
 
-      // Validate password
-      if (!passwordValidation.isValid && mode === 'signup') {
-        throw new Error('Password does not meet security requirements');
-      }
-
-      // Confirm password match for signup
-      if (mode === 'signup' && formData.password !== formData.confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
-
-      // Validate required fields for signup
+      // For signup, check password against breach database
       if (mode === 'signup') {
+        // Check password strength
+        if (!passwordValidation.isValid) {
+          throw new Error('Password does not meet security requirements');
+        }
+
+        // Check password against known breaches
+        try {
+          const { data: breachCheck } = await supabase.functions.invoke('password-security', {
+            body: {
+              password: formData.password,
+              action: 'check_breach'
+            }
+          });
+
+          if (breachCheck?.isBreached) {
+            throw new Error(`This password has been found in ${breachCheck.breachCount} data breaches. Please choose a different password.`);
+          }
+        } catch (breachError) {
+          console.warn('Password breach check failed:', breachError);
+          // Continue with signup if breach check fails (fail open)
+        }
+
+        // Confirm password match for signup
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error('Passwords do not match');
+        }
+
+        // Validate required fields for signup
         if (!formData.firstName.trim() || !formData.lastName.trim()) {
           throw new Error('First name and last name are required');
         }
