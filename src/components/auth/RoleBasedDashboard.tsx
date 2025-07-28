@@ -1,79 +1,205 @@
-import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { WalletConnection } from '@/components/web3/WalletConnection';
+import { TokenRewards } from '@/components/web3/TokenRewards';
+import { RoleUpgrade } from '@/components/web3/RoleUpgrade';
 import { 
-  ShoppingBag, 
+  ShoppingCart, 
   Store, 
-  Truck, 
   Users, 
   Star,
-  CheckCircle,
-  AlertCircle,
-  Clock
+  TrendingUp,
+  Gift,
+  Crown,
+  Shield,
+  Coins
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+
+interface RoleProgression {
+  user_role: string;
+  sales_count: number;
+  referrals_count: number;
+  earnings_total: number;
+}
 
 export const RoleBasedDashboard: React.FC = () => {
-  const { profile, isVerified } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const [progression, setProgression] = useState<RoleProgression | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!profile) return null;
+  useEffect(() => {
+    if (user) {
+      fetchRoleProgression();
+    }
+  }, [user]);
 
-  const getStatusBadge = () => {
-    if (isVerified()) {
-      return <Badge variant="default" className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" />Verified</Badge>;
-    } else if (profile.verification_status === 'pending') {
-      return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Pending Verification</Badge>;
-    } else {
-      return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Not Verified</Badge>;
+  const fetchRoleProgression = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles_progression')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setProgression(data);
+    } catch (error) {
+      console.error('Error fetching role progression:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getRoleIcon = () => {
-    switch (profile.user_type) {
-      case 'buyer': return <ShoppingBag className="w-6 h-6" />;
-      case 'seller': return <Store className="w-6 h-6" />;
-      case 'driver': return <Truck className="w-6 h-6" />;
-      case 'agent': return <Users className="w-6 h-6" />;
-      default: return <Users className="w-6 h-6" />;
+  const getUserInitials = () => {
+    if (profile?.first_name || profile?.last_name) {
+      return `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}`.toUpperCase();
+    }
+    return user?.email?.[0]?.toUpperCase() || 'U';
+  };
+
+  const getVerificationColor = (status: string) => {
+    switch (status) {
+      case 'verified':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-red-100 text-red-800';
+    }
+  };
+
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case 'buyer':
+        return <ShoppingCart className="h-4 w-4" />;
+      case 'seller':
+        return <Store className="h-4 w-4" />;
+      case 'agent':
+        return <Crown className="h-4 w-4" />;
+      default:
+        return <Users className="h-4 w-4" />;
+    }
+  };
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case 'buyer':
+        return 'bg-blue-100 text-blue-800';
+      case 'seller':
+        return 'bg-green-100 text-green-800';
+      case 'agent':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getRoleActions = () => {
-    switch (profile.user_type) {
+    const currentRole = progression?.user_role || profile?.user_type || 'buyer';
+    
+    const baseActions = [
+      {
+        label: 'My Profile',
+        action: () => navigate('/profile'),
+        icon: Users,
+      },
+    ];
+
+    switch (currentRole) {
       case 'buyer':
         return [
-          { label: 'Browse Products', action: () => navigate('/'), icon: ShoppingBag },
-          { label: 'My Orders', action: () => navigate('/dashboard/buyer'), icon: ShoppingBag },
-          { label: 'Track Deliveries', action: () => navigate('/dashboard/buyer'), icon: Truck }
+          ...baseActions,
+          {
+            label: 'Browse Products',
+            action: () => navigate('/'),
+            icon: ShoppingCart,
+          },
+          {
+            label: 'My Orders',
+            action: () => navigate('/orders/all'),
+            icon: Gift,
+          },
+          {
+            label: 'Become a Seller',
+            action: () => navigate('/seller-dashboard'),
+            icon: TrendingUp,
+          },
         ];
+
       case 'seller':
         return [
-          { label: 'My Products', action: () => navigate('/dashboard/seller'), icon: Store },
-          { label: 'Add New Product', action: () => navigate('/products'), icon: Store },
-          { label: 'Sales Analytics', action: () => navigate('/dashboard/seller'), icon: Star }
+          ...baseActions,
+          {
+            label: 'Seller Dashboard',
+            action: () => navigate('/seller-dashboard'),
+            icon: Store,
+          },
+          {
+            label: 'Add Products',
+            action: () => navigate('/seller-dashboard'),
+            icon: TrendingUp,
+          },
+          {
+            label: 'My Sales',
+            action: () => navigate('/seller-dashboard'),
+            icon: Star,
+          },
         ];
-      case 'driver':
-        return [
-          { label: 'Available Deliveries', action: () => navigate('/dashboard/driver'), icon: Truck },
-          { label: 'My Routes', action: () => navigate('/dashboard/driver'), icon: Truck },
-          { label: 'Earnings', action: () => navigate('/dashboard/driver'), icon: Star }
-        ];
+
       case 'agent':
         return [
-          { label: 'Help Users', action: () => navigate('/dashboard/agent'), icon: Users },
-          { label: 'Community Management', action: () => navigate('/dashboard/agent'), icon: Users },
-          { label: 'Reports', action: () => navigate('/dashboard/agent'), icon: Star }
+          ...baseActions,
+          {
+            label: 'Agent Dashboard',
+            action: () => navigate('/agent-dashboard'),
+            icon: Crown,
+          },
+          {
+            label: 'Referral Program',
+            action: () => navigate('/affiliate'),
+            icon: Users,
+          },
+          {
+            label: 'My Network',
+            action: () => navigate('/agent-dashboard'),
+            icon: TrendingUp,
+          },
         ];
+
       default:
-        return [
-          { label: 'Browse Products', action: () => navigate('/'), icon: ShoppingBag }
-        ];
+        return baseActions;
     }
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {[1, 2, 3].map(i => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <div className="animate-pulse space-y-4">
+                <div className="h-6 bg-muted rounded w-1/3"></div>
+                <div className="h-20 bg-muted rounded"></div>
+                <div className="h-8 bg-muted rounded w-1/2"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  const currentRole = progression?.user_role || profile?.user_type || 'buyer';
   const actions = getRoleActions();
 
   return (
@@ -81,80 +207,108 @@ export const RoleBasedDashboard: React.FC = () => {
       {/* Profile Overview */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {getRoleIcon()}
-              <div>
-                <CardTitle className="text-xl">
-                  Welcome, {profile.first_name || 'User'}!
-                </CardTitle>
-                <p className="text-muted-foreground capitalize">
-                  {profile.user_type} Account
-                </p>
-              </div>
-            </div>
-            {getStatusBadge()}
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Profile Overview
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Star className="w-5 h-5 text-yellow-500 mr-1" />
-                <span className="font-semibold">{profile.rating.toFixed(1)}</span>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={profile?.avatar_url} />
+              <AvatarFallback>{getUserInitials()}</AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-lg font-semibold">
+                  {profile?.first_name && profile?.last_name 
+                    ? `${profile.first_name} ${profile.last_name}`
+                    : user?.email
+                  }
+                </h3>
+                <Badge className={getRoleColor(currentRole)}>
+                  {getRoleIcon(currentRole)}
+                  <span className="ml-1">
+                    {currentRole.charAt(0).toUpperCase() + currentRole.slice(1)}
+                  </span>
+                </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">Rating</p>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold mb-2">{profile.total_ratings}</div>
-              <p className="text-sm text-muted-foreground">Reviews</p>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold mb-2 capitalize">{profile.verification_status}</div>
-              <p className="text-sm text-muted-foreground">Status</p>
+              
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>{user?.email}</span>
+                <Badge variant="outline" className={getVerificationColor(profile?.verification_status || 'unverified')}>
+                  {profile?.verification_status || 'Unverified'}
+                </Badge>
+              </div>
             </div>
           </div>
+
+          {progression && (
+            <div className="grid grid-cols-3 gap-4 mt-4 p-4 bg-muted/50 rounded-lg">
+              <div className="text-center">
+                <div className="text-lg font-semibold">{progression.sales_count}</div>
+                <div className="text-xs text-muted-foreground">Sales</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-semibold">{progression.referrals_count}</div>
+                <div className="text-xs text-muted-foreground">Referrals</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-semibold flex items-center justify-center gap-1">
+                  <Coins className="h-4 w-4 text-yellow-500" />
+                  {progression.earnings_total.toFixed(2)}
+                </div>
+                <div className="text-xs text-muted-foreground">$ZSHOP Earned</div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Role-Specific Actions */}
+      {/* Quick Actions */}
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {actions.map((action, index) => (
               <Button
                 key={index}
                 variant="outline"
-                className="h-20 flex flex-col items-center justify-center space-y-2"
                 onClick={action.action}
+                className="justify-start h-12"
               >
-                <action.icon className="w-6 h-6" />
-                <span className="text-sm">{action.label}</span>
+                <action.icon className="h-4 w-4 mr-3" />
+                {action.label}
               </Button>
             ))}
           </div>
         </CardContent>
       </Card>
 
+      {/* Web3 Components */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <WalletConnection />
+        <RoleUpgrade />
+      </div>
+      
+      <TokenRewards />
+
       {/* Verification Notice */}
-      {!isVerified() && (
+      {profile?.verification_status !== 'verified' && (
         <Card className="border-orange-200 bg-orange-50">
-          <CardHeader>
-            <CardTitle className="text-orange-800 flex items-center">
-              <AlertCircle className="w-5 h-5 mr-2" />
-              Account Verification Required
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-orange-700 mb-4">
-              To access all features and build trust with other users, please complete your account verification.
-            </p>
-            <Button variant="default" className="bg-orange-600 hover:bg-orange-700">
-              Complete Verification
-            </Button>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Shield className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="font-medium text-orange-800">Account Verification Required</p>
+                <p className="text-sm text-orange-700">
+                  Complete your verification to unlock full platform features and higher earning rates.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}

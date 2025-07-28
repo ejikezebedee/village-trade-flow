@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Web3Provider } from "@/contexts/Web3Context";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { LiveChatWidget } from "@/components/support/LiveChatWidget";
@@ -67,7 +68,8 @@ const App = () => (
     <HelmetProvider>
       <TooltipProvider>
         <AuthProvider>
-          <LanguageProvider>
+          <Web3Provider>
+            <LanguageProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -202,8 +204,9 @@ const App = () => (
               <LiveChatWidget />
             </AnalyticsProvider>
           </BrowserRouter>
-        </LanguageProvider>
-      </AuthProvider>
+            </LanguageProvider>
+          </Web3Provider>
+        </AuthProvider>
     </TooltipProvider>
     </HelmetProvider>
   </QueryClientProvider>

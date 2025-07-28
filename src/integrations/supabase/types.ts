@@ -3730,6 +3730,93 @@ export type Database = {
         }
         Relationships: []
       }
+      token_config: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          max_amount: number | null
+          min_amount: number
+          multiplier: number
+          reward_rate: number
+          updated_at: string
+          updated_by: string | null
+          user_role: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          multiplier?: number
+          reward_rate: number
+          updated_at?: string
+          updated_by?: string | null
+          user_role: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          multiplier?: number
+          reward_rate?: number
+          updated_at?: string
+          updated_by?: string | null
+          user_role?: string
+        }
+        Relationships: []
+      }
+      token_rewards: {
+        Row: {
+          action_type: string
+          amount: number
+          created_at: string
+          id: string
+          multiplier: number
+          order_id: string | null
+          referral_id: string | null
+          status: string
+          transaction_hash: string | null
+          updated_at: string
+          user_id: string
+          user_role: string
+        }
+        Insert: {
+          action_type: string
+          amount?: number
+          created_at?: string
+          id?: string
+          multiplier?: number
+          order_id?: string | null
+          referral_id?: string | null
+          status?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id: string
+          user_role?: string
+        }
+        Update: {
+          action_type?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          multiplier?: number
+          order_id?: string | null
+          referral_id?: string | null
+          status?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id?: string
+          user_role?: string
+        }
+        Relationships: []
+      }
       transaction_fees: {
         Row: {
           created_at: string
@@ -4317,6 +4404,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles_progression: {
+        Row: {
+          created_at: string
+          earnings_total: number
+          id: string
+          previous_role: string | null
+          referrals_count: number
+          requirements_met: boolean
+          role_changed_at: string
+          sales_count: number
+          unlock_requirements: Json | null
+          updated_at: string
+          user_id: string
+          user_role: string
+        }
+        Insert: {
+          created_at?: string
+          earnings_total?: number
+          id?: string
+          previous_role?: string | null
+          referrals_count?: number
+          requirements_met?: boolean
+          role_changed_at?: string
+          sales_count?: number
+          unlock_requirements?: Json | null
+          updated_at?: string
+          user_id: string
+          user_role?: string
+        }
+        Update: {
+          created_at?: string
+          earnings_total?: number
+          id?: string
+          previous_role?: string | null
+          referrals_count?: number
+          requirements_met?: boolean
+          role_changed_at?: string
+          sales_count?: number
+          unlock_requirements?: Json | null
+          updated_at?: string
+          user_id?: string
+          user_role?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           browser: string | null
@@ -4437,6 +4569,42 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_connections: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified: boolean
+          last_balance_check: string | null
+          token_balance: number
+          updated_at: string
+          user_id: string
+          wallet_address: string
+          wallet_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          last_balance_check?: string | null
+          token_balance?: number
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+          wallet_type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          last_balance_check?: string | null
+          token_balance?: number
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+          wallet_type?: string
+        }
+        Relationships: []
+      }
       wallet_transfers: {
         Row: {
           amount: number
@@ -4537,6 +4705,15 @@ export type Database = {
       }
       calculate_next_minimum_bid: {
         Args: { p_auction_id: string }
+        Returns: number
+      }
+      calculate_token_reward: {
+        Args: {
+          p_user_id: string
+          p_action_type: string
+          p_amount: number
+          p_role?: string
+        }
         Returns: number
       }
       calculate_transaction_fee: {
@@ -4890,6 +5067,10 @@ export type Database = {
       update_product_performance_tags: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      upgrade_user_role: {
+        Args: { p_user_id: string; p_new_role: string }
+        Returns: boolean
       }
       verify_email_and_complete_registration: {
         Args: { p_token: string }
