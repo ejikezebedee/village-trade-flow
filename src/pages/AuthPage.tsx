@@ -222,7 +222,7 @@ export default function AuthPage() {
           title: "Welcome Admin!",
           description: "You have successfully signed in as administrator.",
         });
-        navigate('/dashboard/admin');
+        navigate('/admin-dashboard');
       }
     } catch (error) {
       toast({

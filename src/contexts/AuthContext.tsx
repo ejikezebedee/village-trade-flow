@@ -303,45 +303,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithAdmin = async (username: string, password: string) => {
     try {
-      const { data, error } = await supabase.rpc('verify_admin_credentials', {
+      const { data, error } = await supabase.rpc('verify_admin_login', {
         p_username: username,
         p_password: password
       });
 
       if (error || !data || data.length === 0 || !data[0].success) {
-        return { error: new Error('Wrong username or password') };
+        return { error: new Error('Invalid username or password') };
       }
 
-      // Get admin profile data
+      // Get admin data
       const adminData = data[0];
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', adminData.user_id)
-        .single();
-
-      if (profileError || !profileData) {
-        return { error: new Error('Admin profile not found') };
-      }
-
-      // Create a mock user object for admin (since we can't access auth.users)
+      
+      // Create a mock user object for admin session
       const mockAdminUser = {
-        id: adminData.user_id,
-        email: 'admin@system.local',
-        role: 'admin',
-        created_at: profileData.created_at,
-        updated_at: profileData.updated_at,
-        user_metadata: {},
-        app_metadata: { role: 'admin' }
+        id: adminData.admin_id,
+        email: `${adminData.username}@admin.local`,
+        role: adminData.role,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        user_metadata: { username: adminData.username },
+        app_metadata: { role: adminData.role }
       };
 
-      // Set the state manually for admin login
+      // Create a mock profile for admin
+      const mockAdminProfile = {
+        id: adminData.admin_id,
+        user_id: adminData.admin_id,
+        user_type: adminData.role,
+        user_role: adminData.role,
+        unique_user_id: 'ADMIN001',
+        verification_status: 'verified',
+        rating: 5.0,
+        total_ratings: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      // Set the state for admin login
       setUser(mockAdminUser as any);
-      setProfile(profileData);
+      setProfile(mockAdminProfile as any);
       
       return { error: null };
     } catch (error) {
-      return { error: new Error('Wrong username or password') };
+      console.error('Admin login error:', error);
+      return { error: new Error('Invalid username or password') };
     }
   };
 

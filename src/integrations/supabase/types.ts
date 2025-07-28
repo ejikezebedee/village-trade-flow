@@ -14,35 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_credentials: {
+      admins: {
         Row: {
           created_at: string | null
           id: string
           is_active: boolean | null
-          last_login: string | null
-          password_hash: string
+          password: string
+          role: string
           updated_at: string | null
-          user_id: string | null
           username: string
         }
         Insert: {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          last_login?: string | null
-          password_hash: string
+          password: string
+          role?: string
           updated_at?: string | null
-          user_id?: string | null
           username: string
         }
         Update: {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          last_login?: string | null
-          password_hash?: string
+          password?: string
+          role?: string
           updated_at?: string | null
-          user_id?: string | null
           username?: string
         }
         Relationships: []
@@ -5112,11 +5109,12 @@ export type Database = {
         Args: { p_user_id: string; p_new_role: string }
         Returns: boolean
       }
-      verify_admin_credentials: {
+      verify_admin_login: {
         Args: { p_username: string; p_password: string }
         Returns: {
-          user_id: string
-          profile_id: string
+          admin_id: string
+          username: string
+          role: string
           success: boolean
         }[]
       }
