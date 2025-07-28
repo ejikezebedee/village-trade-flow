@@ -66,7 +66,12 @@ export function EscrowTransactionPanel() {
 
       if (error) throw error;
 
-      setTransactions(data || []);
+      const processedTransactions = data?.map(transaction => ({
+        ...transaction,
+        order: transaction.orders
+      })) || [];
+
+      setTransactions(processedTransactions);
     } catch (error) {
       console.error('Error fetching transactions:', error);
       toast({

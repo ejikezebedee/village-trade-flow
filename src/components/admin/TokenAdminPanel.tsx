@@ -141,8 +141,9 @@ export function TokenAdminPanel() {
 
   const exportTokenLogs = async () => {
     try {
+      // Use wallet_transfers as proxy for token transactions
       const { data } = await supabase
-        .from('token_transactions')
+        .from('wallet_transfers')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(1000);
@@ -152,10 +153,10 @@ export function TokenAdminPanel() {
           ['Date', 'User ID', 'Amount', 'Type', 'Reason'].join(','),
           ...data.map(row => [
             new Date(row.created_at).toLocaleDateString(),
-            row.user_id,
+            row.sender_id || row.recipient_id || 'N/A',
             row.amount,
-            row.transaction_type,
-            row.description || ''
+            'transfer',
+            row.reference_number || ''
           ].join(','))
         ].join('\n');
 

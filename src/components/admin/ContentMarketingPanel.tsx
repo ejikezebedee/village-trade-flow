@@ -44,18 +44,10 @@ export function ContentMarketingPanel() {
 
     setLoading(true);
     try {
-      // In a real implementation, you'd upload to storage and save banner config
       // For now, just show success - would integrate with actual banner system
       toast({
         title: "Banner Updated",
         description: "Banner configuration saved successfully",
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Banner Updated",
-        description: "Homepage banner has been updated successfully",
       });
 
       setBannerTitle('');
@@ -130,13 +122,6 @@ export function ContentMarketingPanel() {
       toast({
         title: "Blog Published",
         description: "Blog post saved successfully",
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Blog Published",
-        description: "Blog article has been published successfully",
       });
 
       setBlogTitle('');

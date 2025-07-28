@@ -79,15 +79,15 @@ export function EnhancedUserManagement() {
         id: user.id,
         user_id: user.user_id,
         unique_user_id: user.unique_user_id || 'N/A',
-        display_name: user.full_name || 'Unknown',
-        email: user.email || 'N/A',
+        display_name: user.first_name || user.last_name ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Unknown',
+        email: 'N/A', // Email field doesn't exist in profiles table
         user_type: user.user_type || 'buyer',
         user_role: user.user_role || 'user',
         kyc_status: user.kyc_status || 'pending',
         is_active: user.is_active !== false,
         created_at: user.created_at,
-        last_login: user.last_login || user.created_at,
-        wallet_balance: user.user_wallets?.[0]?.escrow_balance || 0
+        last_login: user.updated_at || user.created_at,
+        wallet_balance: Array.isArray(user.user_wallets) && user.user_wallets.length > 0 ? user.user_wallets[0]?.escrow_balance || 0 : 0
       })) || [];
 
       setUsers(processedUsers);
