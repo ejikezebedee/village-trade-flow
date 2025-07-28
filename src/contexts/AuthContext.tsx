@@ -309,37 +309,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error || !data || data.length === 0 || !data[0].success) {
-        return { error: new Error('Invalid admin credentials') };
+        return { error: new Error('Wrong username or password') };
       }
 
-      // Create a session for the admin user
+      // Get admin profile data
       const adminData = data[0];
-      
-      // Manually set user and profile for admin login
-      const { data: adminUser, error: userError } = await supabase.auth.admin.getUserById(adminData.user_id);
-      
-      if (userError || !adminUser.user) {
-        return { error: new Error('Admin user not found') };
-      }
-
-      // Get the profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', adminData.user_id)
         .single();
 
-      if (profileError) {
-        return { error: profileError };
+      if (profileError || !profileData) {
+        return { error: new Error('Admin profile not found') };
       }
 
+      // Create a mock user object for admin (since we can't access auth.users)
+      const mockAdminUser = {
+        id: adminData.user_id,
+        email: 'admin@system.local',
+        role: 'admin',
+        created_at: profileData.created_at,
+        updated_at: profileData.updated_at,
+        user_metadata: {},
+        app_metadata: { role: 'admin' }
+      };
+
       // Set the state manually for admin login
-      setUser(adminUser.user);
+      setUser(mockAdminUser as any);
       setProfile(profileData);
       
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: new Error('Wrong username or password') };
     }
   };
 
@@ -408,7 +410,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const hasRole = (role: string): boolean => {
-    return profile?.user_type === role;
+    return profile?.user_role === role || profile?.user_type === role;
   };
 
   const isVerified = (): boolean => {
