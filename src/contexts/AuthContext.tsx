@@ -7,6 +7,7 @@ interface Profile {
   user_id: string;
   user_type: string;
   user_role?: 'user' | 'admin' | 'moderator';
+  unique_user_id?: string;
   first_name?: string;
   last_name?: string;
   phone_number?: string;
@@ -38,6 +39,7 @@ interface AuthContextType {
   twoFactorVerified: boolean;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any; twoFactorRequired?: boolean }>;
+  signInWithAdmin: (username: string, password: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPassword: (email: string) => Promise<{ error: any }>;
@@ -58,6 +60,7 @@ const AuthContext = createContext<AuthContextType>({
   twoFactorVerified: false,
   signUp: async () => ({ error: null }),
   signIn: async () => ({ error: null }),
+  signInWithAdmin: async () => ({ error: null }),
   signInWithGoogle: async () => ({ error: null }),
   signOut: async () => ({ error: null }),
   resetPassword: async () => ({ error: null }),
@@ -298,6 +301,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithAdmin = async (username: string, password: string) => {
+    try {
+      const { data, error } = await supabase.rpc('verify_admin_credentials', {
+        p_username: username,
+        p_password: password
+      });
+
+      if (error || !data || data.length === 0 || !data[0].success) {
+        return { error: new Error('Invalid admin credentials') };
+      }
+
+      // Create a session for the admin user
+      const adminData = data[0];
+      
+      // Manually set user and profile for admin login
+      const { data: adminUser, error: userError } = await supabase.auth.admin.getUserById(adminData.user_id);
+      
+      if (userError || !adminUser.user) {
+        return { error: new Error('Admin user not found') };
+      }
+
+      // Get the profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', adminData.user_id)
+        .single();
+
+      if (profileError) {
+        return { error: profileError };
+      }
+
+      // Set the state manually for admin login
+      setUser(adminUser.user);
+      setProfile(profileData);
+      
+      return { error: null };
+    } catch (error) {
+      return { error };
+    }
+  };
+
   const signInWithGoogle = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -400,6 +445,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     twoFactorVerified,
     signUp,
     signIn,
+    signInWithAdmin,
     signInWithGoogle,
     signOut,
     resetPassword,

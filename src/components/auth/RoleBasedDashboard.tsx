@@ -241,6 +241,15 @@ export const RoleBasedDashboard: React.FC = () => {
                   {profile?.verification_status || 'Unverified'}
                 </Badge>
               </div>
+              
+              {profile?.unique_user_id && (
+                <div className="mt-2">
+                  <div className="text-xs text-muted-foreground">User ID</div>
+                  <div className="font-mono text-sm font-medium text-primary">
+                    {profile.unique_user_id}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

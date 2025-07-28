@@ -17,7 +17,7 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState('signin');
   const [show2FA, setShow2FA] = useState(false);
   const [pendingUser, setPendingUser] = useState<{ id: string; email: string } | null>(null);
-  const { signIn, signUp, signInWithGoogle, resetPassword, verifyTwoFactor } = useAuth();
+  const { signIn, signUp, signInWithAdmin, signInWithGoogle, resetPassword, verifyTwoFactor } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -39,6 +39,12 @@ export default function AuthPage() {
 
   // Reset Password State
   const [resetEmail, setResetEmail] = useState('');
+
+  // Admin Login State
+  const [adminData, setAdminData] = useState({
+    username: '',
+    password: ''
+  });
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +204,37 @@ export default function AuthPage() {
     }
   };
 
+  const handleAdminSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await signInWithAdmin(adminData.username, adminData.password);
+
+      if (error) {
+        toast({
+          title: "Admin Sign In Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Welcome Admin!",
+          description: "You have successfully signed in as administrator.",
+        });
+        navigate('/dashboard/admin');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handle2FAVerificationComplete = () => {
     verifyTwoFactor();
     setShow2FA(false);
@@ -252,15 +289,17 @@ export default function AuthPage() {
           <CardHeader>
             <CardTitle className="text-center">
               {activeTab === 'signin' ? 'Sign In' : 
-               activeTab === 'signup' ? 'Create Account' : 'Reset Password'}
+               activeTab === 'signup' ? 'Create Account' : 
+               activeTab === 'admin' ? 'Admin Login' : 'Reset Password'}
             </CardTitle>
           </CardHeader>
           
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="admin">Admin</TabsTrigger>
                 <TabsTrigger value="reset">Reset</TabsTrigger>
               </TabsList>
 
@@ -438,6 +477,60 @@ export default function AuthPage() {
                     {loading ? "Creating Account..." : "Create Account"}
                   </Button>
                 </form>
+              </TabsContent>
+
+              <TabsContent value="admin" className="space-y-4">
+                <form onSubmit={handleAdminSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="admin-username">Username</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="admin-username"
+                        type="text"
+                        value={adminData.username}
+                        onChange={(e) => setAdminData({ ...adminData, username: e.target.value })}
+                        className="pl-10"
+                        placeholder="Enter admin username"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="admin-password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="admin-password"
+                        type={showPassword ? "text" : "password"}
+                        value={adminData.password}
+                        onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
+                        className="pl-10 pr-10"
+                        placeholder="Enter admin password"
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Signing In..." : "Sign In as Admin"}
+                  </Button>
+                </form>
+
+                <div className="text-center text-sm text-muted-foreground">
+                  <p>Admin access only</p>
+                  <p className="text-xs">Default: admin / admin123</p>
+                </div>
               </TabsContent>
 
               <TabsContent value="reset" className="space-y-4">

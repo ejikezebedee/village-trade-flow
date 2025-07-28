@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_credentials: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_login: string | null
+          password_hash: string
+          updated_at: string | null
+          user_id: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_login?: string | null
+          password_hash: string
+          updated_at?: string | null
+          user_id?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_login?: string | null
+          password_hash?: string
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
       affiliate_commissions: {
         Row: {
           affiliate_id: string
@@ -3177,6 +3210,7 @@ export type Database = {
           two_factor_enabled: boolean | null
           two_factor_secret: string | null
           two_factor_verified_at: string | null
+          unique_user_id: string | null
           updated_at: string
           user_id: string
           user_role: Database["public"]["Enums"]["user_role"] | null
@@ -3211,6 +3245,7 @@ export type Database = {
           two_factor_enabled?: boolean | null
           two_factor_secret?: string | null
           two_factor_verified_at?: string | null
+          unique_user_id?: string | null
           updated_at?: string
           user_id: string
           user_role?: Database["public"]["Enums"]["user_role"] | null
@@ -3245,6 +3280,7 @@ export type Database = {
           two_factor_enabled?: boolean | null
           two_factor_secret?: string | null
           two_factor_verified_at?: string | null
+          unique_user_id?: string | null
           updated_at?: string
           user_id?: string
           user_role?: Database["public"]["Enums"]["user_role"] | null
@@ -4851,6 +4887,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      generate_unique_user_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       generate_verification_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -5071,6 +5111,14 @@ export type Database = {
       upgrade_user_role: {
         Args: { p_user_id: string; p_new_role: string }
         Returns: boolean
+      }
+      verify_admin_credentials: {
+        Args: { p_username: string; p_password: string }
+        Returns: {
+          user_id: string
+          profile_id: string
+          success: boolean
+        }[]
       }
       verify_email_and_complete_registration: {
         Args: { p_token: string }
