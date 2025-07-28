@@ -15,7 +15,11 @@ import {
   Search,
   Filter,
   UserCheck,
-  Settings
+  Settings,
+  Coins,
+  Megaphone,
+  BarChart3,
+  Crown
 } from 'lucide-react';
 import AdminSecurityPanel from '@/components/admin/AdminSecurityPanel';
 import AdminSecurityDashboard from '@/components/admin/AdminSecurityDashboard';
@@ -28,6 +32,11 @@ import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { ComprehensivePlatformDashboard } from '@/components/admin/ComprehensivePlatformDashboard';
 import { ProductManagement } from '@/components/admin/ProductManagement';
 import { PaymentManagement } from '@/components/admin/PaymentManagement';
+import { TokenAdminPanel } from '@/components/admin/TokenAdminPanel';
+import { EnhancedUserManagement } from '@/components/admin/EnhancedUserManagement';
+import { ContentMarketingPanel } from '@/components/admin/ContentMarketingPanel';
+import { EscrowTransactionPanel } from '@/components/admin/EscrowTransactionPanel';
+import { SystemSettingsPanel } from '@/components/admin/SystemSettingsPanel';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -239,27 +248,91 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-12 w-full">
-            <TabsTrigger value="dashboard">Platform Overview</TabsTrigger>
-            <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="automated">Automated</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="security">Security Panel</TabsTrigger>
-            <TabsTrigger value="security-dashboard">Security Dashboard</TabsTrigger>
-            <TabsTrigger value="health-check">Health Check</TabsTrigger>
-            <TabsTrigger value="alerts">Alerts Manager</TabsTrigger>
+          <TabsList className="grid grid-cols-6 lg:grid-cols-12 w-full gap-1">
+            <TabsTrigger value="dashboard" className="text-xs">
+              <Crown className="h-4 w-4 mr-1" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="users" className="text-xs">
+              <Users className="h-4 w-4 mr-1" />
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="products" className="text-xs">
+              <Package className="h-4 w-4 mr-1" />
+              Products
+            </TabsTrigger>
+            <TabsTrigger value="tokens" className="text-xs">
+              <Coins className="h-4 w-4 mr-1" />
+              $ZSHOP
+            </TabsTrigger>
+            <TabsTrigger value="escrow" className="text-xs">
+              <Shield className="h-4 w-4 mr-1" />
+              Escrow
+            </TabsTrigger>
+            <TabsTrigger value="content" className="text-xs">
+              <Megaphone className="h-4 w-4 mr-1" />
+              Content
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs">
+              <BarChart3 className="h-4 w-4 mr-1" />
+              Reports
+            </TabsTrigger>
+            <TabsTrigger value="security" className="text-xs">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              Security
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs">
+              <Settings className="h-4 w-4 mr-1" />
+              Settings
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="text-xs">
+              <DollarSign className="h-4 w-4 mr-1" />
+              Payments
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="text-xs">
+              <MessageCircle className="h-4 w-4 mr-1" />
+              Messages
+            </TabsTrigger>
+            <TabsTrigger value="health-check" className="text-xs">
+              <Shield className="h-4 w-4 mr-1" />
+              Health
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
             <ComprehensivePlatformDashboard />
           </TabsContent>
 
+          <TabsContent value="users">
+            <EnhancedUserManagement />
+          </TabsContent>
+
+          <TabsContent value="products">
+            <ProductManagement />
+          </TabsContent>
+
+          <TabsContent value="tokens">
+            <TokenAdminPanel />
+          </TabsContent>
+
+          <TabsContent value="escrow">
+            <EscrowTransactionPanel />
+          </TabsContent>
+
+          <TabsContent value="content">
+            <ContentMarketingPanel />
+          </TabsContent>
+
           <TabsContent value="analytics">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="security">
+            <AdminSecurityPanel />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SystemSettingsPanel />
           </TabsContent>
 
           <TabsContent value="orders">
@@ -349,35 +422,12 @@ export default function AdminDashboard() {
             <PaymentManagement />
           </TabsContent>
 
-          <TabsContent value="products">
-            <ProductManagement />
-          </TabsContent>
-
           <TabsContent value="messages">
             <MessageMonitoring />
           </TabsContent>
 
-          <TabsContent value="automated">
-            <AutomatedMessageMonitoring />
-          </TabsContent>
-          <TabsContent value="users">
-            <UserManagement />
-          </TabsContent>
-
-          <TabsContent value="security">
-            <AdminSecurityPanel />
-          </TabsContent>
-
-          <TabsContent value="security-dashboard">
-            <AdminSecurityDashboard />
-          </TabsContent>
-
           <TabsContent value="health-check">
             <SecurityHealthCheck />
-          </TabsContent>
-
-          <TabsContent value="alerts">
-            <SecurityAlertsManager />
           </TabsContent>
         </Tabs>
       </div>
