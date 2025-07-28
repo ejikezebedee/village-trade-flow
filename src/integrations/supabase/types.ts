@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_earnings: {
+        Row: {
+          admin_wallet_address: string | null
+          amount: number
+          buyer_id: string | null
+          commission_percent: number | null
+          created_at: string
+          currency: string
+          earnings_type: string
+          id: string
+          metadata: Json | null
+          order_id: string | null
+          payment_status: string | null
+          processed_at: string | null
+          seller_id: string | null
+          transaction_hash: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_wallet_address?: string | null
+          amount?: number
+          buyer_id?: string | null
+          commission_percent?: number | null
+          created_at?: string
+          currency?: string
+          earnings_type: string
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          payment_status?: string | null
+          processed_at?: string | null
+          seller_id?: string | null
+          transaction_hash?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_wallet_address?: string | null
+          amount?: number
+          buyer_id?: string | null
+          commission_percent?: number | null
+          created_at?: string
+          currency?: string
+          earnings_type?: string
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          payment_status?: string | null
+          processed_at?: string | null
+          seller_id?: string | null
+          transaction_hash?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_earnings_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admins: {
         Row: {
           created_at: string | null
@@ -1697,6 +1759,75 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_ads: {
+        Row: {
+          ad_type: string
+          admin_earnings_id: string | null
+          amount_paid: number
+          created_at: string
+          currency: string
+          duration_days: number | null
+          expires_at: string
+          id: string
+          payment_status: string | null
+          product_id: string | null
+          seller_id: string
+          starts_at: string
+          status: string
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          ad_type?: string
+          admin_earnings_id?: string | null
+          amount_paid?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number | null
+          expires_at?: string
+          id?: string
+          payment_status?: string | null
+          product_id?: string | null
+          seller_id: string
+          starts_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ad_type?: string
+          admin_earnings_id?: string | null
+          amount_paid?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number | null
+          expires_at?: string
+          id?: string
+          payment_status?: string | null
+          product_id?: string | null
+          seller_id?: string
+          starts_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_ads_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "optimized_product_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_ads_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback: {
         Row: {
           comment: string | null
@@ -2488,6 +2619,39 @@ export type Database = {
           },
         ]
       }
+      monetization_config: {
+        Row: {
+          config_key: string
+          config_value: Json
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       notification_deliveries: {
         Row: {
           created_at: string
@@ -2952,6 +3116,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      premium_subscriptions: {
+        Row: {
+          amount: number
+          auto_renew: boolean | null
+          billing_cycle: string
+          cancelled_at: string | null
+          created_at: string
+          currency: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          seller_id: string
+          status: string
+          stripe_subscription_id: string | null
+          subscription_type: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          auto_renew?: boolean | null
+          billing_cycle?: string
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          seller_id: string
+          status?: string
+          stripe_subscription_id?: string | null
+          subscription_type?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          auto_renew?: boolean | null
+          billing_cycle?: string
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          seller_id?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          subscription_type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       product_analytics: {
         Row: {

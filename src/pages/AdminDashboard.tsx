@@ -37,6 +37,7 @@ import { EnhancedUserManagement } from '@/components/admin/EnhancedUserManagemen
 import { ContentMarketingPanel } from '@/components/admin/ContentMarketingPanel';
 import { EscrowTransactionPanel } from '@/components/admin/EscrowTransactionPanel';
 import { SystemSettingsPanel } from '@/components/admin/SystemSettingsPanel';
+import { MonetizationDashboard } from '@/components/admin/MonetizationDashboard';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -248,7 +249,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-6 lg:grid-cols-12 w-full gap-1">
+          <TabsList className="grid grid-cols-6 lg:grid-cols-13 w-full gap-1">
             <TabsTrigger value="dashboard" className="text-xs">
               <Crown className="h-4 w-4 mr-1" />
               Overview
@@ -264,6 +265,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="tokens" className="text-xs">
               <Coins className="h-4 w-4 mr-1" />
               $ZSHOP
+            </TabsTrigger>
+            <TabsTrigger value="monetization" className="text-xs">
+              <DollarSign className="h-4 w-4 mr-1" />
+              Revenue
             </TabsTrigger>
             <TabsTrigger value="escrow" className="text-xs">
               <Shield className="h-4 w-4 mr-1" />
@@ -313,6 +318,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="tokens">
             <TokenAdminPanel />
+          </TabsContent>
+
+          <TabsContent value="monetization">
+            <MonetizationDashboard />
           </TabsContent>
 
           <TabsContent value="escrow">
