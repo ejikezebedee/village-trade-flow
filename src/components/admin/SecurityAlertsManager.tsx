@@ -48,6 +48,9 @@ export default function SecurityAlertsManager() {
   const [loading, setLoading] = useState(true);
   const [emailRecipients, setEmailRecipients] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterSeverity, setFilterSeverity] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -204,16 +207,76 @@ export default function SecurityAlertsManager() {
     updateAlertSetting('alert_recipients', { emails: updatedEmails, sms: [] });
   };
 
+  const resolveAlert = async (alertId: string) => {
+    try {
+      const { error } = await supabase
+        .from('security_alerts')
+        .update({
+          status: 'resolved',
+          resolved_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', alertId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Alert Resolved",
+        description: "Security alert has been resolved.",
+      });
+
+      fetchAlerts();
+    } catch (error) {
+      console.error('Error resolving alert:', error);
+      toast({
+        title: "Error",
+        description: "Failed to resolve alert.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const markAsFalsePositive = async (alertId: string) => {
+    try {
+      const { error } = await supabase
+        .from('security_alerts')
+        .update({
+          status: 'false_positive',
+          resolved_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', alertId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Alert Marked as False Positive",
+        description: "Security alert has been marked as false positive.",
+      });
+
+      fetchAlerts();
+    } catch (error) {
+      console.error('Error marking alert:', error);
+      toast({
+        title: "Error",
+        description: "Failed to mark alert as false positive.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const testAlert = async () => {
     try {
       const { error } = await supabase.functions.invoke('send-security-alert', {
         body: {
-          alert: {
-            alert_type: 'test_alert',
-            severity: 'low',
-            title: 'Test Security Alert',
-            message: 'This is a test alert to verify the security alerting system is working correctly.',
-            metadata: { test: true }
+          alert_type: 'test_alert',
+          severity: 'medium',
+          title: 'Test Security Alert',
+          message: 'This is a test alert to verify the security alerting system is working correctly.',
+          metadata: { 
+            test: true,
+            generated_by: 'admin_panel',
+            timestamp: new Date().toISOString()
           }
         }
       });
@@ -224,6 +287,8 @@ export default function SecurityAlertsManager() {
         title: "Test Alert Sent",
         description: "Test security alert has been triggered.",
       });
+
+      fetchAlerts();
     } catch (error) {
       console.error('Error sending test alert:', error);
       toast({
@@ -258,10 +323,24 @@ export default function SecurityAlertsManager() {
       case 'failed_logins': return <UserX className="h-4 w-4" />;
       case 'role_change': return <UserCheck className="h-4 w-4" />;
       case 'password_resets': return <KeyRound className="h-4 w-4" />;
+      case 'password_changed': return <KeyRound className="h-4 w-4" />;
+      case 'admin_migration_required': return <AlertTriangle className="h-4 w-4" />;
+      case 'test_alert': return <MessageSquare className="h-4 w-4" />;
       case 'escrow_anomaly': return <DollarSign className="h-4 w-4" />;
       default: return <AlertTriangle className="h-4 w-4" />;
     }
   };
+
+  const filteredAlerts = alerts.filter(alert => {
+    const matchesStatus = filterStatus === 'all' || alert.status === filterStatus;
+    const matchesSeverity = filterSeverity === 'all' || alert.severity === filterSeverity;
+    const matchesSearch = !searchTerm || 
+      alert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alert.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alert.alert_type.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesStatus && matchesSeverity && matchesSearch;
+  });
 
   if (loading) {
     return (
@@ -285,6 +364,57 @@ export default function SecurityAlertsManager() {
           <MessageSquare className="h-4 w-4 mr-2" />
           Test Alert
         </Button>
+      </div>
+
+      {/* Alert Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Alerts</p>
+                <p className="text-2xl font-bold">{alerts.length}</p>
+              </div>
+              <Bell className="w-8 h-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Active Alerts</p>
+                <p className="text-2xl font-bold">{alerts.filter(a => a.status === 'active').length}</p>
+              </div>
+              <AlertTriangle className="w-8 h-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Critical Alerts</p>
+                <p className="text-2xl font-bold">{alerts.filter(a => a.severity === 'critical').length}</p>
+              </div>
+              <XCircle className="w-8 h-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Resolved</p>
+                <p className="text-2xl font-bold">{alerts.filter(a => a.status === 'resolved').length}</p>
+              </div>
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Alert Configuration */}
@@ -364,14 +494,77 @@ export default function SecurityAlertsManager() {
         </CardContent>
       </Card>
 
-      {/* Active Alerts */}
+      {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Security Alerts ({alerts.filter(a => a.status !== 'closed').length})</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="text-sm font-medium">Search</label>
+              <Input
+                placeholder="Search alerts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md bg-background"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="acknowledged">Acknowledged</option>
+                <option value="resolved">Resolved</option>
+                <option value="false_positive">False Positive</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Severity</label>
+              <select
+                value={filterSeverity}
+                onChange={(e) => setFilterSeverity(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md bg-background"
+              >
+                <option value="all">All Severities</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <Button 
+                onClick={() => {
+                  setFilterStatus('all');
+                  setFilterSeverity('all');
+                  setSearchTerm('');
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Security Alerts */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Security Alerts ({filteredAlerts.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {alerts.filter(alert => alert.status !== 'closed').map((alert) => (
+            {filteredAlerts.map((alert) => (
               <div key={alert.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center gap-2">
@@ -396,7 +589,7 @@ export default function SecurityAlertsManager() {
                     {alert.ip_address && <p>IP: {String(alert.ip_address)}</p>}
                   </div>
                   
-                  {alert.status === 'new' && (
+                  {(alert.status === 'active' || alert.status === 'new') && (
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -408,32 +601,56 @@ export default function SecurityAlertsManager() {
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => closeAlert(alert.id)}
+                        variant="outline"
+                        onClick={() => resolveAlert(alert.id)}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Resolve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markAsFalsePositive(alert.id)}
                       >
                         <XCircle className="h-4 w-4 mr-1" />
-                        Close
+                        False Positive
                       </Button>
                     </div>
                   )}
                   
                   {alert.status === 'acknowledged' && (
-                    <Button
-                      size="sm"
-                      onClick={() => closeAlert(alert.id)}
-                    >
-                      <XCircle className="h-4 w-4 mr-1" />
-                      Close
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => resolveAlert(alert.id)}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Resolve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markAsFalsePositive(alert.id)}
+                      >
+                        <XCircle className="h-4 w-4 mr-1" />
+                        False Positive
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
             ))}
             
-            {alerts.filter(alert => alert.status !== 'closed').length === 0 && (
+            {filteredAlerts.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-600" />
-                <p>No active security alerts</p>
-                <p className="text-sm">Your platform security is healthy</p>
+                <p>No security alerts found</p>
+                <p className="text-sm">
+                  {alerts.length === 0 
+                    ? "No security alerts have been generated yet." 
+                    : "No alerts match your current filters."}
+                </p>
               </div>
             )}
           </div>

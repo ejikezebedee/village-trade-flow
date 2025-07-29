@@ -1,20 +1,19 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
-import { Resend } from "npm:resend@2.0.0";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
 interface SecurityAlert {
   alert_type: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   message: string;
-  actor_id?: string;
-  target_id?: string;
-  ip_address?: string;
+  actor?: string;
+  target?: string;
+  ip?: string;
   metadata?: any;
 }
 
@@ -25,99 +24,153 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const supabase = createClient(
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+    const { alert_type, severity, title, message, actor, target, ip, metadata }: SecurityAlert = await req.json();
 
-    const { alert }: { alert: SecurityAlert } = await req.json();
+    console.log('Processing security alert:', { alert_type, severity, title });
 
-    // Store alert in database
-    const { data: alertData, error: alertError } = await supabase
+    // Store the alert in the database
+    const { data: alertData, error: alertError } = await supabaseClient
       .from('security_alerts')
-      .insert([{
-        alert_type: alert.alert_type,
-        severity: alert.severity,
-        title: alert.title,
-        message: alert.message,
-        actor_id: alert.actor_id,
-        target_id: alert.target_id,
-        ip_address: alert.ip_address,
-        metadata: alert.metadata || {}
-      }])
-      .select()
+      .insert({
+        alert_type,
+        severity,
+        title,
+        message,
+        metadata: {
+          ...metadata,
+          actor,
+          target,
+          ip,
+          timestamp: new Date().toISOString(),
+          source: 'system'
+        }
+      })
+      .select('*')
       .single();
 
-    if (alertError) throw alertError;
+    if (alertError) {
+      console.error('Error creating security alert:', alertError);
+      throw alertError;
+    }
 
-    // Get alert recipients
-    const { data: settings } = await supabase
+    console.log('Security alert created:', alertData.id);
+
+    // Get email recipients from alert settings
+    const { data: emailSettings, error: settingsError } = await supabaseClient
       .from('alert_settings')
       .select('setting_value')
-      .eq('setting_key', 'alert_recipients')
+      .eq('setting_key', 'email_recipients')
+      .eq('is_active', true)
       .single();
 
-    const recipients = settings?.setting_value?.emails || [];
+    let emailRecipients: string[] = [];
     
-    if (recipients.length > 0) {
-      // Send email alerts
-      const emailSubject = `🚨 Security Alert: ${alert.title}`;
-      const emailBody = `
-        <h2 style="color: ${alert.severity === 'critical' ? '#dc2626' : alert.severity === 'high' ? '#ea580c' : '#ca8a04'};">
-          Security Alert: ${alert.title}
-        </h2>
-        <p><strong>Severity:</strong> ${alert.severity.toUpperCase()}</p>
-        <p><strong>Type:</strong> ${alert.alert_type}</p>
-        <p><strong>Message:</strong> ${alert.message}</p>
-        ${alert.ip_address ? `<p><strong>IP Address:</strong> ${alert.ip_address}</p>` : ''}
-        <p><strong>Time:</strong> ${new Date().toISOString()}</p>
-        
-        <hr>
-        <p><em>This is an automated security alert from VillageMarket Platform.</em></p>
-      `;
+    if (!settingsError && emailSettings?.setting_value?.emails) {
+      emailRecipients = emailSettings.setting_value.emails;
+    } else {
+      // Fallback to default admin emails if no settings found
+      emailRecipients = ['admin@villagemarket.com'];
+    }
 
-      for (const email of recipients) {
-        await resend.emails.send({
-          from: 'Security <security@villagemarket.co>',
-          to: [email],
-          subject: emailSubject,
-          html: emailBody,
-        });
+    // Send email notifications (if email service is configured)
+    if (emailRecipients.length > 0) {
+      try {
+        const resendApiKey = Deno.env.get('RESEND_API_KEY');
+        
+        if (resendApiKey) {
+          const emailSubject = `🚨 Security Alert [${severity.toUpperCase()}]: ${title}`;
+          const emailBody = `
+            <h2>Security Alert Notification</h2>
+            <p><strong>Alert Type:</strong> ${alert_type}</p>
+            <p><strong>Severity:</strong> ${severity.toUpperCase()}</p>
+            <p><strong>Title:</strong> ${title}</p>
+            <p><strong>Message:</strong> ${message}</p>
+            ${actor ? `<p><strong>Actor:</strong> ${actor}</p>` : ''}
+            ${target ? `<p><strong>Target:</strong> ${target}</p>` : ''}
+            ${ip ? `<p><strong>IP Address:</strong> ${ip}</p>` : ''}
+            <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+            
+            ${metadata ? `
+            <h3>Additional Details:</h3>
+            <pre>${JSON.stringify(metadata, null, 2)}</pre>
+            ` : ''}
+            
+            <hr>
+            <p><em>This is an automated security alert from VillageMarket. Please review and take appropriate action.</em></p>
+          `;
+
+          const emailResponse = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${resendApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: 'security@villagemarket.com',
+              to: emailRecipients,
+              subject: emailSubject,
+              html: emailBody,
+            }),
+          });
+
+          if (emailResponse.ok) {
+            console.log('Security alert email sent successfully');
+            
+            // Update the alert to mark as notified
+            await supabaseClient
+              .from('security_alerts')
+              .update({
+                metadata: {
+                  ...alertData.metadata,
+                  email_sent: true,
+                  email_recipients: emailRecipients,
+                  email_sent_at: new Date().toISOString()
+                }
+              })
+              .eq('id', alertData.id);
+          } else {
+            console.error('Failed to send security alert email:', await emailResponse.text());
+          }
+        }
+      } catch (emailError) {
+        console.error('Error sending security alert email:', emailError);
       }
     }
 
-    // Mark alert as notified
-    await supabase
-      .from('security_alerts')
-      .update({ 
-        notified_channels: ['email'],
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', alertData.id);
-
-    console.log(`Security alert sent: ${alert.title} (${alert.severity})`);
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      alert_id: alertData.id,
-      message: 'Security alert sent successfully'
-    }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
-
-  } catch (error: any) {
-    console.error('Error in send-security-alert function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({
+        success: true,
+        alert_id: alertData.id,
+        message: 'Security alert processed successfully'
+      }),
       {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        },
+        status: 200,
+      }
+    );
+
+  } catch (error) {
+    console.error('Error processing security alert:', error);
+    
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message || 'Failed to process security alert'
+      }),
+      {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        },
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );
   }

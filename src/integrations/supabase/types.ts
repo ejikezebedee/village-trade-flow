@@ -76,30 +76,101 @@ export type Database = {
           },
         ]
       }
+      admin_security_audit: {
+        Row: {
+          action_type: string
+          admin_id: string | null
+          created_at: string | null
+          failure_reason: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          success: boolean | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_id?: string | null
+          created_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string | null
+          created_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_security_audit_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admins: {
         Row: {
           created_at: string | null
+          failed_login_attempts: number | null
           id: string
           is_active: boolean | null
+          last_login_at: string | null
+          locked_until: string | null
           password: string
+          password_hash: string | null
+          password_reset_expires: string | null
+          password_reset_token: string | null
+          password_salt: string | null
           role: string
           updated_at: string | null
           username: string
         }
         Insert: {
           created_at?: string | null
+          failed_login_attempts?: number | null
           id?: string
           is_active?: boolean | null
+          last_login_at?: string | null
+          locked_until?: string | null
           password: string
+          password_hash?: string | null
+          password_reset_expires?: string | null
+          password_reset_token?: string | null
+          password_salt?: string | null
           role?: string
           updated_at?: string | null
           username: string
         }
         Update: {
           created_at?: string | null
+          failed_login_attempts?: number | null
           id?: string
           is_active?: boolean | null
+          last_login_at?: string | null
+          locked_until?: string | null
           password?: string
+          password_hash?: string | null
+          password_reset_expires?: string | null
+          password_reset_token?: string | null
+          password_salt?: string | null
           role?: string
           updated_at?: string | null
           username?: string
@@ -3633,6 +3704,50 @@ export type Database = {
         }
         Relationships: []
       }
+      secure_admin_sessions: {
+        Row: {
+          admin_id: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          is_active: boolean | null
+          last_accessed: string | null
+          session_token: string
+          user_agent: string | null
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_accessed?: string | null
+          session_token: string
+          user_agent?: string | null
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_accessed?: string | null
+          session_token?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "secure_admin_sessions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_alerts: {
         Row: {
           acknowledged_at: string | null
@@ -4951,6 +5066,15 @@ export type Database = {
         Args: { dispute_uuid: string }
         Returns: string
       }
+      authenticate_admin: {
+        Args: {
+          p_username: string
+          p_password: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
       calculate_next_minimum_bid: {
         Args: { p_auction_id: string }
         Returns: number
@@ -5010,6 +5134,16 @@ export type Database = {
           p_recipient_type: string
           p_title: string
           p_body: string
+        }
+        Returns: string
+      }
+      create_security_alert: {
+        Args: {
+          p_alert_type: string
+          p_severity: string
+          p_title: string
+          p_message: string
+          p_metadata?: Json
         }
         Returns: string
       }
@@ -5145,6 +5279,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      hash_password: {
+        Args: { password: string; salt?: string }
+        Returns: Json
       }
       initialize_user_wallet: {
         Args: { p_user_id: string }
