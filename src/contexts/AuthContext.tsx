@@ -111,11 +111,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       (event, session) => {
         if (!mounted) return;
         
+        console.log('Auth state change:', event, session?.user?.id);
+        
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
-          // Use setTimeout to avoid potential deadlock with onAuthStateChange
+        // Handle OAuth provider callback
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Check if this is a new user from OAuth
+          const isNewUser = session.user.created_at === session.user.updated_at;
+          const provider = session.user.app_metadata?.provider;
+          
+          setTimeout(() => {
+            if (mounted) {
+              fetchUserProfile(session.user.id, isNewUser, provider);
+            }
+          }, 0);
+        } else if (session?.user) {
+          // Regular sign-in
           setTimeout(() => {
             if (mounted) {
               fetchUserProfile(session.user.id);
@@ -178,14 +191,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string, isNewUser = false, provider?: string) => {
     if (!userId) {
       setLoading(false);
       return;
     }
 
     try {
-      console.log('Fetching profile for user:', userId);
+      console.log('Fetching profile for user:', userId, { isNewUser, provider });
       
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise<never>((_, reject) => 
@@ -205,6 +218,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" which is ok
         console.error('Error fetching profile:', error);
         setProfile(null);
+      } else if (!data && isNewUser) {
+        // Create profile for new OAuth users
+        console.log('Creating new profile for OAuth user');
+        await createOAuthProfile(userId, provider);
       } else {
         setProfile(data);
         console.log('Profile set:', data);
@@ -216,6 +233,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Always set loading to false after attempting to fetch profile
       console.log('Setting loading to false');
       setLoading(false);
+    }
+  };
+
+  const createOAuthProfile = async (userId: string, provider?: string) => {
+    try {
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return;
+
+      const userData = user.data.user;
+      const metadata = userData.user_metadata || {};
+
+      const profileData = {
+        user_id: userId,
+        user_type: 'buyer', // Default user type
+        first_name: metadata.full_name?.split(' ')[0] || metadata.name?.split(' ')[0] || '',
+        last_name: metadata.full_name?.split(' ').slice(1).join(' ') || metadata.name?.split(' ').slice(1).join(' ') || '',
+        avatar_url: metadata.avatar_url || metadata.picture || null,
+        verification_status: provider === 'google' ? 'pending' : 'unverified',
+        rating: 0,
+        total_ratings: 0,
+        is_active: true
+      };
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert(profileData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating OAuth profile:', error);
+        return;
+      }
+
+      setProfile(data);
+      
+      // Send welcome email for OAuth users
+      try {
+        await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            emailType: 'oauth_welcome',
+            profileData: data,
+            provider
+          }
+        });
+      } catch (emailError) {
+        console.error('Error sending OAuth welcome email:', emailError);
+      }
+
+      console.log('OAuth profile created:', data);
+    } catch (error) {
+      console.error('Error in createOAuthProfile:', error);
     }
   };
 
@@ -354,15 +423,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     try {
+      // Get Google OAuth configuration from API keys
+      const { data: googleConfig, error: configError } = await supabase.functions.invoke('manage-api-keys', {
+        body: { action: 'validate' }
+      });
+
+      if (configError) {
+        console.error('Error validating Google OAuth config:', configError);
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}/auth?provider=google`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
 
-      return { error };
+      if (error) {
+        // Handle specific OAuth errors
+        if (error.message.includes('configuration')) {
+          throw new Error('Google OAuth is not properly configured. Please contact an administrator.');
+        }
+        throw error;
+      }
+
+      return { error: null };
     } catch (error) {
+      console.error('Google OAuth error:', error);
       return { error };
     }
   };

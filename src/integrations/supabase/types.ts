@@ -437,6 +437,92 @@ export type Database = {
         }
         Relationships: []
       }
+      api_key_audit: {
+        Row: {
+          action_type: string
+          api_key_id: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_value: Json | null
+          old_value: Json | null
+          performed_by: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          api_key_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_value?: Json | null
+          old_value?: Json | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          api_key_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_value?: Json | null
+          old_value?: Json | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_key_audit_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          key_name: string
+          key_value: string
+          last_used_at: string | null
+          updated_at: string | null
+          updated_by: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_name: string
+          key_value: string
+          last_used_at?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_name?: string
+          key_value?: string
+          last_used_at?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       auction_bids: {
         Row: {
           auction_id: string
@@ -5155,6 +5241,10 @@ export type Database = {
         }
         Returns: string
       }
+      decrypt_api_key: {
+        Args: { encrypted_value: string }
+        Returns: string
+      }
       detect_and_save_user_language: {
         Args: {
           p_user_id: string
@@ -5178,6 +5268,10 @@ export type Database = {
           p_timeframe?: unknown
         }
         Returns: Json
+      }
+      encrypt_api_key: {
+        Args: { key_value: string }
+        Returns: string
       }
       encrypt_sensitive_data: {
         Args: { p_data: Json; p_key_purpose?: string }
@@ -5264,6 +5358,10 @@ export type Database = {
           featured: boolean
           time_remaining: unknown
         }[]
+      }
+      get_api_key: {
+        Args: { p_key_name: string }
+        Returns: string
       }
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }
@@ -5461,6 +5559,14 @@ export type Database = {
       upgrade_user_role: {
         Args: { p_user_id: string; p_new_role: string }
         Returns: boolean
+      }
+      upsert_api_key: {
+        Args: {
+          p_key_name: string
+          p_key_value: string
+          p_description?: string
+        }
+        Returns: string
       }
       verify_admin_login: {
         Args: { p_username: string; p_password: string }

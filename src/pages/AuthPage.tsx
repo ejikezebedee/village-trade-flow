@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,9 +17,37 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState('signin');
   const [show2FA, setShow2FA] = useState(false);
   const [pendingUser, setPendingUser] = useState<{ id: string; email: string } | null>(null);
-  const { signIn, signUp, signInWithAdmin, signInWithGoogle, resetPassword, verifyTwoFactor } = useAuth();
+  const { signIn, signUp, signInWithAdmin, signInWithGoogle, resetPassword, verifyTwoFactor, user, profile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Handle OAuth redirect on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const provider = urlParams.get('provider');
+    
+    if (provider === 'google') {
+      // Check if user is now authenticated after OAuth redirect
+      const checkOAuthResult = async () => {
+        if (user && profile) {
+          toast({
+            title: "Welcome to VillageMarket!",
+            description: `Successfully signed in with Google as ${profile.first_name} ${profile.last_name}`,
+          });
+          
+          // Redirect based on user role
+          if (profile.user_role === 'admin') {
+            navigate('/admin-dashboard');
+          } else {
+            navigate('/');
+          }
+        }
+      };
+      
+      // Small delay to allow auth state to settle
+      setTimeout(checkOAuthResult, 1000);
+    }
+  }, [user, profile, navigate, toast]);
 
   // Sign In Form State
   const [signInData, setSignInData] = useState({

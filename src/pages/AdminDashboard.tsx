@@ -19,7 +19,8 @@ import {
   Coins,
   Megaphone,
   BarChart3,
-  Crown
+  Crown,
+  Key
 } from 'lucide-react';
 import AdminSecurityPanel from '@/components/admin/AdminSecurityPanel';
 import AdminSecurityDashboard from '@/components/admin/AdminSecurityDashboard';
@@ -38,6 +39,7 @@ import { ContentMarketingPanel } from '@/components/admin/ContentMarketingPanel'
 import { EscrowTransactionPanel } from '@/components/admin/EscrowTransactionPanel';
 import { SystemSettingsPanel } from '@/components/admin/SystemSettingsPanel';
 import { MonetizationDashboard } from '@/components/admin/MonetizationDashboard';
+import ApiKeyManagement from '@/components/admin/ApiKeyManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -249,7 +251,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-6 lg:grid-cols-13 w-full gap-1">
+          <TabsList className="grid grid-cols-7 lg:grid-cols-14 w-full gap-1">
             <TabsTrigger value="dashboard" className="text-xs">
               <Crown className="h-4 w-4 mr-1" />
               Overview
@@ -281,6 +283,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="analytics" className="text-xs">
               <BarChart3 className="h-4 w-4 mr-1" />
               Reports
+            </TabsTrigger>
+            <TabsTrigger value="api-keys" className="text-xs">
+              <Key className="h-4 w-4 mr-1" />
+              API Keys
             </TabsTrigger>
             <TabsTrigger value="security" className="text-xs">
               <AlertCircle className="h-4 w-4 mr-1" />
@@ -334,6 +340,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="analytics">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="api-keys">
+            <ApiKeyManagement />
           </TabsContent>
 
           <TabsContent value="security">
