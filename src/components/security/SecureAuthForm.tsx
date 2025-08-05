@@ -84,8 +84,18 @@ const SecureAuthForm: React.FC<SecureAuthFormProps> = ({
     setLoading(true);
 
     try {
-      // Validate email
-      if (!validateEmail(formData.email)) {
+      // Enhanced input sanitization
+      const sanitizedData = {
+        email: sanitizeInput(formData.email, { stripSpecialChars: false, maxLength: 254 }).toLowerCase(),
+        password: formData.password, // Don't sanitize passwords as they may contain special chars
+        firstName: formData.firstName ? sanitizeInput(formData.firstName, { stripSpecialChars: true, maxLength: 50 }) : '',
+        lastName: formData.lastName ? sanitizeInput(formData.lastName, { stripSpecialChars: true, maxLength: 50 }) : '',
+        userType: formData.userType,
+        confirmPassword: formData.confirmPassword
+      };
+
+      // Enhanced email validation
+      if (!validateEmail(sanitizedData.email)) {
         throw new Error('Please enter a valid email address');
       }
 
@@ -96,16 +106,25 @@ const SecureAuthForm: React.FC<SecureAuthFormProps> = ({
           throw new Error('Password does not meet security requirements');
         }
 
-        // Check password against known breaches
+        // Additional security checks for admin accounts
+        if (sanitizedData.userType === 'admin') {
+          throw new Error('Admin accounts cannot be created through this form. Contact system administrator.');
+        }
+
+        // Check password against known breaches with enhanced security
         try {
-          const { data: breachCheck } = await supabase.functions.invoke('password-security', {
+          const { data: breachCheck, error: breachError } = await supabase.functions.invoke('password-security', {
             body: {
-              password: formData.password,
-              action: 'check_breach'
+              password: sanitizedData.password,
+              action: 'check_breach',
+              email: sanitizedData.email // For additional context
             }
           });
 
-          if (breachCheck?.isBreached) {
+          if (breachError) {
+            console.warn('Password breach check failed:', breachError);
+            // Continue without blocking if service is unavailable
+          } else if (breachCheck?.isBreached) {
             throw new Error(`This password has been found in ${breachCheck.breachCount} data breaches. Please choose a different password.`);
           }
         } catch (breachError) {
@@ -114,18 +133,18 @@ const SecureAuthForm: React.FC<SecureAuthFormProps> = ({
         }
 
         // Confirm password match for signup
-        if (formData.password !== formData.confirmPassword) {
+        if (sanitizedData.password !== sanitizedData.confirmPassword) {
           throw new Error('Passwords do not match');
         }
 
         // Validate required fields for signup
-        if (!formData.firstName.trim() || !formData.lastName.trim()) {
+        if (!sanitizedData.firstName.trim() || !sanitizedData.lastName.trim()) {
           throw new Error('First name and last name are required');
         }
       }
 
-      // Submit form
-      await onSubmit(formData);
+      // Submit form with sanitized data
+      await onSubmit(sanitizedData);
       
       // Record successful attempt
       recordAttempt(true);
@@ -133,6 +152,24 @@ const SecureAuthForm: React.FC<SecureAuthFormProps> = ({
     } catch (error: any) {
       // Record failed attempt
       recordAttempt(false);
+      
+      // Log security events for failed attempts
+      if (mode === 'signin' && error.message.includes('Invalid')) {
+        // Create security alert for repeated failed login attempts
+        supabase.functions.invoke('send-security-alert', {
+          body: {
+            alert_type: 'login_failure',
+            severity: 'medium',
+            title: 'Failed Login Attempt',
+            message: `Failed login attempt for email: ${formData.email}`,
+            metadata: { 
+              email: formData.email, 
+              timestamp: new Date().toISOString(),
+              userAgent: navigator.userAgent
+            }
+          }
+        }).catch(console.error); // Don't block UI for logging
+      }
       
       toast({
         title: "Authentication Failed",

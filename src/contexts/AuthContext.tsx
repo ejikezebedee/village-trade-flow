@@ -372,52 +372,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithAdmin = async (username: string, password: string) => {
     try {
-      const { data, error } = await supabase.rpc('verify_admin_login', {
+      // Use the new secure admin authentication function
+      const { data, error } = await supabase.rpc('authenticate_admin', {
         p_username: username,
-        p_password: password
+        p_password: password,
+        p_ip_address: null,
+        p_user_agent: navigator.userAgent
       });
 
-      if (error || !data || data.length === 0 || !data[0].success) {
-        return { error: new Error('Invalid username or password') };
+      if (error) throw error;
+
+      // Type-safe access to response data
+      const adminData = data as any;
+      
+      if (adminData && adminData.success) {
+        const mockUser = {
+          id: adminData.admin_id,
+          email: `${adminData.username}@admin.local`,
+          user_metadata: { 
+            role: adminData.role,
+            username: adminData.username,
+            is_admin: true,
+            session_token: adminData.session_token
+          }
+        };
+        
+        setUser(mockUser as any);
+        setProfile({
+          id: adminData.admin_id,
+          user_id: adminData.admin_id,
+          user_role: 'admin',
+          user_type: 'admin',
+          first_name: 'Admin',
+          last_name: 'User',
+          verification_status: 'verified',
+          rating: 5.0,
+          total_ratings: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        } as Profile);
+        
+        localStorage.setItem('admin_session_token', adminData.session_token);
+        return { error: null };
+      } else {
+        return { error: new Error(adminData?.error || 'Invalid admin credentials') };
       }
-
-      // Get admin data
-      const adminData = data[0];
-      
-      // Create a mock user object for admin session
-      const mockAdminUser = {
-        id: adminData.admin_id,
-        email: `${adminData.username}@admin.local`,
-        role: adminData.role,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        user_metadata: { username: adminData.username },
-        app_metadata: { role: adminData.role }
-      };
-
-      // Create a mock profile for admin
-      const mockAdminProfile = {
-        id: adminData.admin_id,
-        user_id: adminData.admin_id,
-        user_type: adminData.role,
-        user_role: adminData.role,
-        unique_user_id: 'ADMIN001',
-        verification_status: 'verified',
-        rating: 5.0,
-        total_ratings: 1,
-        is_active: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-
-      // Set the state for admin login
-      setUser(mockAdminUser as any);
-      setProfile(mockAdminProfile as any);
-      
-      return { error: null };
-    } catch (error) {
-      console.error('Admin login error:', error);
-      return { error: new Error('Invalid username or password') };
+    } catch (error: any) {
+      console.error('Admin sign-in error:', error);
+      return { error: new Error(error.message) };
     }
   };
 

@@ -251,7 +251,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-7 lg:grid-cols-14 w-full gap-1">
+          <TabsList className="grid grid-cols-7 lg:grid-cols-15 w-full gap-1">
             <TabsTrigger value="dashboard" className="text-xs">
               <Crown className="h-4 w-4 mr-1" />
               Overview
@@ -291,6 +291,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="security" className="text-xs">
               <AlertCircle className="h-4 w-4 mr-1" />
               Security
+            </TabsTrigger>
+            <TabsTrigger value="alerts" className="text-xs">
+              <Shield className="h-4 w-4 mr-1" />
+              Alerts
             </TabsTrigger>
             <TabsTrigger value="settings" className="text-xs">
               <Settings className="h-4 w-4 mr-1" />
@@ -348,6 +352,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="security">
             <AdminSecurityPanel />
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <SecurityAlertsManager />
           </TabsContent>
 
           <TabsContent value="settings">
