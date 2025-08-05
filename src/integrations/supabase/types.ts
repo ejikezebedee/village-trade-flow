@@ -3790,6 +3790,33 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action_type: string
+          attempt_count: number | null
+          created_at: string | null
+          id: string
+          user_id: string | null
+          window_start: string | null
+        }
+        Insert: {
+          action_type: string
+          attempt_count?: number | null
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          action_type?: string
+          attempt_count?: number | null
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       secure_admin_sessions: {
         Row: {
           admin_id: string
@@ -5196,6 +5223,15 @@ export type Database = {
           current_encryption_status: string
           compliance_status: string
         }[]
+      }
+      check_rate_limit: {
+        Args: {
+          p_user_id: string
+          p_action_type: string
+          p_max_attempts?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
       }
       cleanup_new_arrival_tags: {
         Args: Record<PropertyKey, never>
