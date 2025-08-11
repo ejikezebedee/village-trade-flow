@@ -40,6 +40,7 @@ import { EscrowTransactionPanel } from '@/components/admin/EscrowTransactionPane
 import { SystemSettingsPanel } from '@/components/admin/SystemSettingsPanel';
 import { MonetizationDashboard } from '@/components/admin/MonetizationDashboard';
 import ApiKeyManagement from '@/components/admin/ApiKeyManagement';
+import { SecurityCenter } from '@/components/admin/SecurityCenter';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -288,9 +289,13 @@ export default function AdminDashboard() {
               <Key className="h-4 w-4 mr-1" />
               API Keys
             </TabsTrigger>
-            <TabsTrigger value="security" className="text-xs">
+            <TabsTrigger value="security-panel" className="text-xs">
               <AlertCircle className="h-4 w-4 mr-1" />
               Security
+            </TabsTrigger>
+            <TabsTrigger value="security-center" className="text-xs">
+              <Shield className="h-4 w-4 mr-1" />
+              Security Center
             </TabsTrigger>
             <TabsTrigger value="alerts" className="text-xs">
               <Shield className="h-4 w-4 mr-1" />
@@ -350,8 +355,12 @@ export default function AdminDashboard() {
             <ApiKeyManagement />
           </TabsContent>
 
-          <TabsContent value="security">
+          <TabsContent value="security-panel">
             <AdminSecurityPanel />
+          </TabsContent>
+
+          <TabsContent value="security-center">
+            <SecurityCenter />
           </TabsContent>
 
           <TabsContent value="alerts">

@@ -41,12 +41,14 @@ export const PayPalButton: React.FC<PayPalButtonProps> = ({
         createOrder: async (data: any, actions: any) => {
           try {
             // Create PayPal order via our edge function
-            const { data: orderData, error } = await supabase.functions.invoke('create-paypal-payment', {
+            const { data: orderData, error } = await supabase.functions.invoke('process-paypal-payment', {
               body: {
-                amount: amount.toString(),
+                amount: parseFloat(amount.toString()),
                 currency: 'USD',
-                orderId: orderId,
-                userId: user?.id
+                orderId: orderId || `order_${Date.now()}`,
+                description: 'Village Trading Purchase',
+                buyerId: user?.id || 'guest_user',
+                sellerId: 'marketplace'
               }
             });
 
@@ -63,11 +65,9 @@ export const PayPalButton: React.FC<PayPalButtonProps> = ({
         onApprove: async (data: any, actions: any) => {
           try {
             // Capture payment via our edge function
-            const { data: captureData, error } = await supabase.functions.invoke('capture-paypal-payment', {
+            const { data: captureData, error } = await supabase.functions.invoke('verify-paypal-payment', {
               body: {
-                paypal_order_id: data.orderID,
-                orderId: orderId,
-                userId: user?.id
+                paypal_order_id: data.orderID
               }
             });
 
@@ -78,7 +78,7 @@ export const PayPalButton: React.FC<PayPalButtonProps> = ({
               description: `Transaction ID: ${captureData.transaction_id}`,
             });
 
-            onSuccess?.(captureData.transaction_id);
+            onSuccess?.(captureData.capture_id);
           } catch (error) {
             console.error('Error capturing PayPal payment:', error);
             toast({

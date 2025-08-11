@@ -5403,6 +5403,23 @@ export type Database = {
         Args: { p_content_key: string; p_language_code?: string }
         Returns: string
       }
+      get_security_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          name: string
+          value: number
+          status: string
+          description: string
+        }[]
+      }
+      get_table_security_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          table_name: string
+          rls_enabled: boolean
+          policy_count: number
+        }[]
+      }
       get_user_language: {
         Args: { user_uuid?: string }
         Returns: string
@@ -5482,6 +5499,10 @@ export type Database = {
       schedule_verification_cleanup: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      toggle_table_rls: {
+        Args: { table_name: string; enable: boolean }
+        Returns: boolean
       }
       track_affiliate_referral: {
         Args: {
