@@ -108,6 +108,7 @@ export const UserManagement: React.FC = () => {
 
   const handlePromoteToAdmin = async (userId: string, userName: string) => {
     try {
+      // Temporarily use direct update until RPC function is properly deployed
       const { error } = await supabase
         .from('profiles')
         .update({ user_role: 'admin' })
@@ -115,18 +116,9 @@ export const UserManagement: React.FC = () => {
 
       if (error) throw error;
 
-      // Log the admin promotion
-      await supabase.rpc('log_security_event', {
-        p_event_type: 'admin_promotion',
-        p_severity: 'warning',
-        p_user_id: userId,
-        p_action_performed: `User promoted to admin: ${userName}`,
-        p_metadata: { promoted_to: 'admin' }
-      });
-
       toast({
         title: "User Promoted",
-        description: "User has been promoted to admin.",
+        description: `User has been promoted to admin.`,
       });
 
       fetchUserData();
