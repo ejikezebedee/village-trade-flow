@@ -5224,6 +5224,10 @@ export type Database = {
           compliance_status: string
         }[]
       }
+      check_password_history: {
+        Args: { p_user_id: string; p_new_password_hash: string }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_user_id: string
@@ -5232,6 +5236,15 @@ export type Database = {
           p_window_minutes?: number
         }
         Returns: boolean
+      }
+      check_rate_limit_enhanced: {
+        Args: {
+          p_identifier: string
+          p_action_type: string
+          p_max_attempts?: number
+          p_window_minutes?: number
+        }
+        Returns: Json
       }
       cleanup_new_arrival_tags: {
         Args: Record<PropertyKey, never>
@@ -5326,7 +5339,7 @@ export type Database = {
         Returns: undefined
       }
       generate_qr_identifier: {
-        Args: { p_order_id: string; p_stage: string }
+        Args: { order_uuid: string; stage: string }
         Returns: string
       }
       generate_receipt_number: {
@@ -5431,6 +5444,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      hash_evidence_file: {
+        Args: { file_content: string }
+        Returns: string
+      }
       hash_password: {
         Args: { password: string; salt?: string }
         Returns: Json
@@ -5495,6 +5512,10 @@ export type Database = {
       run_security_health_check: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      sanitize_input: {
+        Args: { input_text: string }
+        Returns: string
       }
       schedule_verification_cleanup: {
         Args: Record<PropertyKey, never>
@@ -5624,6 +5645,19 @@ export type Database = {
           p_description?: string
         }
         Returns: string
+      }
+      validate_api_request: {
+        Args: {
+          p_endpoint: string
+          p_user_id: string
+          p_ip_address: unknown
+          p_payload?: Json
+        }
+        Returns: Json
+      }
+      validate_password_strength: {
+        Args: { password: string }
+        Returns: Json
       }
       verify_admin_login: {
         Args: { p_username: string; p_password: string }
