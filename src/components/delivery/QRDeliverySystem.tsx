@@ -19,24 +19,9 @@ import {
   Shield
 } from 'lucide-react';
 
-interface Order {
-  id: string;
-  order_number: string;
-  product_name: string;
-  current_stage: string;
-  order_status: string;
-  buyer_id: string;
-  seller_id: string;
-  driver_id?: string;
-  shop_id?: string;
-  seller_to_driver_qr?: string;
-  driver_to_shop_qr?: string;
-  shop_to_buyer_qr?: string;
-  pickup_location: any;
-  delivery_location: any;
-  created_at: string;
-  estimated_delivery_time?: string;
-}
+import type { Database } from '@/integrations/supabase/types';
+
+type Order = Database['public']['Tables']['orders']['Row'];
 
 interface QRScanData {
   qr_code: string;
@@ -360,11 +345,11 @@ export const QRDeliverySystem: React.FC = () => {
                         <div className="text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
-                            Pickup: {order.pickup_location?.community || 'N/A'}
+                            Pickup: {(order.pickup_location as any)?.community || 'N/A'}
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
-                            Delivery: {order.delivery_location?.community || 'N/A'}
+                            Delivery: {(order.delivery_location as any)?.community || 'N/A'}
                           </div>
                         </div>
                       </div>

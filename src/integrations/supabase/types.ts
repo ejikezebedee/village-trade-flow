@@ -1319,6 +1319,51 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_bids: {
+        Row: {
+          accepted_at: string | null
+          bid_amount: number
+          bid_type: string
+          bidder_id: string
+          created_at: string
+          estimated_delivery_time: number | null
+          expires_at: string | null
+          id: string
+          message: string | null
+          order_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          bid_amount: number
+          bid_type?: string
+          bidder_id: string
+          created_at?: string
+          estimated_delivery_time?: number | null
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          order_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          bid_amount?: number
+          bid_type?: string
+          bidder_id?: string
+          created_at?: string
+          estimated_delivery_time?: number | null
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          order_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery_checkpoints: {
         Row: {
           checkpoint_location: string | null
@@ -3043,12 +3088,15 @@ export type Database = {
           buyer_id: string | null
           created_at: string
           current_stage: string | null
+          delivery_location: Json | null
           driver_id: string | null
           driver_to_shop_qr: string | null
           escrow_release_date: string | null
           id: string
+          order_number: string | null
           order_status: string
           payment_status: string
+          pickup_location: Json | null
           product_name: string
           product_price: number
           quantity: number
@@ -3064,12 +3112,15 @@ export type Database = {
           buyer_id?: string | null
           created_at?: string
           current_stage?: string | null
+          delivery_location?: Json | null
           driver_id?: string | null
           driver_to_shop_qr?: string | null
           escrow_release_date?: string | null
           id?: string
+          order_number?: string | null
           order_status?: string
           payment_status?: string
+          pickup_location?: Json | null
           product_name: string
           product_price: number
           quantity?: number
@@ -3085,12 +3136,15 @@ export type Database = {
           buyer_id?: string | null
           created_at?: string
           current_stage?: string | null
+          delivery_location?: Json | null
           driver_id?: string | null
           driver_to_shop_qr?: string | null
           escrow_release_date?: string | null
           id?: string
+          order_number?: string | null
           order_status?: string
           payment_status?: string
+          pickup_location?: Json | null
           product_name?: string
           product_price?: number
           quantity?: number
@@ -3476,8 +3530,10 @@ export type Database = {
       products: {
         Row: {
           auto_tags_generated: boolean | null
+          average_rating: number | null
           category: string
           category_confidence: number | null
+          community: string | null
           created_at: string
           currency: string | null
           description: string | null
@@ -3486,21 +3542,26 @@ export type Database = {
           images: Json | null
           is_active: boolean | null
           last_categorized_at: string | null
+          lga: string | null
           listing_created_at: string | null
           listing_qr_code: string | null
           location: Json | null
           name: string
           price: number
           seller_id: string | null
+          state: string | null
           stock_quantity: number | null
           tags: string[] | null
+          total_ratings: number | null
           unit_type: string | null
           updated_at: string
         }
         Insert: {
           auto_tags_generated?: boolean | null
+          average_rating?: number | null
           category: string
           category_confidence?: number | null
+          community?: string | null
           created_at?: string
           currency?: string | null
           description?: string | null
@@ -3509,21 +3570,26 @@ export type Database = {
           images?: Json | null
           is_active?: boolean | null
           last_categorized_at?: string | null
+          lga?: string | null
           listing_created_at?: string | null
           listing_qr_code?: string | null
           location?: Json | null
           name: string
           price: number
           seller_id?: string | null
+          state?: string | null
           stock_quantity?: number | null
           tags?: string[] | null
+          total_ratings?: number | null
           unit_type?: string | null
           updated_at?: string
         }
         Update: {
           auto_tags_generated?: boolean | null
+          average_rating?: number | null
           category?: string
           category_confidence?: number | null
+          community?: string | null
           created_at?: string
           currency?: string | null
           description?: string | null
@@ -3532,14 +3598,17 @@ export type Database = {
           images?: Json | null
           is_active?: boolean | null
           last_categorized_at?: string | null
+          lga?: string | null
           listing_created_at?: string | null
           listing_qr_code?: string | null
           location?: Json | null
           name?: string
           price?: number
           seller_id?: string | null
+          state?: string | null
           stock_quantity?: number | null
           tags?: string[] | null
+          total_ratings?: number | null
           unit_type?: string | null
           updated_at?: string
         }
@@ -3560,6 +3629,7 @@ export type Database = {
           bio: string | null
           created_at: string
           detect_language_automatically: boolean | null
+          display_name: string | null
           encrypted_personal_data: Json | null
           encryption_key_id: string | null
           first_name: string | null
@@ -3568,9 +3638,11 @@ export type Database = {
           is_encrypted: boolean | null
           kyc_level: string | null
           kyc_status: string | null
+          language_preference: string | null
           last_encrypted_at: string | null
           last_name: string | null
           location: Json | null
+          notification_preferences: Json | null
           phone_number: string | null
           preferred_language: string | null
           rating: number | null
@@ -3595,6 +3667,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           detect_language_automatically?: boolean | null
+          display_name?: string | null
           encrypted_personal_data?: Json | null
           encryption_key_id?: string | null
           first_name?: string | null
@@ -3603,9 +3676,11 @@ export type Database = {
           is_encrypted?: boolean | null
           kyc_level?: string | null
           kyc_status?: string | null
+          language_preference?: string | null
           last_encrypted_at?: string | null
           last_name?: string | null
           location?: Json | null
+          notification_preferences?: Json | null
           phone_number?: string | null
           preferred_language?: string | null
           rating?: number | null
@@ -3630,6 +3705,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           detect_language_automatically?: boolean | null
+          display_name?: string | null
           encrypted_personal_data?: Json | null
           encryption_key_id?: string | null
           first_name?: string | null
@@ -3638,9 +3714,11 @@ export type Database = {
           is_encrypted?: boolean | null
           kyc_level?: string | null
           kyc_status?: string | null
+          language_preference?: string | null
           last_encrypted_at?: string | null
           last_name?: string | null
           location?: Json | null
+          notification_preferences?: Json | null
           phone_number?: string | null
           preferred_language?: string | null
           rating?: number | null

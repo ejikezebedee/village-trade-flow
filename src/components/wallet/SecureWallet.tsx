@@ -20,18 +20,9 @@ import {
 } from 'lucide-react';
 import { PayPalButton } from '@/components/payments/PayPalButton';
 
-interface WalletData {
-  id: string;
-  user_id: string;
-  escrow_balance: number;
-  available_balance: number;
-  total_earned: number;
-  total_spent: number;
-  currency: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import type { Database } from '@/integrations/supabase/types';
+
+type WalletData = Database['public']['Tables']['user_wallets']['Row'];
 
 interface Transaction {
   id: string;
@@ -180,8 +171,8 @@ export const SecureWallet: React.FC = () => {
         const { error } = await supabase
           .from('user_wallets')
           .update({
-            available_balance: wallet.available_balance + amount,
-            total_earned: wallet.total_earned + amount,
+            balance: wallet.balance + amount,
+            total_received: wallet.total_received + amount,
             updated_at: new Date().toISOString()
           })
           .eq('user_id', user.id);
@@ -219,7 +210,7 @@ export const SecureWallet: React.FC = () => {
         return;
       }
 
-      if (!wallet || amount > wallet.available_balance) {
+      if (!wallet || amount > wallet.balance) {
         toast({
           title: "Insufficient Funds",
           description: "You don't have enough available balance.",
@@ -318,7 +309,7 @@ export const SecureWallet: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Available Balance</p>
                 <p className="text-2xl font-bold text-green-600">
-                  ₦{wallet.available_balance.toLocaleString()}
+                  ₦{wallet.balance.toLocaleString()}
                 </p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -346,7 +337,7 @@ export const SecureWallet: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Earned</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  ₦{wallet.total_earned.toLocaleString()}
+                  ₦{wallet.total_received.toLocaleString()}
                 </p>
               </div>
               <ArrowDownLeft className="h-8 w-8 text-blue-600" />

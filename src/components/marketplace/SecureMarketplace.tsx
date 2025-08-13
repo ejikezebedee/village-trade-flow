@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { 
   Package, 
   ShoppingCart, 
@@ -21,54 +22,13 @@ import {
   Plus
 } from 'lucide-react';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  category: string;
-  images: string[];
-  seller_id: string;
+type Product = Database['public']['Tables']['products']['Row'] & {
   seller_name: string;
-  location: any;
-  state: string;
-  lga: string;
-  community: string;
-  stock_quantity: number;
-  average_rating: number;
-  total_reviews: number;
-  is_featured: boolean;
-  created_at: string;
-}
+  profiles?: Partial<Database['public']['Tables']['profiles']['Row']>;
+};
 
-interface Order {
-  id: string;
-  order_number: string;
-  product_name: string;
-  quantity: number;
-  total_amount: number;
-  order_status: string;
-  current_stage: string;
-  buyer_id: string;
-  seller_id: string;
-  driver_id?: string;
-  shop_id?: string;
-  created_at: string;
-  estimated_delivery_time?: string;
-}
-
-interface DeliveryBid {
-  id: string;
-  order_id: string;
-  bidder_id: string;
-  bidder_type: 'driver' | 'shop';
-  bid_amount: number;
-  estimated_time_minutes: number;
-  message: string;
-  status: string;
-  created_at: string;
-}
+type Order = Database['public']['Tables']['orders']['Row'];
+type DeliveryBid = Database['public']['Tables']['delivery_bids']['Row'];
 
 export const SecureMarketplace: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -169,9 +129,9 @@ export const SecureMarketplace: React.FC = () => {
         seller_id: product.seller_id,
         product_name: product.name,
         product_description: product.description,
-        product_image_url: product.images[0] || null,
+        product_image_url: Array.isArray(product.images) ? product.images[0] : null,
         quantity: 1,
-        unit_price: product.price,
+        product_price: product.price,
         total_amount: product.price,
         currency: product.currency,
         pickup_location: {
@@ -181,6 +141,11 @@ export const SecureMarketplace: React.FC = () => {
         },
         delivery_location: {
           // This would be set based on user's delivery address
+          state: 'Lagos',
+          lga: 'Ikeja',
+          community: 'Allen'
+        },
+        shipping_address: {
           state: 'Lagos',
           lga: 'Ikeja',
           community: 'Allen'
@@ -225,9 +190,9 @@ export const SecureMarketplace: React.FC = () => {
       const bidData = {
         order_id: orderId,
         bidder_id: user.id,
-        bidder_type: bidderType,
+        bid_type: bidderType,
         bid_amount: bidAmount,
-        estimated_time_minutes: bidderType === 'driver' ? 60 : 30,
+        estimated_delivery_time: bidderType === 'driver' ? 60 : 30,
         message: `${bidderType === 'driver' ? 'Delivery' : 'Storage'} service available`
       };
 
@@ -394,7 +359,7 @@ export const SecureMarketplace: React.FC = () => {
                           <Package className="h-12 w-12 text-muted-foreground" />
                         </div>
                       )}
-                      {product.is_featured && (
+                      {product.featured && (
                         <Badge className="absolute top-2 left-2" variant="secondary">
                           Featured
                         </Badge>
@@ -413,7 +378,7 @@ export const SecureMarketplace: React.FC = () => {
                           <div className="flex items-center gap-1">
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                             <span className="text-sm">
-                              {product.average_rating.toFixed(1)} ({product.total_reviews})
+                              {(product.average_rating || 0).toFixed(1)} ({product.total_ratings || 0})
                             </span>
                           </div>
                         </div>
@@ -530,13 +495,13 @@ export const SecureMarketplace: React.FC = () => {
                         <div className="flex items-start justify-between">
                           <div>
                             <div className="flex items-center gap-2">
-                              {bid.bidder_type === 'driver' ? (
+                              {bid.bid_type === 'driver' ? (
                                 <Truck className="h-4 w-4" />
                               ) : (
                                 <Store className="h-4 w-4" />
                               )}
                               <span className="font-semibold capitalize">
-                                {bid.bidder_type} Bid
+                                {bid.bid_type} Bid
                               </span>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">
@@ -545,7 +510,7 @@ export const SecureMarketplace: React.FC = () => {
                             <div className="flex items-center gap-2 mt-2">
                               <Badge>{bid.status}</Badge>
                               <span className="text-sm text-muted-foreground">
-                                Est: {bid.estimated_time_minutes} min
+                                Est: {bid.estimated_delivery_time || 0} min
                               </span>
                             </div>
                           </div>

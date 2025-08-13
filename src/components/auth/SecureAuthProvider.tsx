@@ -3,34 +3,9 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface UserProfile {
-  id: string;
-  user_id: string;
-  unique_user_id: string;
-  first_name?: string;
-  last_name?: string;
-  display_name?: string;
-  avatar_url?: string;
-  phone?: string;
-  user_type: 'buyer' | 'seller' | 'driver' | 'shop' | 'business' | 'diaspora';
-  user_role: 'user' | 'admin' | 'moderator';
-  verification_status: 'unverified' | 'pending' | 'verified' | 'rejected';
-  kyc_status: 'pending' | 'submitted' | 'verified' | 'rejected';
-  is_active: boolean;
-  rating: number;
-  total_ratings: number;
-  location?: any;
-  state?: string;
-  lga?: string;
-  community?: string;
-  landmarks?: string;
-  bio?: string;
-  language_preference: string;
-  notification_preferences: any;
-  two_factor_enabled: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import type { Database } from '@/integrations/supabase/types';
+
+type UserProfile = Database['public']['Tables']['profiles']['Row'];
 
 interface AuthContextType {
   user: User | null;
