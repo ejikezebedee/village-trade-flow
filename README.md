@@ -1,73 +1,73 @@
-# Welcome to your Lovable project
+# VillageMarket - Secure Marketplace Platform
 
-## Project info
+A comprehensive marketplace platform built with React, TypeScript, and Supabase with enterprise-grade security hardening.
 
-**URL**: https://lovable.dev/projects/c805b08a-61c4-4f19-b912-b279acdb90f3
+## Quick Start
 
-## How can I edit this code?
+```bash
+# Setup development environment
+npm run dev:setup
 
-There are several ways of editing your application.
+# Verify everything works
+npm run verify
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c805b08a-61c4-4f19-b912-b279acdb90f3) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Development Workflow
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Type-Safe Database Access
 
-**Use GitHub Codespaces**
+This project maintains perfect sync between Supabase schema and TypeScript types:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+# Generate fresh types from database
+npm run db:types
 
-## What technologies are used for this project?
+# Check for type drift (CI enforced)
+npm run db:types:check
+```
 
-This project is built with:
+### Migration Discipline
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+All database changes are validated for security:
 
-## How can I deploy this project?
+```bash
+# Create new migration
+npm run db:diff
 
-Simply open [Lovable](https://lovable.dev/projects/c805b08a-61c4-4f19-b912-b279acdb90f3) and click on Share -> Publish.
+# Validate migration security
+npm run db:migrations:check
+```
 
-## Can I connect a custom domain to my Lovable project?
+### CI/CD Pipeline
 
-Yes, you can!
+- ✅ **Type Drift Detection**: Fails if DB types are out of sync
+- ✅ **Migration Validation**: Ensures RLS policies and search_path protection
+- ✅ **Security Testing**: Comprehensive security test suite
+- ✅ **Strict TypeScript**: No `any` types allowed
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Documentation
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- [Developer Setup](./docs/developer-setup.md) - Complete setup guide
+- [Architecture](./docs/architecture.md) - System architecture and patterns  
+- [Security](./docs/security.md) - Security implementation details
+
+## Local Development
+
+### How to run locally
+```bash
+npm run dev:setup && npm run verify
+```
+
+### How CI enforces type/migration discipline
+- Pre-commit hooks validate types and migrations
+- CI fails on type drift or insecure migrations
+- Automated security testing on every PR
+
+### Where generated types live
+- **Database types**: `src/types/database.ts`
+- **RPC types**: `src/types/rpc.ts`
+
+Built with enterprise security standards and strict type safety.

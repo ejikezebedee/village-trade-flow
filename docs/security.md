@@ -213,6 +213,8 @@ if (!rateLimitResult.allowed) {
 
 ## Adding New Tables with Security
 
+**CRITICAL REMINDER: All new SQL functions must include `SET search_path = ''` and new tables must ship with RLS policies + tests.**
+
 When creating new tables, always follow this checklist:
 
 1. **Enable RLS:**
@@ -231,14 +233,29 @@ CREATE POLICY "Users can manage their data" ON new_table
 FOR ALL USING (user_id = auth.uid());
 ```
 
-3. **Add Audit Trigger:**
+3. **Create Functions with Search Path Protection:**
+```sql
+-- ✅ REQUIRED: All functions must include SET search_path = ''
+CREATE OR REPLACE FUNCTION secure_table_function()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''  -- MANDATORY for security
+AS $$
+BEGIN
+  -- Use fully qualified names: public.table_name
+END;
+$$;
+```
+
+4. **Add Audit Trigger:**
 ```sql
 CREATE TRIGGER audit_new_table
   AFTER INSERT OR UPDATE OR DELETE ON new_table
   FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 ```
 
-4. **Test Policies:**
+5. **Test Policies:**
 ```typescript
 // Test unauthorized access is blocked
 const { error } = await supabase

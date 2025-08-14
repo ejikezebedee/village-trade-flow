@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Check for type drift
+npm run db:types:check
+
+# Run linting
+npm run lint
+
+# Run type checking
+npm run typecheck
+
+# Check migration discipline
+npm run db:migrations:check
+
+echo "✅ Pre-commit checks passed!"
