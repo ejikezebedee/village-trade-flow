@@ -12,19 +12,27 @@ export const SecurityHeaders: React.FC<SecurityHeadersProps> = ({
   nonce, 
   reportUri = '/api/csp-report' 
 }) => {
+  // Environment-aware CSP policy
+  const isDevelopment = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  
   const cspPolicy = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com",
+    isDevelopment 
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com"
+      : "script-src 'self' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
     "connect-src 'self' https://api.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://*.supabase.co",
-    "frame-src 'self' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com",
+    isDevelopment 
+      ? "frame-src 'self' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com http://localhost:* https://*.lovable.app"
+      : "frame-src 'self' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com",
     "object-src 'none'",
     "base-uri 'self'",
-    "upgrade-insecure-requests",
+    isDevelopment ? "" : "upgrade-insecure-requests",
     `report-uri ${reportUri}`
-  ].join('; ');
+  ].filter(Boolean).join('; ');
 
   return (
     <Helmet>
