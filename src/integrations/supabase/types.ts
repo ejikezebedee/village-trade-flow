@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -5259,10 +5259,10 @@ export type Database = {
       }
       authenticate_admin: {
         Args: {
-          p_username: string
-          p_password: string
           p_ip_address?: unknown
+          p_password: string
           p_user_agent?: string
+          p_username: string
         }
         Returns: Json
       }
@@ -5272,10 +5272,10 @@ export type Database = {
       }
       calculate_token_reward: {
         Args: {
-          p_user_id: string
           p_action_type: string
           p_amount: number
           p_role?: string
+          p_user_id: string
         }
         Returns: number
       }
@@ -5284,41 +5284,41 @@ export type Database = {
         Returns: number
       }
       can_user_transact: {
-        Args: { p_user_id: string; p_transaction_amount?: number }
+        Args: { p_transaction_amount?: number; p_user_id: string }
         Returns: boolean
       }
       can_user_transfer: {
-        Args: { p_user_id: string; p_amount: number }
+        Args: { p_amount: number; p_user_id: string }
         Returns: boolean
       }
       check_encryption_compliance: {
         Args: Record<PropertyKey, never>
         Returns: {
-          table_name: string
-          column_name: string
           classification_level: string
-          encryption_required: boolean
-          current_encryption_status: string
+          column_name: string
           compliance_status: string
+          current_encryption_status: string
+          encryption_required: boolean
+          table_name: string
         }[]
       }
       check_password_history: {
-        Args: { p_user_id: string; p_new_password_hash: string }
+        Args: { p_new_password_hash: string; p_user_id: string }
         Returns: boolean
       }
       check_rate_limit: {
         Args: {
-          p_user_id: string
           p_action_type: string
           p_max_attempts?: number
+          p_user_id: string
           p_window_minutes?: number
         }
         Returns: boolean
       }
       check_rate_limit_enhanced: {
         Args: {
-          p_identifier: string
           p_action_type: string
+          p_identifier: string
           p_max_attempts?: number
           p_window_minutes?: number
         }
@@ -5330,41 +5330,41 @@ export type Database = {
       }
       create_notification: {
         Args: {
-          p_user_id: string
-          p_type: string
-          p_title: string
-          p_message: string
           p_data?: Json
+          p_message: string
           p_priority?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
         }
         Returns: string
       }
       create_payment_notification: {
         Args: {
-          p_transaction_id: string
-          p_order_id: string
+          p_body: string
           p_notification_type: string
+          p_order_id: string
           p_recipient_type: string
           p_title: string
-          p_body: string
+          p_transaction_id: string
         }
         Returns: string
       }
       create_security_alert: {
         Args: {
           p_alert_type: string
-          p_severity: string
-          p_title: string
           p_message: string
           p_metadata?: Json
+          p_severity: string
+          p_title: string
         }
         Returns: string
       }
       create_two_factor_code: {
         Args: {
-          p_user_id: string
-          p_method?: string
           p_expires_minutes?: number
+          p_method?: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -5374,9 +5374,9 @@ export type Database = {
       }
       detect_and_save_user_language: {
         Args: {
-          p_user_id: string
           p_accept_language?: string
           p_detected_region?: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -5390,9 +5390,9 @@ export type Database = {
       }
       detect_velocity_fraud: {
         Args: {
-          p_user_id: string
-          p_transaction_amount: number
           p_timeframe?: unknown
+          p_transaction_amount: number
+          p_user_id: string
         }
         Returns: Json
       }
@@ -5429,7 +5429,7 @@ export type Database = {
         Returns: string
       }
       generate_secure_qr: {
-        Args: { p_order_id: string; p_stage: string; p_expires_hours?: number }
+        Args: { p_expires_hours?: number; p_order_id: string; p_stage: string }
         Returns: string
       }
       generate_short_lived_otp: {
@@ -5441,12 +5441,12 @@ export type Database = {
       }
       generate_transaction_qr: {
         Args: {
-          p_transaction_type: string
-          p_transaction_id: string
-          p_product_id?: string
+          p_metadata?: Json
           p_order_id?: string
           p_payment_id?: string
-          p_metadata?: Json
+          p_product_id?: string
+          p_transaction_id: string
+          p_transaction_type: string
         }
         Returns: string
       }
@@ -5469,21 +5469,21 @@ export type Database = {
       get_active_flash_sales: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          title: string
           description: string
-          product_id: string
-          product_name: string
-          product_image: string
-          original_price: number
-          sale_price: number
           discount_percentage: number
-          start_time: string
           end_time: string
+          featured: boolean
+          id: string
+          original_price: number
+          product_id: string
+          product_image: string
+          product_name: string
           quantity_available: number
           quantity_sold: number
-          featured: boolean
+          sale_price: number
+          start_time: string
           time_remaining: unknown
+          title: string
         }[]
       }
       get_api_key: {
@@ -5497,18 +5497,18 @@ export type Database = {
       get_security_metrics: {
         Args: Record<PropertyKey, never>
         Returns: {
-          name: string
-          value: number
-          status: string
           description: string
+          name: string
+          status: string
+          value: number
         }[]
       }
       get_table_security_status: {
         Args: Record<PropertyKey, never>
         Returns: {
-          table_name: string
-          rls_enabled: boolean
           policy_count: number
+          rls_enabled: boolean
+          table_name: string
         }[]
       }
       get_user_language: {
@@ -5517,8 +5517,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -5544,26 +5544,28 @@ export type Database = {
       }
       log_activity_and_check_fraud: {
         Args: {
-          p_user_id: string
-          p_ip_address: unknown
-          p_activity_type: string
           p_activity_data?: Json
-          p_user_agent?: string
+          p_activity_type: string
+          p_ip_address: unknown
           p_session_id?: string
+          p_user_agent?: string
+          p_user_id: string
         }
         Returns: Json
       }
       log_security_event: {
-        Args: {
-          p_event_type: string
-          p_severity?: string
-          p_user_id?: string
-          p_admin_id?: string
-          p_target_resource?: string
-          p_target_id?: string
-          p_action_performed?: string
-          p_metadata?: Json
-        }
+        Args:
+          | { event_data?: Json; event_type: string; severity?: string }
+          | {
+              p_action_performed?: string
+              p_admin_id?: string
+              p_event_type: string
+              p_metadata?: Json
+              p_severity?: string
+              p_target_id?: string
+              p_target_resource?: string
+              p_user_id?: string
+            }
         Returns: string
       }
       match_faq_response: {
@@ -5573,8 +5575,8 @@ export type Database = {
       place_auction_bid: {
         Args: {
           p_auction_id: string
-          p_bidder_id: string
           p_bid_amount: number
+          p_bidder_id: string
           p_max_bid?: number
         }
         Returns: Json
@@ -5600,96 +5602,96 @@ export type Database = {
         Returns: undefined
       }
       toggle_table_rls: {
-        Args: { table_name: string; enable: boolean }
+        Args: { enable: boolean; table_name: string }
         Returns: boolean
       }
       track_affiliate_referral: {
         Args: {
-          p_referral_code: string
-          p_user_id?: string
           p_ip_address?: unknown
-          p_user_agent?: string
+          p_referral_code: string
           p_source_url?: string
+          p_user_agent?: string
+          p_user_id?: string
         }
         Returns: string
       }
       track_page_view: {
         Args:
           | {
-              p_user_id?: string
-              p_session_id?: string
-              p_page_url?: string
+              p_ip_address?: unknown
               p_page_title?: string
+              p_page_url?: string
               p_referrer?: string
+              p_session_id?: string
               p_user_agent?: string
+              p_user_id?: string
             }
           | {
-              p_user_id?: string
-              p_session_id?: string
-              p_page_url?: string
               p_page_title?: string
+              p_page_url?: string
               p_referrer?: string
+              p_session_id?: string
               p_user_agent?: string
-              p_ip_address?: unknown
+              p_user_id?: string
             }
         Returns: string
       }
       track_product_event: {
         Args:
           | {
-              p_product_id?: string
-              p_user_id?: string
-              p_session_id?: string
-              p_event_type?: string
               p_category?: string
-              p_price?: number
               p_event_properties?: Json
+              p_event_type?: string
+              p_price?: number
+              p_product_id?: string
+              p_search_query?: string
+              p_session_id?: string
+              p_user_id?: string
             }
           | {
-              p_product_id?: string
-              p_user_id?: string
-              p_session_id?: string
-              p_event_type?: string
-              p_search_query?: string
               p_category?: string
-              p_price?: number
               p_event_properties?: Json
+              p_event_type?: string
+              p_price?: number
+              p_product_id?: string
+              p_session_id?: string
+              p_user_id?: string
             }
         Returns: string
       }
       track_user_event: {
         Args:
           | {
-              p_user_id?: string
-              p_session_id?: string
-              p_event_type?: string
               p_event_name?: string
-              p_page_url?: string
               p_event_properties?: Json
+              p_event_type?: string
+              p_ip_address?: unknown
+              p_page_url?: string
+              p_session_id?: string
               p_user_agent?: string
+              p_user_id?: string
             }
           | {
-              p_user_id?: string
-              p_session_id?: string
-              p_event_type?: string
               p_event_name?: string
-              p_page_url?: string
               p_event_properties?: Json
+              p_event_type?: string
+              p_page_url?: string
+              p_session_id?: string
               p_user_agent?: string
-              p_ip_address?: unknown
+              p_user_id?: string
             }
         Returns: string
       }
       trigger_security_alert: {
         Args: {
-          p_alert_type: string
-          p_severity: string
-          p_title: string
-          p_message: string
           p_actor_id?: string
-          p_target_id?: string
+          p_alert_type: string
           p_ip_address?: unknown
+          p_message: string
           p_metadata?: Json
+          p_severity: string
+          p_target_id?: string
+          p_title: string
         }
         Returns: string
       }
@@ -5699,12 +5701,12 @@ export type Database = {
       }
       update_delivery_status: {
         Args: {
-          p_order_id: string
           p_checkpoint_type: string
-          p_scanned_by: string
+          p_coordinates?: Json
           p_location?: string
           p_notes?: string
-          p_coordinates?: Json
+          p_order_id: string
+          p_scanned_by: string
         }
         Returns: Json
       }
@@ -5713,23 +5715,23 @@ export type Database = {
         Returns: undefined
       }
       upgrade_user_role: {
-        Args: { p_user_id: string; p_new_role: string }
+        Args: { p_new_role: string; p_user_id: string }
         Returns: boolean
       }
       upsert_api_key: {
         Args: {
+          p_description?: string
           p_key_name: string
           p_key_value: string
-          p_description?: string
         }
         Returns: string
       }
       validate_api_request: {
         Args: {
           p_endpoint: string
-          p_user_id: string
           p_ip_address: unknown
           p_payload?: Json
+          p_user_id: string
         }
         Returns: Json
       }
@@ -5738,12 +5740,12 @@ export type Database = {
         Returns: Json
       }
       verify_admin_login: {
-        Args: { p_username: string; p_password: string }
+        Args: { p_password: string; p_username: string }
         Returns: {
           admin_id: string
-          username: string
           role: string
           success: boolean
+          username: string
         }[]
       }
       verify_email_and_complete_registration: {
@@ -5751,11 +5753,11 @@ export type Database = {
         Returns: Json
       }
       verify_qr_scan: {
-        Args: { p_qr_code: string; p_scanner_id: string; p_location?: Json }
+        Args: { p_location?: Json; p_qr_code: string; p_scanner_id: string }
         Returns: boolean
       }
       verify_two_factor_code: {
-        Args: { p_user_id: string; p_code: string; p_method?: string }
+        Args: { p_code: string; p_method?: string; p_user_id: string }
         Returns: boolean
       }
     }
