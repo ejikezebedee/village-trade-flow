@@ -36,8 +36,8 @@ export function GlobalHeader() {
   };
 
   const getUserInitials = () => {
-    if (profile?.full_name || profile?.first_name) {
-      const name = profile.full_name || `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+    if (profile?.first_name || profile?.last_name) {
+      const name = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
       return name
         .split(' ')
         .map(name => name.charAt(0))
@@ -193,7 +193,11 @@ export function GlobalHeader() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{profile?.full_name || profile?.first_name || user?.email}</p>
+                      <p className="font-medium">
+                        {(profile?.first_name || profile?.last_name) ? 
+                          `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 
+                          user?.email}
+                      </p>
                       {profile?.user_role && (
                         <Badge className={`w-fit text-xs ${getRoleBadgeColor(profile.user_role)}`}>
                           {profile.user_role}
