@@ -42,6 +42,12 @@ jobs:
       - name: Check Migration Discipline
         run: npm run db:migrations:check
         
+      - name: Security Function Check
+        run: npm run security:check
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        
       - name: Lint
         run: npm run lint
         
