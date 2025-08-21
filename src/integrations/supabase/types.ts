@@ -5574,6 +5574,10 @@ export type Database = {
         Args: { p_key_name: string }
         Returns: string
       }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }
         Returns: string
@@ -5619,7 +5623,7 @@ export type Database = {
         Returns: string
       }
       is_admin: {
-        Args: { user_uuid?: string }
+        Args: Record<PropertyKey, never> | { user_uuid?: string }
         Returns: boolean
       }
       is_admin_role: {
