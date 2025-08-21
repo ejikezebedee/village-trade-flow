@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import * as OTPAuth from 'otpauth';
-import QRCode from 'qrcode';
+// QRCode import removed - using OTP only
 
 export default function TwoFactorSetup() {
   const { user, profile, updateProfile } = useAuth();
@@ -21,7 +21,7 @@ export default function TwoFactorSetup() {
   const [verificationCode, setVerificationCode] = useState('');
   const [emailCode, setEmailCode] = useState('');
   const [secret, setSecret] = useState('');
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  // QR code URL removed - using OTP only
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('email');
 
@@ -45,13 +45,7 @@ export default function TwoFactorSetup() {
       });
 
       const secretBase32 = totp.secret.base32;
-      const otpauthUrl = totp.toString();
-      
       setSecret(secretBase32);
-      
-      // Generate QR code
-      const qrUrl = await QRCode.toDataURL(otpauthUrl);
-      setQrCodeUrl(qrUrl);
     } catch (error) {
       console.error('Error generating TOTP secret:', error);
       toast({
@@ -334,55 +328,56 @@ export default function TwoFactorSetup() {
               </p>
             </div>
 
-            {qrCodeUrl && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>1. Scan QR Code</Label>
-                  <div className="flex justify-center">
-                    <img src={qrCodeUrl} alt="2FA QR Code" className="w-48 h-48" />
-                  </div>
-                </div>
+            <div className="space-y-4">
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Manual setup: Enter the secret key in your authenticator app (Google Authenticator, Authy, etc.)
+                </AlertDescription>
+              </Alert>
 
-                <div className="space-y-2">
-                  <Label>2. Or enter this secret manually</Label>
-                  <div className="flex items-center gap-2">
-                    <Input value={secret} readOnly className="font-mono" />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(secret)}
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>3. Enter verification code from your app</Label>
-                  <InputOTP
-                    value={verificationCode}
-                    onChange={setVerificationCode}
-                    maxLength={6}
+              <div className="space-y-2">
+                <Label>Secret Key for Manual Entry</Label>
+                <div className="flex items-center gap-2">
+                  <Input value={secret} readOnly className="font-mono" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(secret)}
                   >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
+                    <Copy className="w-4 h-4" />
+                  </Button>
                 </div>
-
-                <Button 
-                  onClick={verifyTOTPCode} 
-                  disabled={loading || verificationCode.length !== 6}
-                >
-                  Enable Authenticator 2FA
-                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Copy this key and add it manually in your authenticator app as a new account
+                </p>
               </div>
-            )}
+
+              <div className="space-y-2">
+                <Label>Enter verification code from your app</Label>
+                <InputOTP
+                  value={verificationCode}
+                  onChange={setVerificationCode}
+                  maxLength={6}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+
+              <Button 
+                onClick={verifyTOTPCode} 
+                disabled={loading || verificationCode.length !== 6}
+              >
+                Enable Authenticator 2FA
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>

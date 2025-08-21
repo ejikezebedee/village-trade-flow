@@ -55,6 +55,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import CookiesPage from "./pages/CookiesPage";
+import PricingPage from "./pages/PricingPage";
 import FAQPage from "./pages/FAQPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -204,6 +205,7 @@ const App = () => (
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/cookies" element={<CookiesPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
         <Route path="*" element={<NotFound />} />
               </Routes>
               <LiveChatWidget />
