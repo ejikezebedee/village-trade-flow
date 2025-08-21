@@ -4155,6 +4155,36 @@ export type Database = {
         }
         Relationships: []
       }
+      security_configurations: {
+        Row: {
+          config_key: string
+          config_value: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       security_health_checks: {
         Row: {
           check_type: string
@@ -5601,6 +5631,10 @@ export type Database = {
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }
         Returns: string
+      }
+      get_security_health_summary: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_security_metrics: {
         Args: Record<PropertyKey, never>
