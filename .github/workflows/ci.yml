@@ -47,6 +47,12 @@ jobs:
         env:
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          
+      - name: Final Security Verification
+        run: node scripts/final-security-verification.cjs
+        env:
+          SUPABASE_URL: https://zrsdcbqqeyoipzjlasjv.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         
       - name: Lint
         run: npm run lint

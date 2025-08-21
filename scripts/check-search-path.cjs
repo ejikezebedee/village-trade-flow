@@ -22,47 +22,36 @@ async function checkSearchPathHardening() {
   console.log('🔍 Checking function search_path hardening...');
   
   try {
-    // Query to find functions missing SET search_path = ''
+    // Updated query to properly detect functions missing SET search_path = ''
     const { data, error } = await supabase
-      .rpc('execute', {
-        query: `
-          SELECT n.nspname AS schema_name,
-                 p.proname AS function_name,
-                 pg_get_function_identity_arguments(p.oid) AS args,
-                 l.lanname AS language,
-                 CASE WHEN p.prosecdef THEN 'SECURITY DEFINER' ELSE 'SECURITY INVOKER' END AS security_mode
-          FROM pg_proc p
-          JOIN pg_namespace n ON n.oid = p.pronamespace
-          JOIN pg_language l ON l.oid = p.prolang
-          WHERE n.nspname NOT IN ('pg_catalog','information_schema')
-            AND p.prokind IN ('f','p')
-            AND NOT EXISTS (
-              SELECT 1
-              FROM pg_options_to_table(p.proconfig) t
-              WHERE t.key = 'search_path' AND t.value = ''
-            )
-          ORDER BY p.proname;
-        `
-      });
+      .from('dummy')  // Using a different approach
+      .select('*')
+      .limit(0);
 
-    if (error) {
-      console.error('❌ Database query failed:', error.message);
+    // Use direct SQL query instead
+    const hardeningResult = await supabase.rpc('get_function_hardening_status');
+    
+    if (hardeningResult.error) {
+      console.error('❌ Database query failed:', hardeningResult.error.message);
       process.exit(1);
     }
 
-    if (!data || data.length === 0) {
+    const status = hardeningResult.data;
+    
+    if (status.is_fully_hardened) {
       console.log('✅ All functions have proper search_path hardening');
-      console.log('🔒 Security check passed');
+      console.log(`🔒 Security check passed: ${status.hardened_functions}/${status.total_functions} functions hardened (${status.coverage_percentage}%)`);
       process.exit(0);
     }
 
-    console.log(`❌ Found ${data.length} functions missing SET search_path = '':`);
+    console.log(`❌ Found ${status.unhardened_functions} functions missing SET search_path = '':`);
+    console.log(`📊 Coverage: ${status.coverage_percentage}% (${status.hardened_functions}/${status.total_functions})`);
     console.log('');
     
-    data.forEach((func, index) => {
-      console.log(`${index + 1}. ${func.schema_name}.${func.function_name}(${func.args})`);
+    status.unhardened_list.forEach((func, index) => {
+      console.log(`${index + 1}. public.${func.name}(${func.args})`);
       console.log(`   Language: ${func.language}`);
-      console.log(`   Security: ${func.security_mode}`);
+      console.log(`   Security: ${func.security_definer ? 'SECURITY DEFINER' : 'SECURITY INVOKER'}`);
       console.log('');
     });
 
