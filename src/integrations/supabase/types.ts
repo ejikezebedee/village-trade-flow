@@ -828,6 +828,33 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          actor_user_id: string | null
+          client_ip: unknown | null
+          created_at: string | null
+          event: string
+          id: string
+          meta: Json | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          client_ip?: unknown | null
+          created_at?: string | null
+          event: string
+          id?: string
+          meta?: Json | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          client_ip?: unknown | null
+          created_at?: string | null
+          event?: string
+          id?: string
+          meta?: Json | null
+        }
+        Relationships: []
+      }
       automated_messages: {
         Row: {
           created_at: string
@@ -3730,8 +3757,10 @@ export type Database = {
           total_ratings: number | null
           two_factor_backup_codes: string[] | null
           two_factor_enabled: boolean | null
+          two_factor_last_verified_at: string | null
           two_factor_secret_encrypted: string | null
           two_factor_secret_iv: string | null
+          two_factor_secret_tag: string | null
           two_factor_verified_at: string | null
           unique_user_id: string | null
           updated_at: string
@@ -3769,8 +3798,10 @@ export type Database = {
           total_ratings?: number | null
           two_factor_backup_codes?: string[] | null
           two_factor_enabled?: boolean | null
+          two_factor_last_verified_at?: string | null
           two_factor_secret_encrypted?: string | null
           two_factor_secret_iv?: string | null
+          two_factor_secret_tag?: string | null
           two_factor_verified_at?: string | null
           unique_user_id?: string | null
           updated_at?: string
@@ -3808,8 +3839,10 @@ export type Database = {
           total_ratings?: number | null
           two_factor_backup_codes?: string[] | null
           two_factor_enabled?: boolean | null
+          two_factor_last_verified_at?: string | null
           two_factor_secret_encrypted?: string | null
           two_factor_secret_iv?: string | null
+          two_factor_secret_tag?: string | null
           two_factor_verified_at?: string | null
           unique_user_id?: string | null
           updated_at?: string
@@ -4835,6 +4868,38 @@ export type Database = {
           },
         ]
       }
+      two_factor_backup_codes: {
+        Row: {
+          code_hash: string
+          created_at: string | null
+          id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string | null
+          id?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string | null
+          id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "two_factor_backup_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       two_factor_logs: {
         Row: {
           created_at: string
@@ -5338,6 +5403,33 @@ export type Database = {
       }
     }
     Views: {
+      audit_logs_admin_view: {
+        Row: {
+          actor_user_id: string | null
+          client_ip_masked: string | null
+          created_at: string | null
+          event: string | null
+          id: string | null
+          meta: Json | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          client_ip_masked?: never
+          created_at?: string | null
+          event?: string | null
+          id?: string | null
+          meta?: Json | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          client_ip_masked?: never
+          created_at?: string | null
+          event?: string | null
+          id?: string | null
+          meta?: Json | null
+        }
+        Relationships: []
+      }
       optimized_product_listings: {
         Row: {
           category: string | null
@@ -5385,6 +5477,10 @@ export type Database = {
       }
       assign_mediator_to_dispute: {
         Args: { dispute_uuid: string }
+        Returns: string
+      }
+      auth_user_id: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       authenticate_admin: {
@@ -5631,6 +5727,14 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_function_hardening_counters: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          hardened: number
+          total: number
+          unhardened: number
+        }[]
       }
       get_function_hardening_status: {
         Args: Record<PropertyKey, never>
