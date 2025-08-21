@@ -5628,6 +5628,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_function_hardening_status: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }
         Returns: string
