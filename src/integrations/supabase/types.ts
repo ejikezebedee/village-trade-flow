@@ -170,7 +170,6 @@ export type Database = {
           is_active: boolean | null
           last_login_at: string | null
           locked_until: string | null
-          password: string
           password_hash: string | null
           password_reset_expires: string | null
           password_reset_token: string | null
@@ -186,7 +185,6 @@ export type Database = {
           is_active?: boolean | null
           last_login_at?: string | null
           locked_until?: string | null
-          password: string
           password_hash?: string | null
           password_reset_expires?: string | null
           password_reset_token?: string | null
@@ -202,7 +200,6 @@ export type Database = {
           is_active?: boolean | null
           last_login_at?: string | null
           locked_until?: string | null
-          password?: string
           password_hash?: string | null
           password_reset_expires?: string | null
           password_reset_token?: string | null
@@ -3733,7 +3730,8 @@ export type Database = {
           total_ratings: number | null
           two_factor_backup_codes: string[] | null
           two_factor_enabled: boolean | null
-          two_factor_secret: string | null
+          two_factor_secret_encrypted: string | null
+          two_factor_secret_iv: string | null
           two_factor_verified_at: string | null
           unique_user_id: string | null
           updated_at: string
@@ -3771,7 +3769,8 @@ export type Database = {
           total_ratings?: number | null
           two_factor_backup_codes?: string[] | null
           two_factor_enabled?: boolean | null
-          two_factor_secret?: string | null
+          two_factor_secret_encrypted?: string | null
+          two_factor_secret_iv?: string | null
           two_factor_verified_at?: string | null
           unique_user_id?: string | null
           updated_at?: string
@@ -3809,7 +3808,8 @@ export type Database = {
           total_ratings?: number | null
           two_factor_backup_codes?: string[] | null
           two_factor_enabled?: boolean | null
-          two_factor_secret?: string | null
+          two_factor_secret_encrypted?: string | null
+          two_factor_secret_iv?: string | null
           two_factor_verified_at?: string | null
           unique_user_id?: string | null
           updated_at?: string
@@ -5337,6 +5337,22 @@ export type Database = {
       }
     }
     Functions: {
+      admin_get_audit_logs: {
+        Args: { limit_count?: number; offset_count?: number }
+        Returns: {
+          created_at: string
+          event_data: Json
+          event_type: string
+          id: string
+          masked_ip: string
+          severity: string
+          user_id: string
+        }[]
+      }
+      admin_set_user_role: {
+        Args: { new_role: string; reason?: string; target_user_id: string }
+        Returns: Json
+      }
       assign_mediator_to_dispute: {
         Args: { dispute_uuid: string }
         Returns: string
@@ -5406,6 +5422,10 @@ export type Database = {
           p_max_attempts?: number
           p_window_minutes?: number
         }
+        Returns: Json
+      }
+      check_security_health: {
+        Args: Record<PropertyKey, never>
         Returns: Json
       }
       cleanup_new_arrival_tags: {
@@ -5660,6 +5680,13 @@ export type Database = {
               p_severity?: string
               p_target_id?: string
               p_target_resource?: string
+              p_user_id?: string
+            }
+          | {
+              p_action_performed?: string
+              p_event_type: string
+              p_metadata?: Json
+              p_severity: string
               p_user_id?: string
             }
         Returns: string
