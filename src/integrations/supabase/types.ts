@@ -3158,6 +3158,54 @@ export type Database = {
         }
         Relationships: []
       }
+      otp_verifications: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          order_id: string | null
+          otp_code: string
+          phone: string | null
+          user_id: string | null
+          verified: boolean
+          verified_at: string | null
+          verified_by_ip: unknown | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          order_id?: string | null
+          otp_code: string
+          phone?: string | null
+          user_id?: string | null
+          verified?: boolean
+          verified_at?: string | null
+          verified_by_ip?: unknown | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          order_id?: string | null
+          otp_code?: string
+          phone?: string | null
+          user_id?: string | null
+          verified?: boolean
+          verified_at?: string | null
+          verified_by_ip?: unknown | null
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           created_at: string
