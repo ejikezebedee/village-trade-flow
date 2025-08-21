@@ -76,6 +76,42 @@ export type Database = {
           },
         ]
       }
+      admin_permissions: {
+        Row: {
+          expires_at: string | null
+          granted_at: string
+          granted_by: string | null
+          id: string
+          is_active: boolean
+          metadata: Json | null
+          permission_type: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          permission_type: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          permission_type?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_security_audit: {
         Row: {
           action_type: string
@@ -5590,6 +5626,10 @@ export type Database = {
         Args: { _user_id?: string }
         Returns: boolean
       }
+      is_security_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       log_activity_and_check_fraud: {
         Args: {
           p_activity_data?: Json
@@ -5600,6 +5640,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: Json
+      }
+      log_audit_access_attempt: {
+        Args: { p_table_name: string }
+        Returns: boolean
       }
       log_security_event: {
         Args:
