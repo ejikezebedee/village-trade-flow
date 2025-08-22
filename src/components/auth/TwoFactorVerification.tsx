@@ -107,42 +107,48 @@ export default function TwoFactorVerification({
   };
 
   const verifyTOTPCode = async () => {
-    if (!verificationCode) return;
+    if (!verificationCode || !userId) return;
 
     setLoading(true);
     try {
-      // Get user's TOTP configuration
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('two_factor_enabled, two_factor_secret_encrypted')
-        .eq('user_id', userId)
-        .single();
+      // Use the enhanced 2FA verification function that blocks demo codes
+      const { data: isValid, error } = await supabase.rpc('verify_two_factor_code', {
+        p_user_id: userId,
+        p_code: verificationCode,
+        p_method: 'totp'
+      });
 
-      if (profileError) throw profileError;
-
-      if (!profile?.two_factor_enabled || !profile?.two_factor_secret_encrypted) {
-        throw new Error('TOTP not set up for this user');
+      if (error) {
+        console.error('2FA verification error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to verify code",
+          variant: "destructive"
+        });
+        return;
       }
 
-      // For demonstration purposes, we'll use a dummy verification
-      // In production, you'd decrypt the stored secret and verify properly
-      const isDemoCode = verificationCode === '123456';
-      
-      if (isDemoCode) {
+      if (isValid) {
+        // Update last verified timestamp
+        await supabase
+          .from('profiles')
+          .update({ two_factor_last_verified_at: new Date().toISOString() })
+          .eq('user_id', userId);
+
         toast({
           title: "Verified",
-          description: "Authenticator verification successful"
+          description: "Two-factor authentication verified"
         });
         onVerificationComplete();
       } else {
         toast({
           title: "Invalid Code",
-          description: "Invalid verification code. Use 123456 for demo.",
+          description: "Invalid or expired verification code",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error('Error verifying TOTP code:', error);
+      console.error('TOTP verification error:', error);
       toast({
         title: "Error",
         description: "Failed to verify code",

@@ -5441,6 +5441,15 @@ export type Database = {
         }
         Returns: Json
       }
+      check_rls_policy_coverage: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          has_issues: boolean
+          policy_count: number
+          rls_enabled: boolean
+          table_name: string
+        }[]
+      }
       check_security_health: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -5728,6 +5737,12 @@ export type Database = {
               p_event_type: string
               p_metadata?: Json
               p_severity: string
+              p_user_id?: string
+            }
+          | {
+              p_details?: Json
+              p_event_type: string
+              p_severity?: string
               p_user_id?: string
             }
         Returns: string
