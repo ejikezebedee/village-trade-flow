@@ -39,7 +39,7 @@ interface AuthContextType {
   twoFactorVerified: boolean;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any; twoFactorRequired?: boolean }>;
-  signInWithAdmin: (username: string, password: string) => Promise<{ error: any }>;
+  // Removed signInWithAdmin - admin access is now via Supabase Auth only
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPassword: (email: string) => Promise<{ error: any }>;
@@ -370,59 +370,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signInWithAdmin = async (username: string, password: string) => {
-    try {
-      // Use the new secure admin authentication function
-      const { data, error } = await supabase.rpc('authenticate_admin', {
-        p_username: username,
-        p_password: password,
-        p_ip_address: null,
-        p_user_agent: navigator.userAgent
-      });
-
-      if (error) throw error;
-
-      // Type-safe access to response data
-      const adminData = data as any;
-      
-      if (adminData && adminData.success) {
-        const mockUser = {
-          id: adminData.admin_id,
-          email: `${adminData.username}@admin.local`,
-          user_metadata: { 
-            role: adminData.role,
-            username: adminData.username,
-            is_admin: true,
-            session_token: adminData.session_token
-          }
-        };
-        
-        setUser(mockUser as any);
-        setProfile({
-          id: adminData.admin_id,
-          user_id: adminData.admin_id,
-          user_role: 'admin',
-          user_type: 'admin',
-          first_name: 'Admin',
-          last_name: 'User',
-          verification_status: 'verified',
-          rating: 5.0,
-          total_ratings: 1,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        } as Profile);
-        
-        localStorage.setItem('admin_session_token', adminData.session_token);
-        return { error: null };
-      } else {
-        return { error: new Error(adminData?.error || 'Invalid admin credentials') };
-      }
-    } catch (error: any) {
-      console.error('Admin sign-in error:', error);
-      return { error: new Error(error.message) };
-    }
-  };
+  // Removed signInWithAdmin function - admin access is now via standard Supabase Auth
+  // Admin privileges are determined by profiles.user_role = 'admin' with mandatory 2FA
 
   const signInWithGoogle = async () => {
     try {
@@ -548,7 +497,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     twoFactorVerified,
     signUp,
     signIn,
-    signInWithAdmin,
+    
     signInWithGoogle,
     signOut,
     resetPassword,

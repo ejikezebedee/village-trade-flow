@@ -152,62 +152,6 @@ export type Database = {
           success?: boolean | null
           user_agent?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "admin_security_audit_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
-            referencedRelation: "admins"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      admins: {
-        Row: {
-          created_at: string | null
-          failed_login_attempts: number | null
-          id: string
-          is_active: boolean | null
-          last_login_at: string | null
-          locked_until: string | null
-          password_hash: string | null
-          password_reset_expires: string | null
-          password_reset_token: string | null
-          password_salt: string | null
-          role: string
-          updated_at: string | null
-          username: string
-        }
-        Insert: {
-          created_at?: string | null
-          failed_login_attempts?: number | null
-          id?: string
-          is_active?: boolean | null
-          last_login_at?: string | null
-          locked_until?: string | null
-          password_hash?: string | null
-          password_reset_expires?: string | null
-          password_reset_token?: string | null
-          password_salt?: string | null
-          role?: string
-          updated_at?: string | null
-          username: string
-        }
-        Update: {
-          created_at?: string | null
-          failed_login_attempts?: number | null
-          id?: string
-          is_active?: boolean | null
-          last_login_at?: string | null
-          locked_until?: string | null
-          password_hash?: string | null
-          password_reset_expires?: string | null
-          password_reset_token?: string | null
-          password_salt?: string | null
-          role?: string
-          updated_at?: string | null
-          username?: string
-        }
         Relationships: []
       }
       affiliate_commissions: {
@@ -4012,50 +3956,6 @@ export type Database = {
         }
         Relationships: []
       }
-      secure_admin_sessions: {
-        Row: {
-          admin_id: string
-          created_at: string | null
-          expires_at: string
-          id: string
-          ip_address: unknown | null
-          is_active: boolean | null
-          last_accessed: string | null
-          session_token: string
-          user_agent: string | null
-        }
-        Insert: {
-          admin_id: string
-          created_at?: string | null
-          expires_at: string
-          id?: string
-          ip_address?: unknown | null
-          is_active?: boolean | null
-          last_accessed?: string | null
-          session_token: string
-          user_agent?: string | null
-        }
-        Update: {
-          admin_id?: string
-          created_at?: string | null
-          expires_at?: string
-          id?: string
-          ip_address?: unknown | null
-          is_active?: boolean | null
-          last_accessed?: string | null
-          session_token?: string
-          user_agent?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "secure_admin_sessions_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
-            referencedRelation: "admins"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       security_alerts: {
         Row: {
           acknowledged_at: string | null
@@ -5483,15 +5383,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      authenticate_admin: {
-        Args: {
-          p_ip_address?: unknown
-          p_password: string
-          p_user_agent?: string
-          p_username: string
-        }
-        Returns: Json
-      }
       calculate_next_minimum_bid: {
         Args: { p_auction_id: string }
         Returns: number
@@ -5796,6 +5687,10 @@ export type Database = {
         Args: { _user_id?: string }
         Returns: boolean
       }
+      is_admin_with_2fa: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_security_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -6007,15 +5902,6 @@ export type Database = {
       validate_password_strength: {
         Args: { password: string }
         Returns: Json
-      }
-      verify_admin_login: {
-        Args: { p_password: string; p_username: string }
-        Returns: {
-          admin_id: string
-          role: string
-          success: boolean
-          username: string
-        }[]
       }
       verify_email_and_complete_registration: {
         Args: { p_token: string }

@@ -2,6 +2,24 @@
 
 All notable changes to VillageMarket/RuralConnect security infrastructure are documented in this file.
 
+## [2.1.0] - 2025-01-22
+
+### 🔐 CRITICAL SECURITY FIX - Admin Backdoor Removed
+
+#### Fixed
+- **[CRITICAL]** Removed default admin/admin123 backdoor credentials
+- **[CRITICAL]** Eliminated insecure admin table and RPC functions
+- **[CRITICAL]** Enforced Supabase Auth-only admin access with role verification
+- **[HIGH]** Mandatory 2FA for all admin accounts with hourly re-verification
+- **[MEDIUM]** Added CI guard against hardcoded credentials
+
+#### Security Enhancements
+- Admin access now requires valid Supabase authentication
+- Role-based access control via `profiles.user_role = 'admin'`
+- Two-factor authentication mandatory for admin operations
+- Complete audit trail for all admin actions
+- Automated security scanning in CI pipeline
+
 ## [2.0.1] - 2025-01-21
 
 ### 🎉 COMPLETE SECURITY HARDENING ACHIEVED

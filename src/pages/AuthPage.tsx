@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import TwoFactorVerification from '@/components/auth/TwoFactorVerification';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,56 +9,27 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import TwoFactorVerification from '@/components/auth/TwoFactorVerification';
+import { Mail, Lock, ArrowLeft, Eye, EyeOff, User } from 'lucide-react';
 
 export default function AuthPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('signin');
-  const [show2FA, setShow2FA] = useState(false);
-  const [pendingUser, setPendingUser] = useState<{ id: string; email: string } | null>(null);
-  const { signIn, signUp, signInWithAdmin, signInWithGoogle, resetPassword, verifyTwoFactor, user, profile } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn, signUp, signInWithGoogle, resetPassword, verifyTwoFactor, user, profile } = useAuth();
+  const { toast } = useToast();
 
-  // Handle OAuth redirect on page load
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const provider = urlParams.get('provider');
-    
-    if (provider === 'google') {
-      // Check if user is now authenticated after OAuth redirect
-      const checkOAuthResult = async () => {
-        if (user && profile) {
-          toast({
-            title: "Welcome to VillageMarket!",
-            description: `Successfully signed in with Google as ${profile.first_name} ${profile.last_name}`,
-          });
-          
-          // Redirect based on user role
-          if (profile.user_role === 'admin') {
-            navigate('/admin-dashboard');
-          } else {
-            navigate('/');
-          }
-        }
-      };
-      
-      // Small delay to allow auth state to settle
-      setTimeout(checkOAuthResult, 1000);
-    }
-  }, [user, profile, navigate, toast]);
+  const [activeTab, setActiveTab] = useState<string>('signin');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [show2FA, setShow2FA] = useState(false);
+  const [pendingUser, setPendingUser] = useState<any>(null);
 
-  // Sign In Form State
+  // Sign In State
   const [signInData, setSignInData] = useState({
     email: '',
     password: ''
   });
 
-  // Sign Up Form State
+  // Sign Up State
   const [signUpData, setSignUpData] = useState({
     firstName: '',
     lastName: '',
@@ -68,39 +42,46 @@ export default function AuthPage() {
   // Reset Password State
   const [resetEmail, setResetEmail] = useState('');
 
-  // Admin Login State
-  const [adminData, setAdminData] = useState({
-    username: '',
-    password: ''
-  });
+  // Check if user is already logged in
+  useEffect(() => {
+    if (user) {
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, location]);
 
+  // Handle standard user sign in
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error, twoFactorRequired } = await signIn(signInData.email, signInData.password);
+      const { error } = await signIn(signInData.email, signInData.password);
 
       if (error) {
-        toast({
-          title: "Sign In Failed",
-          description: error.message,
-          variant: "destructive"
-        });
-      } else if (twoFactorRequired) {
-        // Show 2FA verification
-        setPendingUser({ id: '', email: signInData.email }); // We'll need to store the user ID properly
-        setShow2FA(true);
-        toast({
-          title: "2FA Required",
-          description: "Please complete two-factor authentication to continue.",
-        });
+        if (error.message?.includes('2FA') || error.message?.includes('two factor')) {
+          // 2FA verification required
+          setPendingUser({ id: 'temp', email: signInData.email });
+          setShow2FA(true);
+          toast({
+            title: "Two-Factor Authentication Required",
+            description: "Please complete 2FA verification to continue.",
+          });
+        } else {
+          toast({
+            title: "Sign In Failed",
+            description: error.message,
+            variant: "destructive"
+          });
+        }
       } else {
         toast({
           title: "Welcome back!",
           description: "You have successfully signed in.",
         });
-        navigate('/');
+        
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
       }
     } catch (error) {
       toast({
@@ -113,22 +94,14 @@ export default function AuthPage() {
     }
   };
 
+  // Handle user sign up
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (signUpData.password !== signUpData.confirmPassword) {
       toast({
         title: "Password Mismatch",
-        description: "Passwords do not match.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (signUpData.password.length < 6) {
-      toast({
-        title: "Weak Password",
-        description: "Password must be at least 6 characters long.",
+        description: "Passwords do not match. Please try again.",
         variant: "destructive"
       });
       return;
@@ -140,6 +113,7 @@ export default function AuthPage() {
       const { error } = await signUp(signUpData.email, signUpData.password, {
         firstName: signUpData.firstName,
         lastName: signUpData.lastName,
+        fullName: `${signUpData.firstName} ${signUpData.lastName}`,
         userType: signUpData.userType
       });
 
@@ -152,17 +126,7 @@ export default function AuthPage() {
       } else {
         toast({
           title: "Account Created Successfully!",
-          description: `Welcome ${signUpData.firstName}! Please check your email to verify your account and unlock all ${signUpData.userType} features.`,
-        });
-        
-        // Clear form and switch to sign in
-        setSignUpData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          userType: 'buyer'
+          description: "Please check your email to verify your account.",
         });
         setActiveTab('signin');
       }
@@ -177,12 +141,11 @@ export default function AuthPage() {
     }
   };
 
+  // Handle Google OAuth sign in
   const handleGoogleSignIn = async () => {
     setLoading(true);
-
     try {
       const { error } = await signInWithGoogle();
-
       if (error) {
         toast({
           title: "Google Sign In Failed",
@@ -201,13 +164,13 @@ export default function AuthPage() {
     }
   };
 
+  // Handle password reset
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const { error } = await resetPassword(resetEmail);
-
       if (error) {
         toast({
           title: "Reset Failed",
@@ -219,38 +182,6 @@ export default function AuthPage() {
           title: "Reset Email Sent",
           description: "Check your email for password reset instructions.",
         });
-        setActiveTab('signin');
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAdminSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error } = await signInWithAdmin(adminData.username, adminData.password);
-
-      if (error) {
-        toast({
-          title: "Admin Sign In Failed",
-          description: error.message,
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Welcome Admin!",
-          description: "You have successfully signed in as administrator.",
-        });
-        navigate('/admin-dashboard');
       }
     } catch (error) {
       toast({
@@ -318,17 +249,16 @@ export default function AuthPage() {
             <CardTitle className="text-center">
               {activeTab === 'signin' ? 'Sign In' : 
                activeTab === 'signup' ? 'Create Account' : 
-               activeTab === 'admin' ? 'Admin Login' : 'Reset Password'}
+               'Reset Password'}
             </CardTitle>
           </CardHeader>
           
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                <TabsTrigger value="admin">Admin</TabsTrigger>
-                <TabsTrigger value="reset">Reset</TabsTrigger>
+                <TabsTrigger value="reset">Reset Password</TabsTrigger>
               </TabsList>
 
               <TabsContent value="signin" className="space-y-4">
@@ -402,6 +332,11 @@ export default function AuthPage() {
                   </svg>
                   Continue with Google
                 </Button>
+
+                <div className="text-center text-sm text-muted-foreground">
+                  <p className="mb-2">Admin? Use your regular email and password.</p>
+                  <p className="text-xs">Admin privileges are determined by your account role.</p>
+                </div>
               </TabsContent>
 
               <TabsContent value="signup" className="space-y-4">
@@ -507,60 +442,6 @@ export default function AuthPage() {
                 </form>
               </TabsContent>
 
-              <TabsContent value="admin" className="space-y-4">
-                <form onSubmit={handleAdminSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="admin-username">Username</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="admin-username"
-                        type="text"
-                        value={adminData.username}
-                        onChange={(e) => setAdminData({ ...adminData, username: e.target.value })}
-                        className="pl-10"
-                        placeholder="Enter admin username"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="admin-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="admin-password"
-                        type={showPassword ? "text" : "password"}
-                        value={adminData.password}
-                        onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
-                        className="pl-10 pr-10"
-                        placeholder="Enter admin password"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Signing In..." : "Sign In as Admin"}
-                  </Button>
-                </form>
-
-                <div className="text-center text-sm text-muted-foreground">
-                  <p>Admin access only</p>
-                  <p className="text-xs">Default: admin / admin123</p>
-                </div>
-              </TabsContent>
-
               <TabsContent value="reset" className="space-y-4">
                 <form onSubmit={handlePasswordReset} className="space-y-4">
                   <div className="space-y-2">
@@ -580,9 +461,20 @@ export default function AuthPage() {
                   </div>
 
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Sending..." : "Send Reset Link"}
+                    {loading ? "Sending..." : "Send Reset Email"}
                   </Button>
                 </form>
+
+                <div className="text-center text-sm text-muted-foreground">
+                  <p>Remember your password?</p>
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto"
+                    onClick={() => setActiveTab('signin')}
+                  >
+                    Back to Sign In
+                  </Button>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>

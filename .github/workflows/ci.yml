@@ -80,3 +80,9 @@ jobs:
         run: npm run build
         env:
           CI: true
+
+      - name: Check for default admin credentials
+        run: node scripts/check-default-admin.cjs
+
+      - name: Run security verification
+        run: node scripts/security-verification-checklist.cjs
