@@ -210,10 +210,11 @@ export default function ComprehensiveTestSuite() {
         break;
 
       case "Role-based access control":
-        // Test RLS policies
+        // Test admin role access via profiles table
         const { error: roleError } = await supabase
-          .from('admins')
-          .select('*')
+          .from('profiles')
+          .select('user_role')
+          .eq('user_role', 'admin')
           .limit(1);
         
         // Should fail for non-admin users

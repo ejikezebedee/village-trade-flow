@@ -60,7 +60,6 @@ const AuthContext = createContext<AuthContextType>({
   twoFactorVerified: false,
   signUp: async () => ({ error: null }),
   signIn: async () => ({ error: null }),
-  signInWithAdmin: async () => ({ error: null }),
   signInWithGoogle: async () => ({ error: null }),
   signOut: async () => ({ error: null }),
   resetPassword: async () => ({ error: null }),

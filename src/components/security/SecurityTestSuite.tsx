@@ -22,12 +22,9 @@ export const SecurityTestSuite: React.FC = () => {
     const testResults: TestResult[] = [];
 
     try {
-      // Test 1: Admin table access (should be blocked for non-admins)
+      // Test 1: Admin table access (table should not exist)
       try {
-        const { data, error } = await supabase
-          .from('admins')
-          .select('*')
-          .limit(1);
+        const { data, error } = await supabase.rpc('is_admin_with_2fa');
         
         if (error && error.message.includes('policy')) {
           testResults.push({

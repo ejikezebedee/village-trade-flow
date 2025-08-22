@@ -164,24 +164,14 @@ export function SystemSettingsPanel() {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('admins')
-        .insert({
-          username: newAdminUsername,
-          password: newAdminPassword, // In production, this should be hashed
-          role: 'admin',
-          is_active: true
-        });
-
-      if (error) throw error;
-
+      // Admin creation is now handled via Supabase Auth + role assignment
+      // This functionality should be replaced with proper user invitation system
       toast({
-        title: "Admin Created",
-        description: "New admin account has been created successfully",
+        title: "Admin Creation Disabled",
+        description: "Admin accounts must now be created via Supabase Auth and role assignment",
+        variant: "destructive"
       });
-
-      setNewAdminUsername('');
-      setNewAdminPassword('');
+      return;
     } catch (error) {
       console.error('Error creating admin:', error);
       toast({
