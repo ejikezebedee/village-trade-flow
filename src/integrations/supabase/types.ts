@@ -5685,6 +5685,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      remind_enable_password_protection: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       resolve_dispute_by_votes: {
         Args: { dispute_uuid: string }
         Returns: string
