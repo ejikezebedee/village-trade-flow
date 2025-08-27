@@ -960,13 +960,6 @@ export type Database = {
             foreignKeyName: "brand_products_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "optimized_product_listings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "brand_products_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -1242,13 +1235,6 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversion_events_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "optimized_product_listings"
             referencedColumns: ["id"]
           },
           {
@@ -2022,13 +2008,6 @@ export type Database = {
             foreignKeyName: "featured_ads_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "optimized_product_listings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "featured_ads_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -2232,13 +2211,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "flash_sales_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "optimized_product_listings"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "flash_sales_product_id_fkey"
             columns: ["product_id"]
@@ -3476,13 +3448,6 @@ export type Database = {
             foreignKeyName: "product_analytics_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "optimized_product_listings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_analytics_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -3562,13 +3527,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "languages"
             referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "product_translations_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "optimized_product_listings"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "product_translations_product_id_fkey"
@@ -4223,13 +4181,6 @@ export type Database = {
             foreignKeyName: "stock_alerts_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "optimized_product_listings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "stock_alerts_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -4516,13 +4467,6 @@ export type Database = {
             columns: ["payment_id"]
             isOneToOne: false
             referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transaction_qr_codes_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "optimized_product_listings"
             referencedColumns: ["id"]
           },
           {
@@ -5303,60 +5247,7 @@ export type Database = {
       }
     }
     Views: {
-      audit_logs_admin_view: {
-        Row: {
-          actor_user_id: string | null
-          client_ip_masked: string | null
-          created_at: string | null
-          event: string | null
-          id: string | null
-          meta: Json | null
-        }
-        Insert: {
-          actor_user_id?: string | null
-          client_ip_masked?: never
-          created_at?: string | null
-          event?: string | null
-          id?: string | null
-          meta?: Json | null
-        }
-        Update: {
-          actor_user_id?: string | null
-          client_ip_masked?: never
-          created_at?: string | null
-          event?: string | null
-          id?: string | null
-          meta?: Json | null
-        }
-        Relationships: []
-      }
-      optimized_product_listings: {
-        Row: {
-          category: string | null
-          created_at: string | null
-          currency: string | null
-          description: string | null
-          featured: boolean | null
-          id: string | null
-          images: Json | null
-          location: Json | null
-          name: string | null
-          price: number | null
-          seller_id: string | null
-          seller_name: string | null
-          seller_rating: number | null
-          stock_quantity: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "products_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_get_audit_logs: {
@@ -5616,6 +5507,17 @@ export type Database = {
           title: string
         }[]
       }
+      get_admin_audit_logs: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: {
+          actor_user_id: string
+          client_ip_masked: string
+          created_at: string
+          event: string
+          id: string
+          meta: Json
+        }[]
+      }
       get_api_key: {
         Args: { p_key_name: string }
         Returns: string
@@ -5643,6 +5545,25 @@ export type Database = {
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }
         Returns: string
+      }
+      get_optimized_product_listings: {
+        Args: {
+          p_category?: string
+          p_featured_only?: boolean
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: {
+          category: string
+          created_at: string
+          featured: boolean
+          id: string
+          image_url: string
+          name: string
+          price: number
+          seller_id: string
+          stock_quantity: number
+        }[]
       }
       get_security_health_summary: {
         Args: Record<PropertyKey, never>
