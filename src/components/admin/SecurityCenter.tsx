@@ -19,7 +19,9 @@ import {
   CheckCircle,
   Database,
   Server,
-  Settings
+  Settings,
+  ExternalLink,
+  Gauge
 } from 'lucide-react';
 
 interface TableInfo {
