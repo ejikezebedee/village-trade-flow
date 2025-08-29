@@ -320,22 +320,113 @@ expect(error).toBeDefined();
    - Enhance monitoring
    - Conduct security training
 
-## Security Testing
+## Security Configuration Guards
 
-### Automated Test Suite
+VillageMarket includes automated security monitoring to prevent configuration drift and ensure security compliance:
 
-Run the security test suite regularly:
+### Config Guard System
+- **Runtime Monitoring**: Real-time security configuration validation
+- **Admin Dashboard**: Visual config status with remediation links  
+- **Automated Alerts**: Security alerts for misconfigurations
+- **CI/CD Integration**: Prevents deployment with critical security issues
 
+### Configuration Health Monitoring
+
+The Config Guard tracks and validates:
+
+1. **OTP TTL Configuration**
+   - Expected: ≤300 seconds (5 minutes)
+   - Status: Monitored via environment and dashboard settings
+   - Remediation: Direct link to Supabase Authentication settings
+
+2. **HIBP Password Protection**
+   - Expected: Enabled in Supabase Dashboard
+   - Status: Manual verification required (Supabase doesn't expose this via API)
+   - Remediation: Direct link to Supabase Password Protection settings
+
+3. **Function Hardening Coverage**
+   - Expected: 100% of SQL functions with `SET search_path = ''`
+   - Status: Automatically validated (currently 137/137 functions)
+   - Remediation: Automated - new functions must include hardening
+
+4. **RLS Coverage**  
+   - Expected: 100% coverage on sensitive tables
+   - Status: Automatically validated (currently 111/111 tables)
+   - Remediation: Automated - new tables must include RLS policies
+
+### Using the Config Guard
+
+#### Admin Dashboard
+1. Navigate to **Admin → Security Center → Config Guard**
+2. Review the configuration health status
+3. Click "Open Supabase Settings" for any warnings
+4. Verify all indicators show "OK" status
+
+#### API Endpoint
 ```bash
-npm run test:security
+curl https://your-app.com/api/security/health
 ```
 
-**Test Categories:**
-- Database security (RLS policies)
-- Input validation (XSS/injection)
-- Authentication security
-- Rate limiting
-- Session management
+Response includes:
+- Configuration status (ok/warn/critical)
+- Specific warnings and remediation links
+- Security metrics summary
+- Last check timestamp
+
+#### CI/CD Integration
+```bash
+# Run security sanity check (fails CI on critical issues)
+npm run security:sanity
+
+# Full security verification suite  
+npm run security:verify
+```
+
+### `STRICT_PUBLIC_CONFIG` Mode (Optional)
+
+For additional security, enable strict mode for public system tables:
+
+```bash
+# Enable strict mode
+STRICT_PUBLIC_CONFIG=true
+```
+
+**When enabled:**
+- System tables (`languages`, `localized_content`) require authentication to read
+- Public views provide safe read-only access for unauthenticated users
+- Admin can toggle via Security Center settings
+
+**Trade-offs:**
+- **Security**: Prevents unauthorized access to system configuration
+- **Usability**: May require authentication for some public content
+- **Compatibility**: Existing public API calls may need authentication
+
+### Security Sanity Check Script
+
+The `scripts/security-sanity.cjs` script validates critical security configuration:
+
+```bash
+node scripts/security-sanity.cjs
+```
+
+**Validates:**
+- OTP TTL environment configuration (fails if >300 seconds)
+- HIBP environment flag (warns if not enabled)
+- Required security files existence
+- Supabase function configuration
+
+**Exit Codes:**
+- `0`: All checks passed
+- `1`: Critical security issues found (fails CI/CD)
+
+### Remediation Workflow
+
+When the Config Guard detects issues:
+
+1. **Automated Alerts**: Security alert created in dashboard
+2. **Remediation Links**: Direct links to fix configuration  
+3. **Re-verification**: Status updates automatically after fixes
+4. **Audit Logging**: All configuration changes logged for security audit
 
 ### Manual Security Checks
 

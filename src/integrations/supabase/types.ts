@@ -2719,13 +2719,6 @@ export type Database = {
             referencedColumns: ["code"]
           },
           {
-            foreignKeyName: "message_translations_language_code_fkey"
-            columns: ["language_code"]
-            isOneToOne: false
-            referencedRelation: "languages_public_view"
-            referencedColumns: ["code"]
-          },
-          {
             foreignKeyName: "message_translations_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
@@ -3536,13 +3529,6 @@ export type Database = {
             referencedColumns: ["code"]
           },
           {
-            foreignKeyName: "product_translations_language_code_fkey"
-            columns: ["language_code"]
-            isOneToOne: false
-            referencedRelation: "languages_public_view"
-            referencedColumns: ["code"]
-          },
-          {
             foreignKeyName: "product_translations_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
@@ -3776,13 +3762,6 @@ export type Database = {
             columns: ["preferred_language"]
             isOneToOne: false
             referencedRelation: "languages"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "profiles_preferred_language_fkey"
-            columns: ["preferred_language"]
-            isOneToOne: false
-            referencedRelation: "languages_public_view"
             referencedColumns: ["code"]
           },
         ]
@@ -4764,13 +4743,6 @@ export type Database = {
             referencedRelation: "languages"
             referencedColumns: ["code"]
           },
-          {
-            foreignKeyName: "translations_language_code_fkey"
-            columns: ["language_code"]
-            isOneToOne: false
-            referencedRelation: "languages_public_view"
-            referencedColumns: ["code"]
-          },
         ]
       }
       two_factor_backup_codes: {
@@ -5308,51 +5280,7 @@ export type Database = {
       }
     }
     Views: {
-      languages_public_view: {
-        Row: {
-          code: string | null
-          is_rtl: boolean | null
-          name: string | null
-          native_name: string | null
-        }
-        Insert: {
-          code?: string | null
-          is_rtl?: boolean | null
-          name?: string | null
-          native_name?: string | null
-        }
-        Update: {
-          code?: string | null
-          is_rtl?: boolean | null
-          name?: string | null
-          native_name?: string | null
-        }
-        Relationships: []
-      }
-      localized_content_public_view: {
-        Row: {
-          content_key: string | null
-          content_text: string | null
-          content_type: string | null
-          language_code: string | null
-          region: string | null
-        }
-        Insert: {
-          content_key?: string | null
-          content_text?: string | null
-          content_type?: string | null
-          language_code?: string | null
-          region?: string | null
-        }
-        Update: {
-          content_key?: string | null
-          content_text?: string | null
-          content_type?: string | null
-          language_code?: string | null
-          region?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_get_audit_logs: {
@@ -5647,9 +5575,28 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_languages_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          code: string
+          is_rtl: boolean
+          name: string
+          native_name: string
+        }[]
+      }
       get_localized_content: {
         Args: { p_content_key: string; p_language_code?: string }
         Returns: string
+      }
+      get_localized_content_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          content_key: string
+          content_text: string
+          content_type: string
+          language_code: string
+          region: string
+        }[]
       }
       get_optimized_product_listings: {
         Args: {
