@@ -2719,6 +2719,13 @@ export type Database = {
             referencedColumns: ["code"]
           },
           {
+            foreignKeyName: "message_translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages_public_view"
+            referencedColumns: ["code"]
+          },
+          {
             foreignKeyName: "message_translations_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
@@ -3529,6 +3536,13 @@ export type Database = {
             referencedColumns: ["code"]
           },
           {
+            foreignKeyName: "product_translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages_public_view"
+            referencedColumns: ["code"]
+          },
+          {
             foreignKeyName: "product_translations_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
@@ -3762,6 +3776,13 @@ export type Database = {
             columns: ["preferred_language"]
             isOneToOne: false
             referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "profiles_preferred_language_fkey"
+            columns: ["preferred_language"]
+            isOneToOne: false
+            referencedRelation: "languages_public_view"
             referencedColumns: ["code"]
           },
         ]
@@ -4043,6 +4064,39 @@ export type Database = {
           target_resource?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_config: {
+        Row: {
+          config_key: string
+          config_value: Json
+          created_at: string | null
+          environment: string
+          id: string
+          last_verified_at: string | null
+          updated_at: string | null
+          verification_method: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value: Json
+          created_at?: string | null
+          environment?: string
+          id?: string
+          last_verified_at?: string | null
+          updated_at?: string | null
+          verification_method?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: Json
+          created_at?: string | null
+          environment?: string
+          id?: string
+          last_verified_at?: string | null
+          updated_at?: string | null
+          verification_method?: string | null
         }
         Relationships: []
       }
@@ -4710,6 +4764,13 @@ export type Database = {
             referencedRelation: "languages"
             referencedColumns: ["code"]
           },
+          {
+            foreignKeyName: "translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages_public_view"
+            referencedColumns: ["code"]
+          },
         ]
       }
       two_factor_backup_codes: {
@@ -5247,7 +5308,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      languages_public_view: {
+        Row: {
+          code: string | null
+          is_rtl: boolean | null
+          name: string | null
+          native_name: string | null
+        }
+        Insert: {
+          code?: string | null
+          is_rtl?: boolean | null
+          name?: string | null
+          native_name?: string | null
+        }
+        Update: {
+          code?: string | null
+          is_rtl?: boolean | null
+          name?: string | null
+          native_name?: string | null
+        }
+        Relationships: []
+      }
+      localized_content_public_view: {
+        Row: {
+          content_key: string | null
+          content_text: string | null
+          content_type: string | null
+          language_code: string | null
+          region: string | null
+        }
+        Insert: {
+          content_key?: string | null
+          content_text?: string | null
+          content_type?: string | null
+          language_code?: string | null
+          region?: string | null
+        }
+        Update: {
+          content_key?: string | null
+          content_text?: string | null
+          content_type?: string | null
+          language_code?: string | null
+          region?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_get_audit_logs: {
@@ -5565,6 +5670,10 @@ export type Database = {
           stock_quantity: number
         }[]
       }
+      get_security_config_status: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_security_health_summary: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -5622,6 +5731,10 @@ export type Database = {
         Returns: boolean
       }
       is_security_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_strict_public_config_enabled: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
@@ -5816,6 +5929,14 @@ export type Database = {
       }
       update_product_performance_tags: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_security_config_verification: {
+        Args: {
+          p_config_key: string
+          p_verification_method?: string
+          p_verified_value: Json
+        }
         Returns: undefined
       }
       upgrade_user_role: {

@@ -36,27 +36,18 @@ export const CACHE_CONFIGS = {
   }
 } as const;
 
-// Cached product listings using optimized view
+// Cached product listings using RPC function
 export const useCachedProducts = (filters?: any) => {
   return useQuery({
     queryKey: ['products', filters],
     queryFn: async () => {
-      let query = supabase
-        .from('optimized_product_listings')
-        .select('*');
+      const { data, error } = await supabase.rpc('get_optimized_product_listings', {
+        p_category: filters?.category || null,
+        p_featured_only: filters?.featured || false,
+        p_limit: 50,
+        p_offset: 0
+      });
       
-      if (filters?.category) {
-        query = query.eq('category', filters.category);
-      }
-      if (filters?.featured) {
-        query = query.eq('featured', true);
-      }
-      if (filters?.priceRange) {
-        query = query.gte('price', filters.priceRange.min)
-                    .lte('price', filters.priceRange.max);
-      }
-      
-      const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
       return data;
     },
