@@ -188,6 +188,11 @@ const App = () => (
                   <AgentDashboard />
                 </ProtectedRoute>
               } />
+              <Route path="/admin" element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
               <Route path="/dashboard/admin" element={
                 <ProtectedRoute requiredRole="admin">
                   <AdminDashboard />
